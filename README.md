@@ -23,7 +23,10 @@ Once you see that `hinter-core` is running as expected with example peers, stop 
 
 ### Start `hinter-core` automatically at startup
 
-Once you confirm that `hinter-core` runs as expected, run it in the background, in "always restart" mode with
+For you to be able exchange reports with a peer, you need to be running `hinter-core` concurrently.
+This is easy to achieve if both of you are running `hinter-core` at all times, at least while your machine is running.
+
+Run `hinter-core` in the background, in "always restart" mode with
 ```sh
 docker run -d --name my-hinter-core --restart=always -v "$(pwd)/peers":/app/peers -v "$(pwd)/.env":/app/.env bbenligiray/hinter-core
 ```
