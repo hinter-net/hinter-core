@@ -4,26 +4,47 @@
 
 ## Instructions
 
-- Install [Docker](https://docs.docker.com/engine/install/).
-- Clone this repo and move in it.
-  ```sh
-  git clone https://github.com/hinter-net/hinter-core.git
-  cd hinter-core
-  ```
-- (OPTIONAL) Build the Docker image locally with
-  ```sh
-  docker build -t hinter-core:latest .
-  ```
-- Create a `.env` file that holds your [keypair](#keypair) with
-  ```sh
-  docker run -it --rm -v "$(pwd)":/app hinter-core npm run generate-keys
-  ```
-- Populate [`peers/`](#peers).
-- Start `hinter-core` with
-  ```sh
-  docker run -it --rm -v "$(pwd)/peers":/app/peers -v "$(pwd)/.env":/app/.env hinter-core
-  ```
+1. Install [Docker](https://docs.docker.com/engine/install/).
+2. Clone this repo and move in it.
+    ```sh
+    git clone https://github.com/hinter-net/hinter-core.git
+    cd hinter-core
+    ```
+3. Create a `.env` file that holds your [keypair](#keypair) with
+    ```sh
+    docker run -it --rm -v "$(pwd)":/app bbenligiray/hinter-core npm run generate-keys
+    ```
+4. Populate [`peers/`](#peers).
+5. Start `hinter-core` with
+    ```sh
+    docker run -it --rm -v "$(pwd)/peers":/app/peers -v "$(pwd)/.env":/app/.env bbenligiray/hinter-core
+    ```
 
+### Start `hinter-core` automatically at startup
+
+Once you confirm that `hinter-core` runs as expected, run it in the background, in "always restart" mode with
+```sh
+docker run -d --name my-hinter-core --restart=always -v "$(pwd)/peers":/app/peers -v "$(pwd)/.env":/app/.env bbenligiray/hinter-core
+```
+
+Note that you will not see its logs when the container is running in the background.
+However, since the command above names the container `my-hinter-core`, you can print its logs at any time with
+```sh
+docker logs my-hinter-core
+```
+
+In "always restart" mode, the container will start automatically at startup.
+Stop and remove it (for example, to [add/remove peers](#addingremoving-peers)) with
+```sh
+docker stop my-hinter-core | xargs docker rm
+```
+
+### Build `hinter-core` locally
+
+Optionally, you can build `hinter-core` locally with
+```sh
+docker build -t hinter-core .
+```
 ## Repo Contents
 
 ```
