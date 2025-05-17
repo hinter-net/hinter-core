@@ -14,6 +14,9 @@
     "type": "terminal"
   },
   "scripts": {
+    "docker:build": "docker build -t hinter-core:latest .",
+    "docker:generate-keys": "docker run -it --rm -v .:/app hinter-core npm run generate-keys",
+    "docker:start": "docker run -it --rm -v ./peers:/app/peers -v ./.env:/app/.env hinter-core",
     "generate-keys": "pear run generate-keys.js",
     "start": "pear run ."
   },
