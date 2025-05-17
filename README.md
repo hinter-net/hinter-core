@@ -14,11 +14,12 @@
     ```sh
     docker run -it --rm -v "$(pwd)":/app bbenligiray/hinter-core npm run generate-keys
     ```
-4. Populate [`peers/`](#peers).
-5. Start `hinter-core` with
+4. Start `hinter-core` with
     ```sh
     docker run -it --rm -v "$(pwd)/peers":/app/peers -v "$(pwd)/.env":/app/.env bbenligiray/hinter-core
     ```
+
+Once you see that `hinter-core` is running as expected with example peers, stop it, delete the [`peers/`](#peers) contents and populate it with your real peers.
 
 ### Start `hinter-core` automatically at startup
 
