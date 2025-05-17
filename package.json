@@ -1,12 +1,18 @@
 {
   "name": "hinter-core",
+  "version": "0.0.1",
+  "description": "A terminal application that implements the hinter protocol, enabling users to exchange reports in a P2P manner",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hinter-net/hinter-core"
+  },
   "main": "index.js",
+  "type": "module",
   "pear": {
     "name": "hinter-core",
     "type": "terminal"
   },
-  "type": "module",
-  "license": "MIT",
   "scripts": {
     "generate-keys": "pear run generate-keys.js",
     "start": "pear run ."
