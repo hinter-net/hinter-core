@@ -38,7 +38,7 @@ docker logs my-hinter-core
 ```
 
 In "always restart" mode, the container will start automatically at startup.
-Stop and remove it (for example, to [add/remove peers](#addingremoving-peers)) with
+Stop and remove it (for example, to [add or remove peers](#add-or-remove-peers)) with
 ```sh
 docker stop my-hinter-core | xargs docker rm
 ```
@@ -89,7 +89,7 @@ While `hinter-core` is running for both you and your peer, the files you place i
 `hinter-core` supports syncing arbitrary content.
 However, for the sake of protocolization, users should populate their `outgoing/` directories only with Markdown files that have `{TIMESTAMP}{OPTIONAL_ARBITRARY_SUFFIX}.md` as the file name (where `TIMESTAMP` is when the report was composed, in `YYYYMMDDHHMMSS` format).
 
-#### Adding/removing peers
+#### Add or remove peers
 
 `hinter-core` loads peers at the beginning.
 Therefore, to add/remove peers:
