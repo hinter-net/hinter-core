@@ -16,6 +16,6 @@ WORKDIR /app
 COPY package*.json .
 RUN npm i
 
-COPY *.js .
+COPY src/ ./src/
 
 CMD ["npm", "run", "start"]
