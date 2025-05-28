@@ -6,6 +6,9 @@ import Localdrive from 'localdrive';
 import Corestore from 'corestore';
 import crypto from 'hypercore-crypto';
 import b4a from 'b4a';
+import { printAsciiArt } from './utils';
+
+printAsciiArt();
 
 async function main() {
     if (!fs.existsSync('.env')) {
