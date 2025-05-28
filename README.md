@@ -40,7 +40,8 @@ docker logs my-hinter-core
 In "always restart" mode, the container will start automatically at startup.
 Stop and remove it (for example, to [add or remove peers](#add-or-remove-peers)) with
 ```sh
-docker stop my-hinter-core | xargs docker rm
+docker stop my-hinter-core
+docker rm my-hinter-core
 ```
 
 ### Build `hinter-core` locally
