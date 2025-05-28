@@ -49,6 +49,7 @@ Optionally, you can build `hinter-core` locally with
 ```sh
 docker build -t hinter-core .
 ```
+
 ## Repo Contents
 
 ```
