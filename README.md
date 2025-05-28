@@ -54,21 +54,21 @@ docker build -t hinter-core .
 ```
 ├── entries
 │    ├── pinned
-│    │    └── *.md                  # pinned entries of user
-│    └── *.md                       # regular entries of user
+│    │    └── *.md                  # your pinned entries
+│    └── *.md                       # your regular entries
 ├── peers/
 │    ├── {ALIAS_1}-{PUBLIC_KEY_1}   # report directory of peer #1
 │    │    ├── incoming/
-│    │    │    └── *.md             # incoming reports from peer #1 to user
+│    │    │    └── *.md             # incoming reports from peer #1 to you
 │    │    └── outgoing/
-│    │         └── *.md             # outgoing reports from user to peer #1
+│    │         └── *.md             # outgoing reports from you to peer #1
 │    ├── {ALIAS_2}-{PUBLIC_KEY_2}   # report directory of peer #2
 │    │    ├── incoming/
-│    │    │    └── *.md             # incoming reports from peer #2 to user
+│    │    │    └── *.md             # incoming reports from peer #2 to you
 │    │    └── outgoing/
-│    │         └── *.md             # outgoing reports from user to peer #2
-│    └──  {ALIAS_*}-{PUBLIC_KEY_*}  # more report directories
-└── .env                            # keypair of user
+│    │         └── *.md             # outgoing reports from you to peer #2
+│    └──  {ALIAS_*}-{PUBLIC_KEY_*}  # report directories of more peers
+└── .env                            # your keypair
 ```
 
 ### Entries
@@ -87,7 +87,7 @@ In each peer directory, there is an `incoming/` and an `outgoing/` directory.
 While `hinter-core` is running for both you and your peer, the files you place in an `outgoing/` directory on your machine will appear on the respective `incoming/` directory of your peer, and vice versa.
 
 `hinter-core` supports syncing arbitrary content.
-However, for the sake of protocolization, users should populate their `outgoing/` directories only with Markdown files that have `{TIMESTAMP}{OPTIONAL_ARBITRARY_SUFFIX}.md` as the file name (where `TIMESTAMP` is when the report was composed, in `YYYYMMDDHHMMSS` format).
+However, for the sake of protocolization, you should populate their `outgoing/` directories only with Markdown files that have `{TIMESTAMP}{OPTIONAL_ARBITRARY_SUFFIX}.md` as the file name (where `TIMESTAMP` is when the report was composed, in `YYYYMMDDHHMMSS` format).
 
 #### Add or remove peers
 
