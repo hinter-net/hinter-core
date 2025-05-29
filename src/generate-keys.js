@@ -11,3 +11,4 @@ if (fs.existsSync('.env')) {
 const { publicKey, secretKey } = crypto.keyPair();
 const envContent = `PUBLIC_KEY=${Buffer.from(publicKey).toString('hex')}\nSECRET_KEY=${Buffer.from(secretKey).toString('hex')}`;
 fs.writeFileSync('.env', envContent);
+console.log('Generated keys!');
