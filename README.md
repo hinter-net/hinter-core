@@ -66,16 +66,16 @@ docker build -t hinter-core .
 │    ├── pinned
 │    │    └── *.md                  # Your pinned entries
 │    └── *.md                       # Your regular entries
-├── peers/
+├── peers
 │    ├── {ALIAS_1}-{PUBLIC_KEY_1}   # Report directory of peer #1
-│    │    ├── incoming/
+│    │    ├── incoming
 │    │    │    └── *.md             # Incoming reports from peer #1 to you
-│    │    └── outgoing/
+│    │    └── outgoing
 │    │         └── *.md             # Outgoing reports from you to peer #1
 │    ├── {ALIAS_2}-{PUBLIC_KEY_2}   # Report directory of peer #2
-│    │    ├── incoming/
+│    │    ├── incoming
 │    │    │    └── *.md             # Incoming reports from peer #2 to you
-│    │    └── outgoing/
+│    │    └── outgoing
 │    │         └── *.md             # Outgoing reports from you to peer #2
 │    └──  {ALIAS_*}-{PUBLIC_KEY_*}  # Report directories of additional peers
 └── .env                            # Your keypair
