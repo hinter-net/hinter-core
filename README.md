@@ -29,7 +29,7 @@
 This repo is populated with example [peers](#peers) and [entries](#entries).
 Remove these examples and add your own before actual usage.
 
-### Start `hinter-core` automatically at startup
+### Start `hinter-core` automatically when your system boots up
 
 For you to be able to exchange reports with a peer, you need to be running `hinter-core` concurrently.
 This is easy to achieve if both of you are running `hinter-core` at all times, or at least while your machine is running.
@@ -45,7 +45,7 @@ However, since the command above names the container `my-hinter-core`, you can p
 docker logs my-hinter-core
 ```
 
-In "always restart" mode, the container will start automatically when the system boots up.
+In "always restart" mode, the container will start automatically when your system boots up.
 Stop and remove it (for example, to [add or remove peers](#add-or-remove-peers)) using:
 ```sh
 docker stop my-hinter-core
