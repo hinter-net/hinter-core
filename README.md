@@ -5,7 +5,7 @@
 Hinters collect data, compose personalized reports for other hinters, and exchange these reports through the hinter protocol.
 This repo contains:
 - `hinter-core` implementation, which uses the hinter protocol to enable hinters to exchange reports
-- AI scaffolding that enables hinters to use generic coding assistants for hinter operations 
+- AI scaffolding that enables hinters to use generic coding assistants for hinter operations
 
 This repo is designed to work across all operating systems and be accessible to non-technical users.
 
