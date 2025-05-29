@@ -90,6 +90,9 @@ This signals to [workflows](#workflows) to give priority to pinned entries for c
 Your entries must be Markdown files that have `{TIMESTAMP}{OPTIONAL_ARBITRARY_SUFFIX}.md` as the file name (where `TIMESTAMP` is when the report was composed, in `YYYYMMDDHHMMSS` format).
 This signals to [workflows](#workflows) to give priority to newer entries for cases when the LLM context size is limited.
 
+Everything in your entries directory is private.
+However, [workflows](#workflows) compose outgoing reports based on your entries.
+
 ### Peers
 
 Each peer has a report directory under `peers/`.
@@ -103,6 +106,7 @@ While `hinter-core` is running for both you and your peer, the files you place i
 
 `hinter-core` supports syncing arbitrary content.
 However, for the sake of protocolization, you should populate their `outgoing/` directories only with Markdown files that have `{TIMESTAMP}{OPTIONAL_ARBITRARY_SUFFIX}.md` as the file name (where `TIMESTAMP` is when the report was composed, in `YYYYMMDDHHMMSS` format).
+This file name will be mirrored in your peer's machine in its entirety, i.e., `OPTIONAL_ARBITRARY_SUFFIX` will be exposed to your peer.
 
 #### Add or remove peers
 
