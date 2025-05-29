@@ -31,7 +31,7 @@ The user may specify an entry by:
 - If user cancels confirmation, acknowledge and stop
 
 ## Examples
-- User says "delete 20241129143022" → Find exact file, show: "Delete '20241129143022_meeting_notes.md'? Content: 'Meeting with team about Q4 goals...' (y/n)"
-- User says "delete meeting_notes" → Find exact suffix match, show content preview and confirm deletion
-- User says "delete meeting" → Find `meeting_notes.md`, confirm: "Did you mean 'meeting_notes'? Content: 'Meeting with team...' Delete it? (y/n)"
-- User says "delete 20241129" → Find all files from that date with content previews, ask user to specify which one
+- User says "delete-entry 20241129143022" → Find exact file, show: "Delete '20241129143022_meeting_notes.md'? Content: 'Meeting with team about Q4 goals...' (y/n)"
+- User says "delete-entry meeting_notes" → Find exact suffix match, show content preview and confirm deletion
+- User says "delete-entry meeting" → Find `meeting_notes.md`, confirm: "Did you mean 'meeting_notes'? Content: 'Meeting with team...' Delete it? (y/n)"
+- User says "delete-entry 20241129" → Find all files from that date with content previews, ask user to specify which one
