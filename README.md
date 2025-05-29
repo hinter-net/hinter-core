@@ -83,7 +83,12 @@ docker build -t hinter-core .
 
 ### Entries
 
-TODO
+Your entries reside in the `entries/` directory.
+Place your regular entries directly in it, and your pinned (i.e., important) entries in the `pinned/` directory in the entries directory.
+This signals to [workflows](#workflows) to give priority to pinned entries for cases when the LLM context size is limited.
+
+Your entries must be Markdown files that have `{TIMESTAMP}{OPTIONAL_ARBITRARY_SUFFIX}.md` as the file name (where `TIMESTAMP` is when the report was composed, in `YYYYMMDDHHMMSS` format).
+This signals to [workflows](#workflows) to give priority to newer entries for cases when the LLM context size is limited.
 
 ### Peers
 
@@ -98,6 +103,7 @@ While `hinter-core` is running for both you and your peer, the files you place i
 
 `hinter-core` supports syncing arbitrary content.
 However, for the sake of protocolization, you should populate their `outgoing/` directories only with Markdown files that have `{TIMESTAMP}{OPTIONAL_ARBITRARY_SUFFIX}.md` as the file name (where `TIMESTAMP` is when the report was composed, in `YYYYMMDDHHMMSS` format).
+Note that this file name format is identical to [entry](#entries) file name format.
 
 #### Add or remove peers
 
@@ -106,6 +112,10 @@ Therefore, to add/remove peers:
 1. Stop `hinter-core`
 2. Modify your `peers/` directory according to the [repo contents diagram](#repo-contents)
 3. Start `hinter-core`
+
+## Workflows
+
+TODO
 
 ## Keypair
 
