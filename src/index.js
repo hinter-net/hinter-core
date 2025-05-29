@@ -26,9 +26,10 @@ async function main() {
     console.log('Parsed key pair!');
 
     console.log('Parsing peers...');
-    const peers = fs.readdirSync('peers').map(peersFileName => {
-        const peerDirectory = path.join('peers', peersFileName);
-        if (!fs.statSync(peerDirectory).isDirectory()) {
+    const peersDirectoryPath = path.join('data', 'peers');
+    const peers = fs.readdirSync(peersDirectoryPath).map(peersFileName => {
+        const peerDirectoryPath = path.join(peersDirectoryPath, peersFileName);
+        if (!fs.statSync(peerDirectoryPath).isDirectory()) {
             throw new Error(`${peersFileName} is not a directory`);
         }
         if (!/^[^-]+-[a-f0-9]{64}$/.test(peersFileName)) {
@@ -36,7 +37,7 @@ async function main() {
         }
         const [peerAlias, peerPublicKey] = peersFileName.split('-');
         const expectedPeerDirectoryNames = ['incoming', 'outgoing'];
-        const peerDirectoryContents = fs.readdirSync(peerDirectory);
+        const peerDirectoryContents = fs.readdirSync(peerDirectoryPath);
         if (peerDirectoryContents.length !== expectedPeerDirectoryNames.length) {
             throw new Error(`Unexpected number of contents in peers/${peerPublicKey}`);
         }
@@ -44,7 +45,7 @@ async function main() {
             if (!peerDirectoryContents.includes(expectedPeerDirectoryName)) {
                 throw new Error(`Missing ${expectedPeerDirectoryContent.name} in peers/${peerPublicKey}`);
             }
-            if (!fs.statSync(path.join(peerDirectory, expectedPeerDirectoryName)).isDirectory()) {
+            if (!fs.statSync(path.join(peerDirectoryPath, expectedPeerDirectoryName)).isDirectory()) {
                 throw new Error(`peers/${peerPublicKey}/${expectedPeerDirectoryName} is not a directory`);
             }
         });
@@ -82,7 +83,7 @@ async function main() {
     });
 
     await Promise.all(peers.map(async (peer) => {
-        peer.incomingLocaldrive = new Localdrive(path.join('peers', `${peer.alias}-${peer.publicKey}`, 'incoming'));
+        peer.incomingLocaldrive = new Localdrive(path.join(peersDirectoryPath, `${peer.alias}-${peer.publicKey}`, 'incoming'));
 
         const incomingHyperdriveKeyPair = crypto.keyPair(crypto.data(b4a.concat([b4a.from(peer.publicKey, 'hex'), keyPair.publicKey])));
         peer.incomingHyperdrive = new Hyperdrive(peer.incomingCorestore, incomingHyperdriveKeyPair.publicKey);
@@ -91,7 +92,7 @@ async function main() {
         peer.incomingDiscovery = swarm.join(peer.incomingHyperdrive.discoveryKey, { client: true, server: false });
         await peer.incomingDiscovery.flushed();
 
-        peer.outgoingLocaldrive = new Localdrive(path.join('peers', `${peer.alias}-${peer.publicKey}`, 'outgoing'));
+        peer.outgoingLocaldrive = new Localdrive(path.join(peersDirectoryPath, `${peer.alias}-${peer.publicKey}`, 'outgoing'));
 
         const outgoingHyperdriveKeyPair = crypto.keyPair(crypto.data(b4a.concat([keyPair.publicKey, b4a.from(peer.publicKey, 'hex')])));
         const outgoingCorestoreMainHypercore = peer.outgoingCorestore.get({ key: outgoingHyperdriveKeyPair.publicKey, keyPair: outgoingHyperdriveKeyPair })
@@ -124,7 +125,7 @@ async function main() {
         })();
 
         // Mirror detected outgoing changes in localdrive
-        fs.watch(path.join('peers', `${peer.alias}-${peer.publicKey}`, 'outgoing'), { recursive: true }, async () => {
+        fs.watch(path.join(peersDirectoryPath, `${peer.alias}-${peer.publicKey}`, 'outgoing'), { recursive: true }, async () => {
             const outgoingMirror = peer.outgoingLocaldrive.mirror(peer.outgoingHyperdrive);
             await outgoingMirror.done();
             console.log(`${peer.alias} detected outgoing: ${JSON.stringify(outgoingMirror.count)}`);
