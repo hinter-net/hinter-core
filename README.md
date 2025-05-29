@@ -99,3 +99,11 @@ Stop and remove it (for example, to add or remove peers) using:
 docker stop my-hinter-core
 docker rm my-hinter-core
 ```
+
+> [!TIP]
+> You are recommended to stop your `hinter-core` before updating `data/` contents (manually or through an [AI assistant](#ai-assistant-operation)), and start it again once you are done.
+> This is both a best practice that prevents you from sending unintended reports, and is a requirement for peer updates to take effect.
+
+## AI Assistant Operation
+
+TODO
