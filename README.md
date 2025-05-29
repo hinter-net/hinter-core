@@ -85,13 +85,13 @@ docker build -t hinter-core .
 
 Your entries reside in the `entries/` directory.
 Place your regular entries directly in it, and your pinned (i.e., important) entries in the `pinned/` subdirectory.
-This signals to [workflows](#workflows) to give priority to pinned entries when the LLM context size is limited.
+This signals to [prompts](#prompts) to give priority to pinned entries when the LLM context size is limited.
 
 Your entries must be Markdown files with filenames following the format `{TIMESTAMP}{OPTIONAL_ARBITRARY_SUFFIX}.md` (where `TIMESTAMP` represents when the entry was composed, in `YYYYMMDDHHMMSS` format).
-This signals to [workflows](#workflows) to give priority to newer entries when the LLM context size is limited.
+This signals to [prompts](#prompts) to give priority to newer entries when the LLM context size is limited.
 
 All content in your entries directory is private.
-However, [workflows](#workflows) compose outgoing reports based on your entries.
+However, [prompts](#prompts) compose outgoing reports based on your entries.
 
 ### Peers
 
@@ -116,7 +116,7 @@ Therefore, to add or remove peers:
 2. Modify your `peers/` directory according to the [repo contents diagram](#repo-contents)
 3. Start `hinter-core`
 
-## Workflows
+## Prompts
 
 TODO
 
