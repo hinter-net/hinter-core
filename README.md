@@ -77,7 +77,7 @@ Your keypair is composed of a `PUBLIC_KEY` and `SECRET_KEY`, and is stored in th
 Give your `PUBLIC_KEY` to your peers so they can connect to your machine.
 Do not expose your `SECRET_KEY` to anyone.
 
-## `hinter-core` operation
+## `hinter-core` Operation
 
 For you to be able to exchange reports with another hinter, you need to be running `hinter-core` concurrently.
 This is easy to achieve if both of you are running `hinter-core` at all times, or at least while your machines are running.

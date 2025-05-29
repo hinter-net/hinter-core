@@ -1,4 +1,4 @@
-# `data/` structure
+# `data/` Structure
 
 ```
 ├── entries
