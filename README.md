@@ -23,7 +23,8 @@
 > Retry the Docker commands above until you see the `hinter-core` ASCII art.
 > This is because Pear Runtime sometimes fails silently when run inside a Docker container.
 
-Once you see that `hinter-core` is running as expected with example peers, stop it, delete the [`peers/`](#peers) contents and populate it with your real peers.
+This repo is populated with example [peers](#peers) and [entries](#entries).
+Remove them and add your own before actual usage.
 
 ### Start `hinter-core` automatically at startup
 
