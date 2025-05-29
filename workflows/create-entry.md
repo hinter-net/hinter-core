@@ -1,5 +1,5 @@
-# `add-entry` workflow
-You are managing a file-based entry system. When a user asks you to add an entry:
+# `create-entry` workflow
+You are managing a file-based entry system. When a user asks you to create an entry:
 
 ## Overview
 Create a new Markdown entry file in the appropriate directory with timestamp-based naming and user-provided or placeholder content.
