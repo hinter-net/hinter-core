@@ -4,6 +4,9 @@
 
 ## Instructions
 
+> [!TIP]
+> Read this entire README before attempting to do anything.
+
 1. Install [Docker](https://docs.docker.com/engine/install/).
 2. Clone this repo and move in it.
     ```sh
