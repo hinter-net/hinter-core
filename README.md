@@ -103,7 +103,6 @@ While `hinter-core` is running for both you and your peer, the files you place i
 
 `hinter-core` supports syncing arbitrary content.
 However, for the sake of protocolization, you should populate their `outgoing/` directories only with Markdown files that have `{TIMESTAMP}{OPTIONAL_ARBITRARY_SUFFIX}.md` as the file name (where `TIMESTAMP` is when the report was composed, in `YYYYMMDDHHMMSS` format).
-Note that this file name format is identical to [entry](#entries) file name format.
 
 #### Add or remove peers
 
