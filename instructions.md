@@ -100,4 +100,16 @@ docker rm my-hinter-core
 
 ## AI Assistant Operation
 
-TODO
+- Open VS Code
+- Click File → Open Folder and open the cloned repository
+- Click the Cline icon in the sidebar
+
+The main thing to know about Cline is the Plan/Act toggle button.
+In Plan mode, Cline can read files in the repository but cannot make changes or run commands.
+In Act mode, it can do anything but requires confirmation on each action by default.
+
+> [!TIP]
+> Using git for version control will enable you to track and revert changes that Cline makes in a powerful way.
+
+Start by telling Cline `Read ai/README.md`.
+Then, you can ask about predefined prompts ("create-entry") or interact with it in natural language ("what am I supposed to do now?").
