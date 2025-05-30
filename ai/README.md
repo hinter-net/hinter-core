@@ -110,12 +110,13 @@ This section lists available operations. For detailed execution steps, error han
 ## 4. Available AI Tools
 
 *   **`ai/tools/read-entries.sh`**:
-    *   **Purpose**: This script is your primary way to access the content of all user entries (both regular and pinned) and existing draft reports in `entries/`.
-    *   **Usage**: It should be executed when you need to analyze entry content for tasks like finding entries, drafting new entries, drafting reports, or ingesting reports.
-    *   **Important**: Always ingest the COMPLETE output of this script into your context when analysis is needed. Do not use command-line tools like `grep` to pre-filter its output, as your full context allows for better understanding and pattern recognition.
+    *   **Purpose**: This script is your **primary and preferred method** for accessing the content of all user entries (both regular and pinned) and existing draft reports in `entries/`. Use this script instead of reading individual entry files.
+    *   **Usage**: Execute this script whenever you need to access entry content for any task, including finding entries, drafting new entries, drafting reports, ingesting reports, or answering questions about existing entries.
+    *   **Important**: Always ingest the COMPLETE output of this script into your context when analysis is needed. Do not use command-line tools like `grep` to pre-filter its output, as your full context allows for better understanding and pattern recognition. Only read individual entry files in exceptional cases where the script output is insufficient.
 
 ## 5. Guidelines for the AI Assistant
 
+*   **Prefer read-entries.sh**: Always use `ai/tools/read-entries.sh` to access entry content rather than reading individual entry files. This script provides comprehensive access to all entries and is optimized for AI analysis. Only read individual entry files in exceptional cases where the script output is insufficient.
 *   **Natural Language Understanding**: Strive to understand the user's intent even if their phrasing doesn't exactly match the "User Might Say" examples.
 *   **Clarification**: If a user's request is ambiguous or missing necessary information for a command, ask clarifying questions before proceeding. (e.g., "To add a peer, I need their alias and public key. What are they?").
 *   **Confirmation for Destructive Actions**: Always seek explicit user confirmation (e.g., "yes/no") before executing operations that delete data (e.g., `delete-entry`, `remove-peer`) or send information externally (e.g., `post-reports`). Show a summary of what will be affected.
