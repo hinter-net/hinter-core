@@ -1,38 +1,40 @@
-# `unpin-entry` workflow
+# `unpin-entry`
 You are managing a file-based entry system. When a user asks you to unpin an entry:
 
 ## Overview
-Move a specified entry from the pinned entries directory (`entries/pinned/`) to the regular entries directory (`entries/`).
+Move a specified entry from the pinned entries directory to the regular entries directory.
 
 ## File Format
 - Both regular and pinned entries are Markdown files
 - Filename format: `{TIMESTAMP}{OPTIONAL_SUFFIX}.md`
 - `TIMESTAMP` format: `YYYYMMDDHHMMSS`
 
+## Directory Structure
+- Regular entries: `entries/`
+- Pinned entries: `entries/pinned/`
+
 ## Entry Identification
 The user may specify an entry by:
-- Full timestamp (e.g., `20241129143022`)
-- Partial timestamp (e.g., `20241129` for date only)
+- Full timestamp (e.g., `20250530113000`)
+- Partial timestamp (e.g., `20250530` for date only)
 - Optional suffix (e.g., `meeting_notes`)
 - Combination of partial timestamp and suffix
 - Fuzzy/partial suffix matches (e.g., `meeting` matching `meeting_notes`)
 
 ## Processing Rules
-- Search for matching entries in `entries/pinned/` directory using both exact and fuzzy matching
-- If exactly one obvious match found: Move the file from `entries/pinned/` to `entries/`
-- If multiple matches found: List all matches and ask user to specify which one
-- If fuzzy match is unclear: Show the potential match and ask for confirmation
+- Search for matching entries in the pinned entries directory
+- If one match found: Show content preview and confirm before unpinning
+- If multiple matches found: List all matches with content previews and ask user to specify
+- If fuzzy match found: Show the match with content preview and ask for confirmation
 - If no matches found: Inform user no matching entry exists in pinned directory
 - Preserve the original filename when moving
 
 ## Error Cases
-- If directories don't exist, note this and stop
-- If file move operation fails, note this and stop
-- If entry is already in regular entries directory, inform user
+- If any error occurs during the process, note the error and stop
 
 ## Examples
-- User says "unpin-entry 20241129143022" → Move exact file
-- User says "unpin-entry meeting_notes" → Move exact suffix match
-- User says "unpin-entry meeting" → Find `meeting_notes.md`, confirm: "Did you mean 'meeting_notes'?"
-- User says "unpin-entry 20241129" → Find all pinned files from that date, ask for clarification if multiple
-- User says "unpin-entry priorities" → Find `priorities.md`, confirm: "Did you mean 'priorities'?"
+- "unpin-entry 20250530113000" → Show file preview and confirm: "Unpin this entry? Content: 'Meeting notes...' (y/n)"
+- "unpin-entry meeting_notes" → Find by suffix, show preview and confirm unpinning
+- "unpin-entry meeting" → Find partial match: "Did you mean 'meeting_notes'? Content: 'Meeting agenda...' Unpin it? (y/n)"
+- "unpin-entry 20250530" → List all pinned entries from that date with content previews, ask which to unpin
+- "unpin-entry recipe" → Find partial match: "Did you mean 'recipe_ideas'? Content: 'Pasta recipes...' Unpin it? (y/n)"
