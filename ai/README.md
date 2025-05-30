@@ -107,6 +107,11 @@ This section lists available operations. For detailed execution steps, error han
     *   **User Might Say**: "Unpin my strategy note."
     *   **Often Needs**: Identifier for the entry in `entries/pinned/`.
 
+*   **Command**: `start-fresh` (see `ai/prompts/start-fresh.md`)
+    *   **Description**: Removes all current data (entries and peers) to provide a clean slate for starting with the hinter-core system. Commonly used by new users to clear example/placeholder data.
+    *   **User Might Say**: "start-fresh" (exact phrase required)
+    *   **Often Needs**: User confirmation after data summary is presented.
+
 ## 4. Available AI Tools
 
 *   **`ai/tools/read-entries.sh`**:

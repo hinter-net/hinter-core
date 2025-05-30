@@ -112,4 +112,5 @@ In Act mode, it can do anything but requires confirmation on each action by defa
 > Using git for version control will enable you to track and revert changes that Cline makes in a powerful way.
 
 Start by telling Cline `Read ai/README.md`.
-Then, you can ask about predefined prompts ("create-entry") or interact with it in natural language ("what am I supposed to do now?").
+If you have already inspected the example data under `data/`, you can then say `start-fresh` for Cline to clean the example data up.
+Then, you can ask about predefined prompts such as create-entry ("what are the available prompts?") or interact with it in natural language ("what am I supposed to do now?").
