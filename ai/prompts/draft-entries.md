@@ -12,7 +12,9 @@ Use AI analysis of existing entries to generate strategic insights, track outcom
 - **Proactive suggestions**: Identify actions the user should consider based on network patterns
 
 ## Entry Creation Process
-- Analyze all entries in `entries/` and `entries/pinned/` directories
+- Execute the `ai/tools/read-entries.sh` script to get all entries
+- Ingest the COMPLETE output into your context (do NOT use grep or other command-line tools to filter)
+- Analyze all entries from both regular and pinned directories
 - Identify patterns, relationships, and opportunities
 - Generate new entries with timestamp-based filenames: `YYYYMMDDHHMMSS_ai_[type].md`
 - Include metadata identifying entries as AI-generated
@@ -114,7 +116,7 @@ Analysis of recent entries reveals a significant gap in legal expertise within t
 - Prioritize suggestions based on potential impact and feasibility
 
 ## Process
-Analyze entries → Identify patterns → Select entry type → Generate content → Create timestamped file → Confirm success
+Execute read-entries.sh → Ingest all entries → Analyze content → Identify patterns → Select entry type → Generate content → Create timestamped file → Confirm success
 
 ## AI-Generated Entry Format
 ```markdown
