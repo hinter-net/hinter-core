@@ -1,7 +1,7 @@
 {
   "name": "hinter-core",
   "version": "0.0.1",
-  "description": "A terminal application that implements the hinter protocol, enabling users to exchange reports in a P2P manner",
+  "description": "A terminal application that is the reference implementation of the hinter protocol",
   "license": "MIT",
   "repository": {
     "type": "git",
