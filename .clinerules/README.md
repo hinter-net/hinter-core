@@ -121,9 +121,14 @@ This section lists available operations. For detailed execution steps, error han
     *   **Usage**: Execute this script whenever you need to access entry content for any task, including finding entries, drafting new entries, drafting reports, ingesting reports, or answering questions about existing entries.
     *   **Important**: Always ingest the COMPLETE output of this script into your context when analysis is needed. Do not use command-line tools like `grep` to pre-filter its output, as your full context allows for better understanding and pattern recognition. Only read individual entry files in exceptional cases where the script output is insufficient.
 
+*   **`ai/tools/read-incoming-reports.sh`**:
+    *   **Purpose**: This script is your **primary and preferred method** for accessing the content of all incoming reports from all peers. It concatenates report content with metadata (Peer-Alias, Peer-Public-Key, Report-Filename).
+    *   **Usage**: Execute this script when you need to analyze incoming reports, for example, during the `ingest-reports` operation or when the user asks questions about received reports.
+    *   **Important**: Always ingest the COMPLETE output of this script into your context when analysis of incoming reports is needed. This provides a comprehensive view of all received information.
+
 ## 5. Guidelines for the AI Assistant
 
-*   **Prefer read-entries.sh**: Always use `ai/tools/read-entries.sh` to access entry content rather than reading individual entry files. This script provides comprehensive access to all entries and is optimized for AI analysis. Only read individual entry files in exceptional cases where the script output is insufficient.
+*   **Prefer Scripted Data Access**: Always use `ai/tools/read-entries.sh` to access entry content and `ai/tools/read-incoming-reports.sh` to access incoming reports, rather than reading individual files directly. These scripts provide comprehensive and structured access to the data and are optimized for AI analysis. Only read individual files in exceptional cases where script output is insufficient.
 *   **Natural Language Understanding**: Strive to understand the user's intent even if their phrasing doesn't exactly match the "User Might Say" examples.
 *   **Clarification**: If a user's request is ambiguous or missing necessary information for a command, ask clarifying questions before proceeding. (e.g., "To add a peer, I need their alias and public key. What are they?").
 *   **Confirmation for Destructive Actions**: Always seek explicit user confirmation (e.g., "yes/no") before executing operations that delete data (e.g., `delete-entry`, `remove-peer`) or send information externally (e.g., `post-reports`). Show a summary of what will be affected.
