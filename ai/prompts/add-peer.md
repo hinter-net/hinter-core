@@ -1,35 +1,59 @@
 # `add-peer`
-You are managing a file-based peer system. When a user asks you to add a peer:
 
-## Overview
-Create a new peer directory structure with the necessary subdirectories for report exchange.
+## Description
+Creates a new peer directory structure (`peers/{ALIAS}-{PUBLIC_KEY}/`) along with the necessary `incoming/` and `outgoing/` subdirectories for report exchange.
 
-## Directory Structure
-Each peer is identified by an alias and their public key:
-- Main directory: `peers/{ALIAS}-{PUBLIC_KEY}/`
-- Incoming reports: `peers/{ALIAS}-{PUBLIC_KEY}/incoming/`
-- Outgoing reports: `peers/{ALIAS}-{PUBLIC_KEY}/outgoing/`
+## Invocation / Arguments
+*   **Invocation**: User typically says: `add-peer {ALIAS} {PUBLIC_KEY}`
+*   **Parameters**:
+    *   `{ALIAS}` (required):
+        *   A human-readable identifier for the peer.
+        *   **Validation**: Must NOT contain the `-` (hyphen) character.
+    *   `{PUBLIC_KEY}` (required):
+        *   The peer's 64-character public key.
+        *   **Validation**: Must be exactly 64 lowercase hexadecimal characters.
 
-## Required Information
-- **ALIAS**: A human-readable identifier for the peer (cannot contain `-` character)
-- **PUBLIC_KEY**: 64 lowercase hexadecimal characters
-- Example directory: `peers/alice-4a6a3d8f09a192cc343f4b5cbe3aec51f8e78c685b70e3de57c20461f14bdc29/`
+## Core Logic / Procedure
+1.  **Receive Inputs**: Obtain `{ALIAS}` and `{PUBLIC_KEY}` from the user.
+2.  **Validate Alias**:
+    *   If `{ALIAS}` contains a `-`, trigger "Invalid Alias Format" error.
+3.  **Validate Public Key**:
+    *   If `{PUBLIC_KEY}` is not 64 lowercase hexadecimal characters, trigger "Invalid Public Key Format" error.
+4.  **Construct Directory Path**: Form the full peer directory path: `peers/{ALIAS}-{PUBLIC_KEY}`.
+5.  **Check for Existing Peer**:
+    *   If the directory path from step 4 already exists, trigger "Peer Already Exists" error.
+6.  **Create Directories**:
+    *   Create the main peer directory: `peers/{ALIAS}-{PUBLIC_KEY}/`
+    *   Create the incoming reports subdirectory: `peers/{ALIAS}-{PUBLIC_KEY}/incoming/`
+    *   Create the outgoing reports subdirectory: `peers/{ALIAS}-{PUBLIC_KEY}/outgoing/`
+    *   If any directory creation fails, trigger "Directory Creation Failed" error.
+7.  **Confirm Success**: If all steps complete without error, provide the success output.
 
-## Input Validation
-- Validate that the public key is exactly 64 lowercase hexadecimal characters
-- Ensure alias doesn't contain the `-` character
+## User Interaction & Confirmation
+*   This command typically does not require intermediate confirmation if inputs are valid and the peer does not already exist. Confirmation is primarily through the success or error messages.
 
-## Process
-Validate inputs → Check if peer exists → Create directories → Confirm success
+## Success Output
+*   "Added peer `{ALIAS}`. Directory: `peers/{ALIAS}-{PUBLIC_KEY}/`"
+
+## Error Handling & Responses
+*   **Peer Already Exists**: "Error: Peer `{ALIAS}-{PUBLIC_KEY}` already exists."
+*   **Invalid Alias Format**: "Error: Alias cannot contain the `-` character. Please use an alias like 'johnsmith' or 'john_smith'."
+*   **Invalid Public Key Format**: "Error: Public key must be 64 lowercase hexadecimal characters."
+*   **Directory Creation Failed**: "Error: Could not create directory structure for peer `{ALIAS}-{PUBLIC_KEY}`. Please check permissions or disk space."
+*   **General Error**: "Error: An unexpected issue occurred while trying to add peer `{ALIAS}-{PUBLIC_KEY}`."
 
 ## Examples
-- User says "add-peer alice 4a6a3d8f09a192cc343f4b5cbe3aec51f8e78c685b70e3de57c20461f14bdc29" → Create `peers/alice-4a6a3d8f.../`
-- User says "add-peer bob 3071edbc..." → Create `peers/bob-3071edbc.../`
-- User provides existing peer → "Peer alice-4a6a3d8f... already exists."
-- User provides invalid alias "john-smith" → "Alias cannot contain '-' character. Use 'johnsmith' or 'john_smith' instead."
+*   **User**: `add-peer alice 4a6a3d8f09a192cc343f4b5cbe3aec51f8e78c685b70e3de57c20461f14bdc29`
+    *   **AI (Success)**: "Added peer `alice`. Directory: `peers/alice-4a6a3d8f09a192cc343f4b5cbe3aec51f8e78c685b70e3de57c20461f14bdc29/`"
+*   **User**: `add-peer bob-by 3071edbc...`
+    *   **AI (Error)**: "Error: Alias cannot contain the `-` character. Please use an alias like 'bobby' or 'bob_by'."
+*   **User**: `add-peer charlie 123`
+    *   **AI (Error)**: "Error: Public key must be 64 lowercase hexadecimal characters."
+*   **User**: `add-peer alice 4a6a3d8f09a192cc343f4b5cbe3aec51f8e78c685b70e3de57c20461f14bdc29` (if `peers/alice-4a6a.../` already exists)
+    *   **AI (Error)**: "Error: Peer `alice-4a6a3d8f09a192cc343f4b5cbe3aec51f8e78c685b70e3de57c20461f14bdc29` already exists."
 
-## Success Response
-On success: "Added peer {ALIAS} with directory peers/{ALIAS}-{PUBLIC_KEY}/"
+## AI Learning
+*   Not applicable for this command.
 
-## Error Cases
-- If any error occurs during the process, note the error and stop
+## Dependencies
+*   None.

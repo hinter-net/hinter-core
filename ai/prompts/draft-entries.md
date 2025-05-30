@@ -1,159 +1,93 @@
 # `draft-entries`
-You are managing a file-based entry system with AI-powered network analysis. When a user asks you to draft entries or when you proactively identify opportunities:
 
-## Overview
-Use AI analysis of existing entries to generate strategic insights, track outcomes, analyze network patterns, and suggest proactive actions. This workflow covers AI-generated content that helps users maintain and optimize their personal networks.
+## Description
+Analyzes existing user entries (from `entries/` and `entries/pinned/`) to generate new, AI-authored entries. These AI-generated entries can highlight noteworthy patterns or trends, suggest actions, track information, or summarize content based on the themes and information present in the user's existing data.
 
-## AI Analysis Capabilities
-- **Outcome tracking**: Generate entries to track results of connections, introductions, and opportunities
-- **Network analysis**: Identify key relationships, patterns, and strategic insights
-- **Network optimization**: Suggest gaps to fill, relationships to strengthen, or new connections to pursue
-- **Strategic insights**: Generate observations about network health, opportunities, and priorities
-- **Proactive suggestions**: Identify actions the user should consider based on network patterns
+## Invocation / Arguments
+*   **Invocation**: User typically says: `draft-entries [focus_area]`
+    *   Example: `draft-entries` (for a general analysis)
+    *   Example: `draft-entries summarize project X updates`
+    *   Example: `draft-entries look for trends in communication with contact Y`
+*   **Parameters**:
+    *   `{FOCUS_AREA}` (optional):
+        *   Keywords or phrases indicating the type of analysis or entries the user wants (e.g., "summarize X", "track Y", "identify patterns in Z").
+        *   If not provided, the AI performs a general analysis, looking for salient themes, actionable items, or notable patterns from the entries.
 
-## Entry Creation Process
-- Execute the `ai/tools/read-entries.sh` script to get all entries
-- Ingest the COMPLETE output into your context (do NOT use grep or other command-line tools to filter)
-- Analyze all entries from both regular and pinned directories
-- Identify patterns, relationships, and opportunities
-- Generate new entries with timestamp-based filenames: `YYYYMMDDHHMMSS_ai_[type].md`
-- Include metadata identifying entries as AI-generated
-- Focus on actionable insights and strategic observations
+## Core Logic / Procedure
+1.  **Data Retrieval**:
+    *   Execute `ai/tools/read-entries.sh` to get the full content of all entries from `entries/` and `entries/pinned/`.
+    *   Ingest the COMPLETE output into the AI's context. Do NOT use command-line tools like `grep` to pre-filter.
+2.  **Contextual Analysis**:
+    *   If `entries/` is empty, trigger "No Entries for Analysis" error.
+    *   Analyze all ingested entries to understand their primary content, themes, entities, and any explicit or implicit tasks or information flows.
+    *   As part of this analysis, identify any notable patterns, trends, or shifts in the data that might be non-obvious to the user (e.g., changes in topic frequency, sentiment shifts if detectable, recurring unaddressed items).
+    *   Pay special attention to pinned entries for overarching user priorities.
+3.  **Determine Focus & Nature of AI-Generated Entries**:
+    *   If `{FOCUS_AREA}` is provided, prioritize analysis and generation related to that area.
+    *   If `{FOCUS_AREA}` is not provided, the AI should identify potential areas for insightful or helpful AI-generated entries. This can include:
+        *   **Pattern Highlighting**: Entries that describe a noteworthy pattern or trend observed in the data.
+        *   **Actionable Suggestions**: If entries indicate pending tasks, communications, or decisions.
+        *   **Information Summarization/Synthesis**: If entries contain dense information that could be usefully summarized or collated.
+        *   **Outcome/Status Tracking**: For ongoing processes or items needing follow-up.
+4.  **Content Generation for Each Identified AI-Entry**:
+    *   For each identified area warranting an AI-generated entry:
+        *   Formulate a clear title reflecting its purpose.
+        *   Compose the content (summary, suggested action, pattern description, etc.), adapting style and structure to the task.
+        *   Provide context or evidence from source entries where appropriate.
+        *   Adhere to the "AI-Generated Entry Format" specified below, including the user feedback section.
+5.  **File Creation**:
+    *   For each generated AI-entry:
+        *   Determine the current timestamp in `YYYYMMDDHHMMSS` format.
+        *   Construct the filename: `{TIMESTAMP}_ai_[type].md` (e.g., `20250530170000_ai_summary.md`). The `[type]` should be a short keyword reflecting the entry's purpose (e.g., `summary`, `action`, `insight`, `pattern`).
+        *   Save the generated content to this new file in the `entries/` directory.
+        *   If file creation fails, trigger "File Creation Failed" error for that specific entry but attempt to continue with others.
+6.  **Confirm Success**: After attempting to generate and save all identified AI-entries, provide a summary success output.
 
-## Types of AI-Generated Entries
-
-### Outcome Tracking Entries
-Track results of networking activities:
+## AI-Generated Entry Format (Template to be filled by AI)
 ```markdown
-<!-- AI-GENERATED OUTCOME TRACKING -->
-<!-- REFS: [related entry timestamps] -->
+<!-- AI-GENERATED: [TYPE: e.g., Summary, ActionSuggestion, PatternInsight, StatusTracker] -->
+<!-- ANALYSIS_DATE: [YYYYMMDDHHMMSS of AI analysis] -->
+<!-- CONFIDENCE: [High/Medium/Low, based on clarity of information/pattern] -->
+<!-- REFS: [List of source YYYYMMDDHHMMSS.md entry filenames if applicable] -->
 
-# Outcome Tracking: Introduction between Alice and Bob
+# [AI-Generated Title Describing the Entry's Purpose]
 
-Following up on the introduction made between Alice (alice-bc8064...) and Bob (bob-a6e1fa...) regarding the blockchain meetup opportunity.
+## AI Observation / Suggestion / Summary
+[The main body of the AI-generated content. This could be a description of a pattern, a text summary, a suggested action, etc.]
 
-**Original connection**: 20250516143000.md
-**Introduction made**: 20250518
-**Expected outcome**: Bob speaks at Alice's meetup, Alice gets React expertise
+## Supporting Details / Evidence (If applicable)
+[Specific details or references from source entries that support the content above.]
 
-**Status to track**:
-- Did Bob attend the meetup?
-- Was the presentation successful?
-- Did this lead to ongoing collaboration?
-- Should similar introductions be prioritized?
-
-**Next check**: Follow up in 2 weeks
+## User Feedback & Notes
+<!--
+    User, please add your comments here:
+    - Do you agree with this observation/suggestion? Why or why not?
+    - Is this type of AI-generated entry useful?
+    - Any other notes for future AI learning?
+-->
+[Leave this section blank for the user to fill in]
 ```
 
-### Network Analysis Entries
-Strategic observations about network patterns:
-```markdown
-<!-- AI-GENERATED NETWORK ANALYSIS -->
-<!-- ANALYSIS DATE: [current_timestamp] -->
+## User Interaction & Confirmation
+*   The AI responds with the generated entries or an error/status message.
+*   User provides feedback by editing the AI-generated entries directly, especially within the "User Feedback & Notes" section.
 
-# Network Analysis: Key Relationship Patterns
+## Success Output
+*   "Drafted {N} new AI-generated entries:
+    *   `entries/{FILENAME_1}` (Purpose: {purpose_1})
+    *   `entries/{FILENAME_2}` (Purpose: {purpose_2})
+    *   ..."
+*   If no significant insights or actionable items found: "Analyzed entries, but no new AI-generated entries were drafted at this time."
 
-Based on analysis of recent entries, several strategic patterns emerge:
+## Error Handling & Responses
+*   **No Entries for Analysis**: "Error: The `entries/` directory is empty. No analysis possible to draft entries."
+*   **Unclear Task/Patterns (Low Confidence)**: If analysis yields only low-confidence interpretations, the AI might state: "Generated some entries based on tentative observations. Please review them carefully and provide feedback."
+*   **File Creation Failed**: "Error: Failed to save AI-generated entry `{FILENAME}`. Please check permissions or disk space."
 
-**Alice (alice-bc8064...) - High Value Connector**
-- Appears in 8 entries over past month
-- Consistently provides valuable introductions
-- Strong technical network in blockchain/React space
-- Recommendation: Prioritize maintaining this relationship
+## AI Learning
+*   The AI (or a supervising system) should be able to process the "User Feedback & Notes" section from edited entries.
+*   This feedback helps refine the AI's understanding of what constitutes a valuable insight, useful suggestion, or relevant pattern for the user, thereby improving future `draft-entries` operations.
 
-**Bob (bob-a6e1fa...) - Emerging Opportunity**
-- Technical skills align with multiple network needs
-- Actively seeking community involvement
-- Could become valuable long-term connector
-- Recommendation: Invest in developing this relationship
-
-**Network Gaps Identified**:
-- Limited legal counsel connections
-- Weak presence in healthcare sector
-- Missing senior executive relationships in target industries
-
-**Strategic Priorities**:
-1. Strengthen relationship with Alice through regular value exchange
-2. Help Bob establish himself in the community
-3. Actively seek legal and healthcare connections
-```
-
-### Network Optimization Entries
-Suggestions for network development:
-```markdown
-<!-- AI-GENERATED NETWORK OPTIMIZATION -->
-<!-- PRIORITY: high -->
-
-# Network Optimization: Legal Counsel Gap
-
-Analysis of recent entries reveals a significant gap in legal expertise within the network.
-
-**Evidence of need**:
-- 3 recent conversations about contract negotiations (entries: 20250515, 20250518, 20250520)
-- Multiple peers asking for legal referrals
-- Missed opportunity to help Alice with startup legal issues
-
-**Recommended actions**:
-1. Attend local bar association networking events
-2. Ask existing network for legal counsel introductions
-3. Consider joining entrepreneur legal meetups
-4. Leverage university alumni network for legal connections
-
-**Target profile**:
-- Startup/tech-focused attorney
-- Experience with blockchain/AI legal issues
-- Well-connected in local business community
-- Willing to provide strategic advice, not just transactional work
-
-**Timeline**: Prioritize over next 30 days
-```
-
-## Processing Rules
-- Analyze entries chronologically to identify trends and patterns
-- Cross-reference peer interactions to identify relationship dynamics
-- Look for gaps between what the network needs and what it provides
-- Generate actionable insights rather than just observations
-- Prioritize suggestions based on potential impact and feasibility
-
-## Process
-Execute read-entries.sh → Ingest all entries → Analyze content → Identify patterns → Select entry type → Generate content → Create timestamped file → Confirm success
-
-## AI-Generated Entry Format
-```markdown
-<!-- AI-GENERATED: [type] -->
-<!-- ANALYSIS_DATE: [current_timestamp] -->
-<!-- CONFIDENCE: [high/medium/low] -->
-<!-- REFS: [related entry timestamps] -->
-
-# [Title describing the insight or suggestion]
-
-[Detailed analysis and recommendations]
-
-**Evidence**: [Supporting data from entries]
-**Recommendation**: [Specific actionable steps]
-**Timeline**: [Suggested timeframe for action]
-**Success metrics**: [How to measure if this was valuable]
-```
-
-## User Interaction
-- User can request specific types of analysis: "draft entries about network gaps"
-- AI can proactively suggest when patterns emerge: "I notice you haven't tracked the outcome of the Alice-Bob introduction"
-- User provides feedback by editing AI-generated entries
-- System learns from which suggestions user acts on vs. ignores
-
-## Success Response
-On success: "Created new AI-generated entry: entries/YYYYMMDDHHMMSS_ai_[type].md focusing on [focus area]"
-
-## Error Cases
-- If entries/ directory is empty, inform user no analysis possible
-- If patterns are unclear, generate low-confidence suggestions
-- If analysis seems repetitive, focus on new insights only
-- If user consistently ignores certain types of suggestions, reduce frequency
-- If file creation fails, note the error and stop
-
-## Examples
-- User says "draft entries about my network" → Generate network analysis and optimization suggestions
-- User says "track outcomes from last week" → Create outcome tracking entries for recent activities
-- User says "what should I focus on?" → Generate strategic priority entries
-- AI proactively suggests: "You haven't followed up on the introduction you made between Alice and Bob"
-- User says "analyze my relationship with alice" → Generate detailed relationship analysis entry
+## Dependencies
+*   Relies heavily on `ai/tools/read-entries.sh` (or a similar mechanism) to access the full content of all user entries.
+*   Requires AI analytical capabilities adaptable to the domain reflected in the user's entries, including pattern recognition and summarization.

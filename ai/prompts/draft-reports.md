@@ -1,95 +1,97 @@
 # `draft-reports`
-You are managing a file-based peer system. When a user asks you to draft reports:
 
-## Overview
-Analyze the user's personal network entries to identify valuable opportunities and information that should be shared with specific peers, then create draft report candidates for user review. This workflow emphasizes opportunity identification as the foundation for report generation.
+## Description
+Analyzes the user's personal entries to identify distinct pieces of valuable information, opportunities, or insights for specific peers. For each distinct item, a *separate* draft report candidate is created in the `entries/` directory for granular user review. The AI attempts to avoid re-drafting items for a peer if a similar draft already exists.
 
-## Opportunity Identification Process
-- Execute the `ai/tools/read-entries.sh` script to get all entries
-- Ingest the COMPLETE output into your context (do NOT use grep or other command-line tools to filter)
-- List all peers from the `peers/` directory to identify valid report recipients
-- **Identify opportunities first**: Look for connections, collaborations, and mutual benefits
-- Cross-reference peer information in entries to understand who each peer is and their interests
-- Apply AI analysis to identify information relevant to each peer
-- Consider peer interests, expertise, and relationship context
-- Respect existing sharing rules and privacy preferences
-- Generate tailored report candidates based on identified opportunities
+## Invocation / Arguments
+*   **Invocation**: User typically says: `draft-reports [target_peer_alias] [focus_criteria]`
+    *   Example: `draft-reports` (to draft for all known peers based on general relevance)
+    *   Example: `draft-reports alice` (to draft only for peer 'alice')
+    *   Example: `draft-reports bob project_phoenix_updates` (to draft for 'bob' focusing on 'project phoenix updates')
+*   **Parameters**:
+    *   `{TARGET_PEER_ALIAS}` (optional):
+        *   The alias of a specific peer to draft reports for.
+        *   If not provided, the AI attempts to draft reports for all known peers.
+    *   `{FOCUS_CRITERIA}` (optional):
+        *   Keywords to guide the AI on what type of information to focus on.
+        *   If not provided, the AI uses general relevance.
 
-## Opportunity Selection Criteria
-- **Connection opportunities**: People who should meet each other
-- **Collaboration opportunities**: Projects or initiatives that could benefit from peer involvement
-- **Resource opportunities**: Information, contacts, or resources the peer needs
-- **Market opportunities**: Business, career, or investment opportunities relevant to peer
-- Relevance to peer's interests or expertise area
-- Potential value for peer's goals or network
-- Timeliness and actionability of information
-- Appropriate level of detail for the relationship
-- Compliance with user's sharing preferences and rules
+## Core Logic / Procedure
+1.  **Data Retrieval (User Entries & Existing Drafts)**:
+    *   Execute `ai/tools/read-entries.sh` to get all user entries (source material) AND existing draft reports (e.g., files matching `*_draft_report_for_*.md` in `entries/`).
+    *   Ingest the COMPLETE output.
+    *   If `entries/` (excluding existing drafts) is empty, trigger "No Source Entries for Report Content" error.
+2.  **Identify Target Peers**:
+    *   List all peer directories from `peers/`.
+    *   If `{TARGET_PEER_ALIAS}` is specified, filter to that peer. If not found, trigger "Target Peer Not Found" error.
+    *   If no peers exist, trigger "No Peers Found" error.
+3.  **Opportunity & Relevance Analysis (Per Peer)**:
+    *   For each target peer:
+        *   Analyze all user source entries to identify **distinct, self-contained pieces of information, insights, or opportunities** (hereafter "items") potentially relevant to this peer.
+        *   Consider: peer's known interests, `{FOCUS_CRITERIA}`, potential for connection/collaboration, timeliness.
+        *   Consult pinned entries for sharing rules/preferences.
+        *   Filter out sensitive or "do not share" information.
+4.  **Draft Report Candidate Creation (One per Distinct Item, Avoiding Duplicates)**:
+    *   For each relevant distinct item identified for a peer:
+        *   **Check for Existing Draft**: Scan the ingested existing draft reports for this peer. If a draft report for a highly similar item already exists (e.g., same core information, same source entries), *skip creating a new draft for this item*. The definition of "highly similar" is up to AI judgment based on content and source.
+        *   If no similar draft exists:
+            *   Construct the filename: `YYYYMMDDHHMMSS_draft_report_for_[peer_alias]_[item_descriptor].md`. `[item_descriptor]` should be a short, unique keyword/hash for the item (e.g., `_projX_update`, `_introY`).
+            *   Use the "Report Candidate Format" below, focusing *only* on this single distinct item.
+            *   Include metadata: target peer directory name, source entry filenames relevant to *this item*, creation timestamp, status (`draft`).
+            *   Save to `entries/`. If creation fails, trigger "File Creation Failed" error for this report but continue.
+5.  **Confirm Success**: After processing, provide a summary.
 
-## Draft Creation Process
-- Verify the peer exists in the `peers/` directory before creating a report
-- Create report candidates as entries in `entries/` directory
-- Use filename format: `YYYYMMDDHHMMSS_draft_report_for_[alias].md`
-- Include metadata identifying the target peer directory and source entries
-- Tailor content style and detail level for specific peer
-- Apply learned preferences from previous user feedback
-
-## Report Candidate Format
+## Report Candidate Format (Template for a single distinct item)
 ```markdown
-<!-- DRAFT REPORT FOR: [Alias] -->
-<!-- TARGET PEER: [alias-public_key] -->
-<!-- SOURCE ENTRIES: [list of source entry filenames] -->
-<!-- CREATED: [current_timestamp] -->
+<!-- DRAFT REPORT FOR: [PeerAlias] -->
+<!-- ITEM FOCUS: [Brief description of this specific item, e.g., "Project X Update", "Introduction to Contact Y"] -->
+<!-- TARGET PEER DIR: [peer_alias-PUBLIC_KEY] -->
+<!-- SOURCE ENTRIES: [List of YYYYMMDDHHMMSS.md source entry filenames relevant to THIS item] -->
+<!-- CREATED: [YYYYMMDDHHMMSS of draft creation] -->
 <!-- STATUS: draft -->
 
-# Report for [Alias] - [Date]
+# Report for [PeerAlias] - Regarding: [Item Focus]
 
-[Tailored content based on peer interests and relationship]
+## Information / Opportunity / Insight
+[Present the core information for THIS SPECIFIC ITEM. Be clear and concise, focusing only on this single piece of information or opportunity.]
 
-## Key Information
-- [Relevant opportunities, insights, or connections]
-- [Industry trends or developments]
-- [Mutual connection updates]
+## Context / Background (If necessary for this item)
+[Briefly provide any necessary context for this specific item.]
 
-## Potential Collaborations
-- [Specific opportunities for the peer]
-- [Introductions that might be valuable]
+## Suggested Action / Next Steps (If applicable to this item)
+[Any suggested action related to this specific item.]
 
-<!-- USER FEEDBACK SECTION -->
-<!-- Add notes here about what should/shouldn't be shared -->
+## User Feedback Section
+<!--
+    User, please review this draft for [Item Focus].
+    - Is this information accurate and appropriate for [PeerAlias]?
+    - Should anything be added, removed, or rephrased for this specific item?
+-->
+[Leave this section blank for the user to fill in]
 ```
 
-## Peer-Specific Customization
-- Adjust technical depth based on peer's expertise
-- Focus on peer's industry or interest areas
-- Consider relationship strength and sharing history
-- Apply peer-specific communication preferences
-- Reference previous conversations or shared interests
+## Peer-Specific Customization & Privacy
+*   For each drafted item, tailor content based on the peer's context and user's sharing preferences.
+*   Adhere to sharing rules from pinned entries or learned feedback.
 
-## Privacy and Filtering
-- Check pinned entries for sharing rules and restrictions
-- Apply global privacy preferences
-- Respect confidentiality of sensitive information
-- Filter out information marked as "do not share"
-- Consider source sensitivity (private conversations vs. public information)
+## Success Output
+*   "Drafted {TotalN} new report candidate(s) for {NumPeers} peer(s):
+    *   Peer `{PEER_ALIAS_1}`: {N1} report(s) (e.g., `entries/{FILENAME_A}`, `entries/{FILENAME_B}`)
+    *   ..."
+*   If items were skipped due to existing similar drafts: "Skipped drafting {S} items as similar drafts already exist."
+*   If no new relevant items found: "No new draft reports created for {PEER_ALIAS_LIST} as no new sufficiently relevant distinct items were identified."
 
-## Process
-Execute read-entries.sh → List peers → Analyze entries → Match peers with entry content → Identify opportunities → Draft reports → Create files → Confirm success
+## Error Handling & Responses
+*   **No Source Entries for Report Content**: "Error: No source entries found. Cannot draft reports."
+*   **No Peers Found**: "Error: No peers found. Please add peers first."
+*   **Target Peer Not Found**: "Error: Peer with alias `{TARGET_PEER_ALIAS}` not found."
+*   **File Creation Failed**: "Error: Failed to save draft report `{FILENAME}`."
 
-## Error Cases
-- If entries/ directory is empty, inform user no content available for reports
-- If no peers exist, suggest adding peers first
-- If specified peer doesn't exist in peers/ directory, inform user
-- If AI analysis fails, create basic template for manual completion
-- If peer preferences are unclear, create conservative draft and ask for guidance
-- If file creation fails, note the error and stop
+## AI Learning
+*   Learn from user edits (via `revise-reports`) and approval/rejection of these granular drafts.
+*   This refines identification of "distinct items" and "similarity" for duplicate checking.
 
-## Success Response
-On success: "Created draft report for {ALIAS} at entries/YYYYMMDDHHMMSS_draft_report_for_{alias}.md based on [number] relevant entries"
-
-## Examples
-- User says "draft-reports" → Create report candidates for all peers
-- User says "draft-reports for alice" → Create report candidate for specific peer alias
-- User says "draft-reports recent" → Focus on information from last 30 days
-- User says "draft-reports opportunities" → Focus on business/career opportunities
-- User says "redraft-reports for alice" → Recreate report candidate with updated information
+## Dependencies
+*   Relies on `ai/tools/read-entries.sh` for all entry content (source and existing drafts).
+*   Requires AI capabilities for relevance assessment, information segmentation, similarity checking, and tailored content generation.
+*   Interacts with `revise-reports` and `post-reports`.

@@ -1,93 +1,66 @@
 # `post-reports`
-You are managing a file-based peer system. When a user asks you to post reports:
 
-## Overview
-Move finalized and approved draft report candidates from the entries directory to the appropriate peer outgoing directories for distribution.
+## Description
+Moves finalized and approved draft report candidates from the `entries/` directory to the appropriate peer outgoing directories (`peers/{ALIAS}-{PUBLIC_KEY}/outgoing/`) for P2P distribution. This involves cleaning the report content of internal metadata/comments and updating the status of the original draft.
 
-## Report Selection
-- Process draft reports with `STATUS: approved` in their metadata
-- Allow user to specify which reports to post (all approved, specific peer, recent, etc.)
-- Verify reports have been reviewed and approved before posting
-- Skip reports marked as `rejected`, `postponed`, or still in `draft` status
+## Invocation / Arguments
+*   **Invocation**: User typically says: `post-reports [target_identifier]`
+    *   Example: `post-reports` (attempts to post all reports marked as 'approved')
+    *   Example: `post-reports alice` (posts approved reports for peer 'alice')
+    *   Example: `post-reports 20250530100000_draft_report_for_bob_itemX.md` (posts a specific approved draft)
+*   **Parameters**:
+    *   `{TARGET_IDENTIFIER}` (optional):
+        *   Can be a peer alias (e.g., `alice`) to post all approved reports for that peer.
+        *   Can be a specific draft report filename from `entries/` (e.g., `YYYY..._draft_report_for_...md`).
+        *   If not provided, AI considers all draft reports in `entries/` with an 'approved' status.
 
-## Report Identification
-The user may specify reports by:
-- All approved reports (e.g., "post-reports")
-- Specific peer alias (e.g., "post-reports for alice")
-- Recent approved reports (e.g., "post-reports recent")
-- Specific report by filename or timestamp
+## Core Logic / Procedure
+1.  **Identify Target Draft Reports**:
+    *   Execute `ai/tools/read-entries.sh` to get the content and metadata of all entries, specifically looking for draft reports (e.g., files named `*_draft_report_for_*.md` or identified by metadata).
+    *   Ingest the COMPLETE output.
+    *   Filter these drafts based on `{TARGET_IDENTIFIER}`:
+        *   If no identifier, select all drafts with `<!-- STATUS: approved -->` (or a similar confirmed ready-to-send status).
+        *   If identifier is a peer alias, select approved drafts where `<!-- DRAFT REPORT FOR: [alias] -->` or `<!-- TARGET PEER DIR: [alias-...] -->` matches.
+        *   If identifier is a filename, select that specific draft (it must also be approved).
+    *   If no suitable approved drafts are found, trigger "No Approved Reports Found" error.
+2.  **User Confirmation (Pre-Posting Summary)**:
+    *   For each selected draft report, extract its target peer alias and item focus/summary from its metadata.
+    *   Present a list to the user: "About to post {N} report(s): \n - Report 1 (Focus: '{ITEM_FOCUS_1}') for Peer '{PEER_ALIAS_1}' \n - Report 2 (Focus: '{ITEM_FOCUS_2}') for Peer '{PEER_ALIAS_2}' \n ... Continue? (yes/no)".
+    *   If user does not confirm with 'yes', abort.
+3.  **Process Each Approved Report for Posting**:
+    *   For each draft report confirmed by the user:
+        *   Let the draft filename in `entries/` be `{DRAFT_FILENAME}`.
+        *   Extract the target peer directory name (e.g., `{PEER_ALIAS}-{PUBLIC_KEY}`) from the draft's `<!-- TARGET PEER DIR: ... -->` metadata.
+        *   Verify the target peer directory `peers/{PEER_ALIAS}-{PUBLIC_KEY}/outgoing/` exists. If not, create it. If creation fails, trigger "Outgoing Directory Creation Failed" error for this report and skip it.
+        *   **Finalize Report Content**: Read the full content of `{DRAFT_FILENAME}`. Remove ALL `<!-- ... -->` style comments (including status, target peer, source entries, item focus, and the user feedback section). The goal is a clean, peer-facing document.
+        *   Generate a new timestamp for the final report filename: `YYYYMMDDHHMMSS.md`. If multiple reports are being posted to the same peer in the same second, append a small unique suffix like `_1`, `_2` to the timestamp part of the filename (e.g., `YYYYMMDDHHMMSS_1.md`) to ensure uniqueness in the `outgoing/` directory.
+        *   Construct the final path: `peers/{PEER_ALIAS}-{PUBLIC_KEY}/outgoing/{FINAL_REPORT_FILENAME}`.
+        *   Write the cleaned content to this final path. If write fails, trigger "File Write Failed" error for this report and skip it.
+        *   **Update Draft Status**: Modify the original draft report `{DRAFT_FILENAME}` in `entries/`. Change its `<!-- STATUS: approved -->` metadata tag to `<!-- STATUS: posted -->`. Add a new metadata tag: `<!-- POSTED_AS: peers/{PEER_ALIAS}-{PUBLIC_KEY}/outgoing/{FINAL_REPORT_FILENAME} -->`. If this update fails, log a warning but consider the report successfully posted if the file was written to `outgoing/`.
+4.  **Confirm Success (Post-Posting Summary)**:
+    *   Provide a summary of successfully posted reports and any errors encountered during the process.
 
-## Processing Rules
-- Search for approved draft reports in `entries/` directory
-- Extract target peer information from report metadata
-- Verify the target peer exists in the `peers/` directory
-- Create clean final report without draft metadata and user feedback comments
-- Copy final report to appropriate `peers/{ALIAS}-{PUBLIC_KEY}/outgoing/` directory
-- Use timestamp-based filename: `YYYYMMDDHHMMSS.md`
-- Update original draft report status to `posted`
-- Maintain reference between draft and posted versions
+## Final Report Content Guidelines
+*   The content written to the `outgoing/` directory must be only the information intended for the peer.
+*   All HTML-style comments (`<!-- ... -->`) used for metadata, status, or user feedback in the draft must be stripped out.
 
-## Report Finalization Process
-- Remove all metadata comments (draft status, user feedback, etc.)
-- Clean up content formatting for peer consumption
-- Preserve core information and structure
-- Apply final content filters based on user feedback
-- Ensure professional tone and appropriate detail level
+## Success Output
+*   "Successfully posted {N} report(s):
+    *   `{FINAL_REPORT_PATH_1}` for peer `{PEER_ALIAS_1}` (from draft `{DRAFT_FILENAME_1}`)
+    *   ... "
+*   Include any errors for reports that failed to post or whose drafts couldn't be updated.
 
-## Final Report Format
-```markdown
-# Report - [Date]
+## Error Handling & Responses
+*   **No Approved Reports Found**: "Error: No approved draft reports found matching your criteria." (Suggest checking draft statuses or running `revise-reports`).
+*   **Target Peer Not Found (from draft metadata)**: "Error: Target peer directory `{PEER_DIR_FROM_METADATA}` specified in draft `{DRAFT_FILENAME}` does not exist. Skipping this report."
+*   **Outgoing Directory Creation Failed**: "Error: Could not create `outgoing/` directory for peer `{PEER_ALIAS}`. Skipping reports for this peer."
+*   **File Write Failed**: "Error: Failed to write final report to `{FINAL_REPORT_PATH}`. Skipping this report."
+*   **Draft Status Update Failed**: "Warning: Posted report `{FINAL_REPORT_PATH}`, but failed to update status of original draft `{DRAFT_FILENAME}`."
 
-[Clean, finalized content without internal metadata]
+## AI Learning
+*   Observing which reports are consistently approved and posted can provide implicit feedback on the quality of the `draft-reports` and `revise-reports` workflows.
 
-## Key Information
-[Relevant information for the peer]
-
-## Opportunities
-[Specific opportunities or connections]
-
-## Updates
-[Network updates and insights]
-```
-
-## Process
-Find approved reports → Verify peers exist → Clean content → Generate timestamp → Copy to outgoing directory → Update status → Confirm success
-
-## Posting Workflow
-1. Identify approved draft reports
-2. Extract target peer directory name and validate peer exists in `peers/` directory
-3. Create clean final version of report content
-4. Generate timestamp for final report filename
-5. Copy to `peers/{ALIAS}-{PUBLIC_KEY}/outgoing/{TIMESTAMP}.md`
-6. Update draft report status to `posted` with reference to final location
-7. Log posting action for user review
-
-## Status Tracking
-- Mark original draft as `STATUS: posted`
-- Add reference to final report location
-- Maintain audit trail of what was posted when
-- Allow user to review posting history
-
-## Success Response
-On success: "Posted [number] reports: [details of each posted report by peer]"
-
-## Error Cases
-- If no approved reports exist, inform user and suggest reviewing draft reports
-- If target peer doesn't exist in peers/ directory, warn user and skip that report
-- If outgoing directory doesn't exist, create it automatically
-- If file write operation fails, note error and continue with other reports
-- If report content is empty or corrupted, warn user and skip
-
-## Confirmation and Review
-- Show summary of reports to be posted before execution
-- List target peers and report summaries
-- Allow user to confirm before posting
-- Provide posting summary after completion
-
-## Examples
-- User says "post-reports" → Post all approved draft reports to respective peers
-- User says "post-reports for alice" → Post only approved reports targeting alice
-- User says "post-reports recent" → Post approved reports from last 7 days
-- User says "post-report draft_report_for_alice_20241129" → Post specific report
-- System shows: "Posting 3 reports: 1 for alice, 2 for bob. Continue? (y/n)"
-- After posting: "Posted 3 reports successfully. alice: 1 report, bob: 2 reports."
+## Dependencies
+*   Relies on draft reports existing in `entries/` (typically created by `draft-reports` and refined by `revise-reports`).
+*   Draft reports must contain `<!-- STATUS: approved -->` and `<!-- TARGET PEER DIR: ... -->` metadata.
+*   May use `ai/tools/read-entries.sh` to efficiently access draft report content and metadata.

@@ -1,50 +1,73 @@
 # `remove-peer`
-You are managing a file-based peer system. When a user asks you to remove a peer:
 
-## Overview
-Safely remove a peer and all associated data including their directory structure, profile, and all incoming/outgoing reports.
+## Description
+Safely and permanently removes a peer's entire directory structure (`peers/{ALIAS}-{PUBLIC_KEY}/`), including their profile information (if any) and all associated incoming/outgoing reports, after explicit user confirmation.
 
-## Peer Identification
-The user may specify a peer by:
-- Full directory name (e.g., `alice-4a6a3d8f09a192cc343f4b5cbe3aec51f8e78c685b70e3de57c20461f14bdc29`)
-- Alias only (e.g., `alice`)
-- Partial public key (e.g., `4a6a3d8f` for first 8 characters)
-- Fuzzy matching on alias names
+## Invocation / Arguments
+*   **Invocation**: User typically says: `remove-peer {PEER_IDENTIFIER}`
+*   **Parameters**:
+    *   `{PEER_IDENTIFIER}` (required):
+        *   Identifies the peer to be removed. Can be:
+            *   Full current directory name (e.g., `alice-4a6a3d8f...`).
+            *   Current alias only (e.g., `alice`).
+            *   Partial current public key (e.g., first 8 characters `4a6a3d8f`).
+            *   Fuzzy matching on alias names is supported.
 
-## Processing Rules
-- Search for matching peers in `peers/` directory
-- If exactly one match found: Show peer details and ask for confirmation
-- If multiple matches found: List all matches with identities and ask user to specify
-- If fuzzy match is unclear: Show potential match details and ask for confirmation
-- If no matches found: Inform user no matching peer exists
-- Always require explicit confirmation before deletion
-- Show summary of data that will be deleted
+## Core Logic / Procedure
+1.  **Identify Peer**:
+    *   Obtain `{PEER_IDENTIFIER}` from the user.
+    *   Scan `peers/` directory to find matching peer directory/directories.
+    *   If no match, trigger "Peer Not Found" error.
+    *   If multiple matches (e.g., due to fuzzy matching or partial identifier), list them and ask user to specify the exact one by its full directory name. Let this be `{PEER_DIR_TO_DELETE}`.
+    *   If a single unique match is found, let it be `{PEER_DIR_TO_DELETE}`.
+2.  **Gather Data Summary**:
+    *   Extract `{ALIAS}` and `{PUBLIC_KEY}` from `{PEER_DIR_TO_DELETE}`.
+    *   Count the number of files in `peers/{PEER_DIR_TO_DELETE}/incoming/` (if it exists).
+    *   Count the number of files in `peers/{PEER_DIR_TO_DELETE}/outgoing/` (if it exists).
+    *   Count any other files directly within `peers/{PEER_DIR_TO_DELETE}/` (e.g., `profile.yaml`).
+3.  **User Confirmation**:
+    *   Display the data summary:
+        ```
+        About to remove peer:
+        - Directory: {PEER_DIR_TO_DELETE}
+        - Alias: {ALIAS}
+        - Public Key: {PUBLIC_KEY}
+        - Incoming reports: {N_INCOMING} file(s)
+        - Outgoing reports: {N_OUTGOING} file(s)
+        - Other files: {N_OTHER} file(s) (e.g., profile)
 
-## Process
-Identify peer → Show data summary → Confirm deletion → Remove directory → Confirm success
+        This action is permanent and cannot be undone.
+        Are you sure you want to delete this peer and all associated data? (yes/no)
+        ```
+    *   If user does not confirm with 'yes', abort the operation.
+4.  **Remove Peer Directory**:
+    *   Recursively delete the entire directory `peers/{PEER_DIR_TO_DELETE}/`.
+    *   If deletion fails, trigger "Directory Deletion Failed" error.
+5.  **Confirm Success**: If deletion is successful, provide the success output.
 
-## Data Summary Format
-```
-Peer to delete:
-- Directory: alice-4a6a3d8f09a192cc343f4b5cbe3aec51f8e78c685b70e3de57c20461f14bdc29
-- Alias: alice
-- Public Key: 4a6a3d8f09a192cc343f4b5cbe3aec51f8e78c685b70e3de57c20461f14bdc29
-- Incoming reports: 5 files
-- Outgoing reports: 3 files
-- Total data: 8 files
+## User Interaction & Confirmation
+*   **Mandatory Confirmation**: Deletion requires explicit user confirmation (typing 'yes') after a detailed data summary is presented.
+*   **Disambiguation**: If `{PEER_IDENTIFIER}` results in multiple matches, the user must specify the exact peer directory.
 
-This action cannot be undone. Type 'yes' to confirm deletion:
-```
+## Success Output
+*   "Successfully removed peer `{ALIAS}`. Deleted directory `peers/{PEER_DIR_TO_DELETE}/` and all its contents."
+
+## Error Handling & Responses
+*   **Peer Not Found**: "Error: No peer found matching `{PEER_IDENTIFIER}`."
+*   **Multiple Peers Found (Disambiguation)**: "Multiple peers match `{PEER_IDENTIFIER}`. Please specify the exact directory name to remove: \n1. `{DIR_1}` \n2. `{DIR_2}`..."
+*   **Directory Deletion Failed**: "Error: Failed to delete peer directory `peers/{PEER_DIR_TO_DELETE}/`. Please check permissions or if files are in use."
+*   **General Error**: "Error: An unexpected issue occurred while trying to remove the peer."
 
 ## Examples
-- User says "remove-peer alice" → Find `alice-4a6a3d8f...`, show summary, confirm
-- User says "remove-peer 4a6a3d8f..." → Find exact key match, show details, confirm
-- User says "remove-peer alice" → Find `alice-4a6a3d8f...`, confirm: "Did you mean 'alice-4a6a3d8f...'?"
-- User says "remove-peer 4a6a" → Find peer starting with those characters, confirm match
-- Multiple matches → "Found 2 peers: 1) alice-4a6a3d8f... 2) bob-3071edbc.... Which one?"
+*   **User**: `remove-peer alice` (assuming `alice-4a6a...` is the only match)
+    *   **AI (Confirmation)**: (Shows data summary for `alice-4a6a...` and asks "Are you sure... (yes/no)")
+    *   **User**: `yes`
+    *   **AI (Success)**: "Successfully removed peer `alice`. Deleted directory `peers/alice-4a6a.../` and all its contents."
+*   **User**: `remove-peer oldpeer` (if multiple peers match "oldpeer")
+    *   **AI (Disambiguation)**: "Multiple peers match `oldpeer`. Please specify...: \n1. `oldpeer_projectA-key1...` \n2. `oldpeer_archive-key2...`"
 
-## Success Response
-On success: "Successfully removed peer {ALIAS}. Deleted directory peers/{ALIAS}-{PUBLIC_KEY}/ and all associated data."
+## AI Learning
+*   Not applicable for this command.
 
-## Error Cases
-- If any error occurs during the process, note the error and stop
+## Dependencies
+*   None.

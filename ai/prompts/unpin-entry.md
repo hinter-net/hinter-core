@@ -1,40 +1,68 @@
 # `unpin-entry`
-You are managing a file-based entry system. When a user asks you to unpin an entry:
 
-## Overview
-Move a specified entry from the pinned entries directory to the regular entries directory.
+## Description
+Moves a specified entry from the pinned entries directory (`entries/pinned/`) to the regular entries directory (`entries/`) after user confirmation.
 
-## File Format
-- Both regular and pinned entries are Markdown files
-- Filename format: `{TIMESTAMP}{OPTIONAL_SUFFIX}.md`
-- `TIMESTAMP` format: `YYYYMMDDHHMMSS`
+## Invocation / Arguments
+*   **Invocation**: User typically says: `unpin-entry {ENTRY_IDENTIFIER}`
+*   **Parameters**:
+    *   `{ENTRY_IDENTIFIER}` (required):
+        *   A string used to identify the entry to be unpinned. Can be:
+            *   Full timestamp (e.g., `20250530113000`).
+            *   Partial timestamp (e.g., `20250530` for date).
+            *   An entry suffix (e.g., `meeting_notes`).
+            *   A combination of partial timestamp and suffix.
+            *   Keywords for fuzzy matching against suffixes.
+        *   **Note**: The AI will search for matches only in the `entries/pinned/` directory.
 
-## Directory Structure
-- Regular entries: `entries/`
-- Pinned entries: `entries/pinned/`
+## Core Logic / Procedure
+1.  **Receive Identifier**: Obtain `{ENTRY_IDENTIFIER}` from the user.
+2.  **Find Matching Entry in Pinned Entries**:
+    *   Scan all files only in the `entries/pinned/` directory.
+    *   Filter these files based on `{ENTRY_IDENTIFIER}` (timestamp, suffix, fuzzy suffix).
+    *   Store all found matches.
+3.  **Handle Results**:
+    *   **No Matches**: Trigger "No Pinned Entry Found" error.
+    *   **One Match**: Proceed to "Confirm Unpinning" (Step 4).
+    *   **Multiple Matches**: Trigger "Multiple Pinned Entries Found" interaction (Step 5).
+4.  **Confirm Unpinning (Single Match)**:
+    *   Let the matched file be `{FILENAME}` located at `entries/pinned/{FILENAME}`.
+    *   Read the full content of `entries/pinned/{FILENAME}`.
+    *   Generate a concise AI summary of the entry's content.
+    *   Ask the user for explicit confirmation: "Unpin this entry: `entries/pinned/{FILENAME}`? Summary: '{AI_SUMMARY}'. (yes/no)"
+    *   If user confirms 'yes', move the file from `entries/pinned/{FILENAME}` to `entries/{FILENAME}`. Preserve the original filename.
+    *   If move operation fails, trigger "File Move Failed" error.
+    *   If successful, provide success output.
+    *   If user responds with anything other than 'yes', abort the operation.
+5.  **Handle Multiple Matches Found**:
+    *   For each matching entry in `entries/pinned/`, read its content and generate an AI summary.
+    *   List all matching entries with their filenames and AI summaries.
+    *   Ask the user to specify which entry to unpin by its filename.
+    *   Once the user specifies a single entry, proceed to "Confirm Unpinning" (Step 4) for that entry. If ambiguous or invalid, re-prompt or abort.
 
-## Entry Identification
-The user may specify an entry by:
-- Full timestamp (e.g., `20250530113000`)
-- Partial timestamp (e.g., `20250530` for date only)
-- Optional suffix (e.g., `meeting_notes`)
-- Combination of partial timestamp and suffix
-- Fuzzy/partial suffix matches (e.g., `meeting` matching `meeting_notes`)
+## User Interaction & Confirmation
+*   **Mandatory Confirmation**: Unpinning any file requires explicit user confirmation (e.g., 'yes') after an AI-generated summary is presented.
+*   **Disambiguation**: If multiple entries match in `entries/pinned/`, the user must specify which one to unpin.
 
-## Processing Rules
-- Search for matching entries in the pinned entries directory
-- If one match found: Show content preview and confirm before unpinning
-- If multiple matches found: List all matches with content previews and ask user to specify
-- If fuzzy match found: Show the match with content preview and ask for confirmation
-- If no matches found: Inform user no matching entry exists in pinned directory
-- Preserve the original filename when moving
+## Success Output
+*   "Successfully unpinned entry: `entries/{FILENAME}` (moved from `entries/pinned/{FILENAME}`)."
 
-## Error Cases
-- If any error occurs during the process, note the error and stop
+## Error Handling & Responses
+*   **No Pinned Entry Found**: "Error: No entry found in `entries/pinned/` matching `{ENTRY_IDENTIFIER}`."
+*   **Multiple Pinned Entries Found (Initial Response)**: "Multiple entries match `{ENTRY_IDENTIFIER}` in `entries/pinned/`. Please specify which one to unpin: \n1. `{FILENAME_1}` (Summary: `{AI_SUMMARY_1}`) \n2. `{FILENAME_2}` (Summary: `{AI_SUMMARY_2}`) \n..."
+*   **File Move Failed**: "Error: Could not move entry `{FILENAME}` to `entries/`. Please check permissions."
+*   **Summarization Failed**: "Error: Could not generate a summary for entry `{FILENAME}`. Cannot proceed with unpinning without summarization."
+*   **General Error**: "Error: An unexpected issue occurred while trying to unpin the entry."
 
 ## Examples
-- "unpin-entry 20250530113000" → Show file preview and confirm: "Unpin this entry? Content: 'Meeting notes...' (y/n)"
-- "unpin-entry meeting_notes" → Find by suffix, show preview and confirm unpinning
-- "unpin-entry meeting" → Find partial match: "Did you mean 'meeting_notes'? Content: 'Meeting agenda...' Unpin it? (y/n)"
-- "unpin-entry 20250530" → List all pinned entries from that date with content previews, ask which to unpin
-- "unpin-entry recipe" → Find partial match: "Did you mean 'recipe_ideas'? Content: 'Pasta recipes...' Unpin it? (y/n)"
+*   **User**: `unpin-entry 20250530113000_important_strategy`
+    *   **AI (Confirmation)**: "Unpin this entry: `entries/pinned/20250530113000_important_strategy.md`? Summary: 'Outlines the Q3 marketing plan and budget allocations...'. (yes/no)"
+    *   **User**: `yes`
+    *   **AI (Success)**: "Successfully unpinned entry: `entries/20250530113000_important_strategy.md` (moved from `entries/pinned/20250530113000_important_strategy.md`)."
+
+## AI Learning
+*   Not applicable for this command.
+
+## Dependencies
+*   Relies on `ai/tools/read-entries.sh` (or a similar mechanism) if AI summarization capability requires full content access beyond simple file listing.
+*   Requires AI capability to generate concise summaries.

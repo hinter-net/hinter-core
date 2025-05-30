@@ -1,34 +1,78 @@
 # `find-entry`
-You are managing a file-based entry system. When a user asks you to find an entry:
 
-## Overview
-Search for entries matching specified criteria (timestamp, suffix, or content) and display matching entries with their details.
+## Description
+Searches for entries in `entries/` and `entries/pinned/` matching specified criteria (timestamp, suffix, or content keywords) and displays the details of matching entries.
 
-## Search Criteria
-The user may specify search criteria by:
-- Full timestamp (e.g., `20250530113000`)
-- Partial timestamp (e.g., `20250530` for date only, or `202505` for month only)
-- Suffix (e.g., `meeting_notes`)
-- Content keywords (e.g., `project update`)
-- Any combination of the above
+## Invocation / Arguments
+*   **Invocation**: User typically says: `find-entry {SEARCH_CRITERIA}`
+    *   Example: `find-entry 20250530`
+    *   Example: `find-entry meeting_notes project_alpha`
+    *   Example: `find-entry "critical update"` (if searching for a phrase in content)
+*   **Parameters**:
+    *   `{SEARCH_CRITERIA}` (required):
+        *   One or more terms to search for. Can include:
+            *   Full timestamp (e.g., `20250530113000`).
+            *   Partial timestamp (e.g., `20250530` for date, `202505` for month).
+            *   Entry suffix (e.g., `meeting_notes`).
+            *   Content keywords or phrases.
+        *   The AI will attempt to match these criteria against filenames and entry content.
 
-## Search Process
-1. Execute the `ai/tools/read-entries.sh` script to get a list of all entries
-2. Ingest the COMPLETE output into your context (do NOT use grep or other command-line tools to filter)
-3. Within your context, analyze each entry and determine if it matches the search criteria
-4. For fuzzy matches, use your best judgment to determine relevance
+## Core Logic / Procedure
+1.  **Receive Search Criteria**: Obtain `{SEARCH_CRITERIA}` from the user.
+2.  **Data Retrieval**:
+    *   Execute `ai/tools/read-entries.sh` to get the full content of all entries from `entries/` and `entries/pinned/`.
+    *   Ingest the COMPLETE output into the AI's context.
+3.  **Filter Entries**:
+    *   For each entry in the ingested data:
+        *   Check if its filename (timestamp or suffix part) matches any part of `{SEARCH_CRITERIA}`. This can be exact or partial/fuzzy.
+        *   Check if its content (as provided by `read-entries.sh`) contains keywords or phrases from `{SEARCH_CRITERIA}`.
+        *   An entry is considered a match if any of its attributes (filename, content) align with the search criteria. The AI should use its judgment for relevance in fuzzy matches.
+    *   Collect all matching entries.
+4.  **Display Results**:
+    *   If no entries match, trigger "No Matches Found" error.
+    *   If one or more entries match, display each matching entry's details:
+        *   Full filename.
+        *   Pinned status (i.e., if it's from `entries/pinned/`).
+        *   Full content of the entry.
+        *   If many entries match, consider asking the user if they want to see all or a subset, or suggest refining criteria. (For now, display all).
 
-## Results Display
-- If one match found: Show the complete entry details (filename, pinned status, and content)
-- If multiple matches found: List all matches with their details
-- If no matches found: Inform the user no matching entries exist
+## User Interaction & Confirmation
+*   This command typically does not require intermediate confirmation beyond the initial invocation.
+
+## Success Output
+*   If matches are found, the output is the direct display of the matching entries. For example:
+    ```
+    Found {N} matching entries:
+
+    ---
+    File: entries/20250530113000_meeting_notes.md
+    Pinned: No
+    Content:
+    [Full content of the entry...]
+    ---
+    File: entries/pinned/20250529100000_important_idea.md
+    Pinned: Yes
+    Content:
+    [Full content of the entry...]
+    ---
+    ... (more entries if found)
+    ```
+
+## Error Handling & Responses
+*   **No Matches Found**: "No entries found matching your criteria: `{SEARCH_CRITERIA}`."
+*   **Read Entries Failed**: "Error: Could not read entries. Please check the `read-entries.sh` script or data directory."
+*   **General Error**: "Error: An unexpected issue occurred while trying to find entries."
 
 ## Examples
-- "find-entry 20250530113000" → Find entry with exact timestamp
-- "find-entry 20250530" → Find entries from May 30, 2025
-- "find-entry meeting" → Find entries with "meeting" in the filename or content
-- "find-entry project update" → Find entries containing "project update" in the content
-- "find-entry 202505 report" → Find entries from May 2025 with "report" in the filename or content
+*   **User**: `find-entry 20250530113000`
+    *   **AI (Success)**: (Displays the entry `entries/20250530113000.md` if it exists)
+*   **User**: `find-entry meeting project_alpha`
+    *   **AI (Success)**: (Displays all entries containing "meeting" or "project_alpha" in filename or content)
+*   **User**: `find-entry non_existent_term`
+    *   **AI (Error)**: "No entries found matching your criteria: `non_existent_term`."
 
-## Error Cases
-- If any error occurs during the process, note the error and stop
+## AI Learning
+*   Not directly applicable for learning, but observing frequent search patterns might inform future AI proactive suggestions (outside this specific command).
+
+## Dependencies
+*   Relies heavily on `ai/tools/read-entries.sh` (or a similar mechanism) to access the full content of all user entries for searching.
