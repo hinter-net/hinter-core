@@ -18,14 +18,17 @@ print_entry() {
 }
 
 # Process regular entries
-for entry in "$ENTRIES_DIR"/*.md; do
+# Ensure chronological order by sorting filenames (YYYYMMDDHHMMSS*.md)
+# 2>/dev/null suppresses errors from ls if no files match (e.g., empty directory)
+for entry in $(ls -1 "$ENTRIES_DIR"/*.md 2>/dev/null | sort); do
   if [ -f "$entry" ]; then
     print_entry "$entry" "false"
   fi
 done
 
 # Process pinned entries
-for entry in "$PINNED_DIR"/*.md; do
+# Ensure chronological order by sorting filenames
+for entry in $(ls -1 "$PINNED_DIR"/*.md 2>/dev/null | sort); do
   if [ -f "$entry" ]; then
     print_entry "$entry" "true"
   fi
