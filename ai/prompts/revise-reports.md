@@ -31,6 +31,7 @@ Processes user-edited draft report candidates (located in `entries/` with filena
             *   Incorporate the user's changes into a clean version of the report content. This means if the user edited the main body, those edits are kept.
             *   If user added notes within the "User Feedback Section" of the draft, interpret these as instructions for revision (e.g., "Remove section X", "Rephrase Y to be more formal").
             *   The AI should intelligently merge user's direct edits with instructions from the feedback section.
+            *   **Preserve Revision History**: In the "User Feedback Section", preserve all previous revision notes and add new ones. Use format: `<!-- REVISION N: User feedback: "[exact feedback]" -->` followed by `<!-- REVISION N INCORPORATED: [what was done] -->`. Do not overwrite previous revision history.
             *   Ensure the core information intended for the peer remains clear and accurate.
         *   **Update Metadata**: Change `<!-- STATUS: draft -->` to `<!-- STATUS: revised -->` within the file content.
         *   Overwrite `entries/{DRAFT_FILENAME}` with the revised content and updated metadata. If save fails, trigger "File Save Failed" error.
