@@ -32,8 +32,8 @@ One way to do this is:
     - Agree to open the cloned repository
     - Click View → Terminal
     
-    > [!TIP]
-    > All Docker commands are designed to be run inside this repository.
+> [!TIP]
+> All Docker commands are designed to be run inside this repository.
 
 6. (OPTIONAL) The technically inclined may choose to build the Docker image locally.
 
