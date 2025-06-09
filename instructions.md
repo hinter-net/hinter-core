@@ -17,7 +17,10 @@ However, given the advanced nature of the underlying technology, setup and usage
     - Click the Cline icon that appears on the sidebar
     - Select an API provider and enter your API key
 
-    If you are not a paid subscriber to any of these API providers, you can get started with [OpenRouter](https://openrouter.ai/) by prepaying a few dollars.
+    If you are not a paid subscriber to any of these API providers:
+      - Create an [OpenRouter](https://openrouter.ai/) account
+      - Create an API key
+      - Configure Cline to use [`deepseek/deepseek-r1-0528:free`](https://openrouter.ai/deepseek/deepseek-r1-0528:free)
 
 4. Install [Docker](https://docs.docker.com/engine/install/).
 
