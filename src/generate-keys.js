@@ -1,8 +1,5 @@
+import fs from 'fs';
 import crypto from 'hypercore-crypto';
-import fs from 'bare-fs';
-import { printAsciiArt } from './utils';
-
-printAsciiArt();
 
 if (fs.existsSync('.env')) {
     throw new Error('.env already exists!');
