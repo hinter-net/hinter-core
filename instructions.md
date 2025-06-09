@@ -48,7 +48,7 @@ One way to do this is:
     ```
 
 > [!TIP]
-> Retry the Docker commands above until you see the `hinter-core` ASCII art (related to [this issue](https://github.com/bbenligiray/hinter-core/issues/5)).
+> Retry the final Docker command until you see the `hinter-core` ASCII art (related to [this issue](https://github.com/bbenligiray/hinter-core/issues/5)).
 
 If the second Docker command prints the following, you can consider the installation complete and stop the container (for example, by closing the terminal):
 
