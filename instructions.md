@@ -20,7 +20,7 @@ However, given the advanced nature of the underlying technology, setup and usage
     If you are not a paid subscriber to any of these API providers:
       - Create an [OpenRouter](https://openrouter.ai/) account
       - Create an API key
-      - Configure Cline to use [`deepseek/deepseek-r1-0528:free`](https://openrouter.ai/deepseek/deepseek-r1-0528:free)
+      - Configure Cline to use [`deepseek/deepseek-chat-v3-0324:free`](https://openrouter.ai/deepseek/deepseek-chat-v3-0324:free)
 
 4. Install [Docker](https://docs.docker.com/engine/install/).
 
