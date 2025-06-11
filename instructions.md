@@ -42,12 +42,12 @@ One way to do this is:
 
 7. Create a `.env` file that contains your [keypair](#keypair) using:
     ```sh
-    docker run -it --rm -v /app/node_modules -v "$(pwd)":/app bbenligiray/hinter-core npm run generate-keys
+    docker run -it --rm -v /app/node_modules -v "$(pwd)":/app bbenligiray/hinter-core:latest npm run generate-keys
     ```
 
 8. Start `hinter-core` using:
     ```sh
-    docker run -it --rm --network host -v "$(pwd)/data/peers":/app/data/peers -v "$(pwd)/.env":/app/.env -v "$(pwd)/.storage":/app/.storage bbenligiray/hinter-core
+    docker run -it --rm --network host -v "$(pwd)/data/peers":/app/data/peers -v "$(pwd)/.env":/app/.env -v "$(pwd)/.storage":/app/.storage bbenligiray/hinter-core:latest
     ```
 
 > [!TIP]
@@ -81,7 +81,7 @@ This is easy to achieve if both of you are running `hinter-core` at all times, o
 
 Run `hinter-core` in the background in "always restart" mode using:
 ```sh
-docker run -d --name my-hinter-core --restart=always --network host -v "$(pwd)/data/peers":/app/data/peers -v "$(pwd)/.env":/app/.env -v "$(pwd)/.storage":/app/.storage bbenligiray/hinter-core
+docker run -d --name my-hinter-core --restart=always --network host -v "$(pwd)/data/peers":/app/data/peers -v "$(pwd)/.env":/app/.env -v "$(pwd)/.storage":/app/.storage bbenligiray/hinter-core:latest
 ```
 
 Note that you will not see its logs when the container is running in the background.
