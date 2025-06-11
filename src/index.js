@@ -1,5 +1,6 @@
 import fs from 'bare-fs';
 import path from 'bare-path';
+import process from 'bare-process';
 import Hyperswarm from 'hyperswarm';
 import Hyperdrive from 'hyperdrive';
 import Localdrive from 'localdrive';
@@ -61,6 +62,13 @@ async function main() {
     const keyPair = await parseKeyPairFromEnv();
     const peersDirectoryPath = path.join('data', 'peers');
     const peers = await parsePeers(peersDirectoryPath);
+    setInterval(async () => {
+        const currentPeers = await parsePeers(peersDirectoryPath);
+        if (peers.map(peer => `${peer.alias}-${peer.publicKey}`).sort().toString() !== currentPeers.map(peer => `${peer.alias}-${peer.publicKey}`).sort().toString()) {
+            console.log('Peers have changed. Exiting to allow restart.');
+            process.exit(0);
+        }
+    }, 60000);
 
     console.log('Preparing to connect...');
     // Create 2 Corestore instances per peer in a local directory
