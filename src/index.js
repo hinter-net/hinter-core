@@ -1,5 +1,6 @@
 import fs from 'bare-fs';
 import path from 'bare-path';
+import process from 'bare-process';
 import Hyperswarm from 'hyperswarm';
 import Hyperdrive from 'hyperdrive';
 import Localdrive from 'localdrive';
@@ -10,7 +11,7 @@ import { printAsciiArt } from './utils';
 
 printAsciiArt();
 
-async function main() {
+async function parseKeyPairFromEnv() {
     if (!fs.existsSync('.env')) {
         throw new Error('Generate .env first!');
     }
@@ -24,9 +25,11 @@ async function main() {
         throw new Error('Key pair not valid');
     }
     console.log('Parsed key pair!');
+    return keyPair;
+}
 
+async function parsePeers(peersDirectoryPath) {
     console.log('Parsing peers...');
-    const peersDirectoryPath = path.join('data', 'peers');
     const peers = fs.readdirSync(peersDirectoryPath).map(peersFileName => {
         const peerDirectoryPath = path.join(peersDirectoryPath, peersFileName);
         if (!fs.statSync(peerDirectoryPath).isDirectory()) {
@@ -43,7 +46,7 @@ async function main() {
         }
         expectedPeerDirectoryNames.map(expectedPeerDirectoryName => {
             if (!peerDirectoryContents.includes(expectedPeerDirectoryName)) {
-                throw new Error(`Missing ${expectedPeerDirectoryContent.name} in peers/${peerPublicKey}`);
+                throw new Error(`Missing ${expectedPeerDirectoryName} in peers/${peerPublicKey}`);
             }
             if (!fs.statSync(path.join(peerDirectoryPath, expectedPeerDirectoryName)).isDirectory()) {
                 throw new Error(`peers/${peerPublicKey}/${expectedPeerDirectoryName} is not a directory`);
@@ -52,6 +55,20 @@ async function main() {
         return { alias: peerAlias, publicKey: peerPublicKey };
     });
     console.log(`Parsed ${peers.length} peers!`);
+    return peers;
+}
+
+async function main() {
+    const keyPair = await parseKeyPairFromEnv();
+    const peersDirectoryPath = path.join('data', 'peers');
+    const peers = await parsePeers(peersDirectoryPath);
+    setInterval(async () => {
+        const currentPeers = await parsePeers(peersDirectoryPath);
+        if (peers.map(peer => `${peer.alias}-${peer.publicKey}`).sort().toString() !== currentPeers.map(peer => `${peer.alias}-${peer.publicKey}`).sort().toString()) {
+            console.log('Peers have changed. Exiting to allow restart.');
+            process.exit(0);
+        }
+    }, 60000);
 
     console.log('Preparing to connect...');
     // Create 2 Corestore instances per peer in a local directory
