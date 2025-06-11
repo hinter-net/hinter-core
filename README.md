@@ -12,5 +12,5 @@ This repo contains:
 - The `hinter-core` implementation
 - AI scaffolding that enables hinters to use generic coding assistants for hinter operations
 
-See [instructions](./instructions.md) for usage.
-Inspect the [`1425-ad`](https://github.com/bbenligiray/hinter-core/tree/1425-ad/data) branch for example usage.
+See [instructions](./instructions.md) for installation.
+Inspect the [`1425-ad`](https://github.com/bbenligiray/hinter-core/tree/1425-ad/data) branch for example user data.
