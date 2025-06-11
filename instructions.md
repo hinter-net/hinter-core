@@ -97,10 +97,6 @@ docker stop my-hinter-core
 docker rm my-hinter-core
 ```
 
-> [!TIP]
-> You are recommended to stop and remove your `hinter-core` container before updating `data/` contents (manually or through an [AI assistant](#ai-assistant-operation)), and start a new one once you are done.
-> This is both a best practice that prevents you from sending unfinalized reports, and is a requirement for peer updates to take effect.
-
 ## AI Assistant Operation
 
 - Open VS Code
