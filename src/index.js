@@ -10,7 +10,7 @@ import { printAsciiArt } from './utils';
 
 printAsciiArt();
 
-async function main() {
+async function parseKeyPairFromEnv() {
     if (!fs.existsSync('.env')) {
         throw new Error('Generate .env first!');
     }
@@ -24,6 +24,11 @@ async function main() {
         throw new Error('Key pair not valid');
     }
     console.log('Parsed key pair!');
+    return keyPair;
+}
+
+async function main() {
+    const keyPair = await parseKeyPairFromEnv();
 
     console.log('Parsing peers...');
     const peersDirectoryPath = path.join('data', 'peers');
