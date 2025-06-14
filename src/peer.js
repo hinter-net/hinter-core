@@ -48,9 +48,9 @@ export function parsePeers(peersDirectoryPath, peerSizeLimitMB) {
         return { alias: peerAlias, publicKey: peerPublicKey };
     }).filter(Boolean);
 
-    const blacklistedPeers = peers.filter(peer => peer.exceedsSizeLimit);
-    if (blacklistedPeers.length > 0) {
-        const blacklistedAliases = blacklistedPeers.map(peer => {
+    const peersToBlacklist = peers.filter(peer => peer.exceedsSizeLimit);
+    if (peersToBlacklist.length > 0) {
+        const blacklistedAliases = peersToBlacklist.map(peer => {
             fs.writeFileSync(path.join(peersDirectoryPath, `${peer.alias}-${peer.publicKey}`, '.blacklisted'), '');
             return peer.alias;
         });
