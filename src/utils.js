@@ -9,3 +9,23 @@ export function printAsciiArt() {
         '                                                     \n'
     );
 }
+
+export function calculateDirectorySize(dirPath) {
+    let totalSize = 0;
+
+    function traverse(currentPath) {
+        const items = fs.readdirSync(currentPath);
+        for (const item of items) {
+            const itemPath = path.join(currentPath, item);
+            const stats = fs.statSync(itemPath);
+            if (stats.isDirectory()) {
+                traverse(itemPath);
+            } else {
+                totalSize += stats.size;
+            }
+        }
+    }
+
+    traverse(dirPath);
+    return totalSize;
+}

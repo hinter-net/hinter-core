@@ -29,15 +29,15 @@ async function parseKeyPairFromEnv() {
     return keyPair;
 }
 
-
 async function main() {
     const keyPair = await parseKeyPairFromEnv();
     const peersDirectoryPath = path.join('data', 'peers');
     console.log('Parsing peers...');
-    const peers = await parsePeers(peersDirectoryPath);
+    const peerSizeLimitMB = parseInt(process.env.PEER_SIZE_LIMIT_MB || '1024');
+    const peers = await parsePeers(peersDirectoryPath, peerSizeLimitMB);
     console.log(`Parsed ${peers.length} peers!`);
     setInterval(async () => {
-        const currentPeers = await parsePeers(peersDirectoryPath);
+        const currentPeers = await parsePeers(peersDirectoryPath, peerSizeLimitMB);
         if (peers.map(peer => `${peer.alias}-${peer.publicKey}`).sort().toString() !== currentPeers.map(peer => `${peer.alias}-${peer.publicKey}`).sort().toString()) {
             console.log('Peers have changed. Exiting to allow restart.');
             process.exit(0);
