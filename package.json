@@ -15,7 +15,7 @@
   },
   "scripts": {
     "docker:build": "docker build -t bbenligiray/hinter-core:latest .",
-    "docker:build-and-push:multiplatform": "docker:build-and-push:multiplatform": "docker buildx build --platform linux/amd64,linux/arm64 -t bbenligiray/hinter-core:latest --push . && docker buildx stop multiplatform0 && docker buildx rm multiplatform0",
+    "docker:build-and-push:multiplatform": "docker buildx build --platform linux/amd64,linux/arm64 -t bbenligiray/hinter-core:latest --push . && docker buildx stop multiplatform0 && docker buildx rm multiplatform0",
     "docker:initialize": "docker run -it --rm -v /app/node_modules -v .:/app bbenligiray/hinter-core:latest npm run initialize",
     "docker:start": "docker run -it --rm --network host -v ./data:/app/data bbenligiray/hinter-core:latest",
     "initialize": "node src/initialize.js",
