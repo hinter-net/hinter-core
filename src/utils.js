@@ -1,3 +1,6 @@
+import fs from 'bare-fs';
+import path from 'bare-path';
+
 export function printAsciiArt() {
     console.log(
         '  _     _       _                                     \n',
