@@ -7,63 +7,20 @@ import Localdrive from 'localdrive';
 import Corestore from 'corestore';
 import crypto from 'hypercore-crypto';
 import b4a from 'b4a';
-import { printAsciiArt } from './utils';
+import { printAsciiArt, parseEnvFile } from './utils';
+import { parsePeers } from './peer.js';
 
 printAsciiArt();
 
-async function parseKeyPairFromEnv() {
-    if (!fs.existsSync('.env')) {
-        throw new Error('Generate .env first!');
-    }
-    console.log('Parsing key pair...');
-    const dotenvContent = fs.readFileSync('.env', 'utf8');
-    const keyPair = {
-        publicKey: b4a.from(dotenvContent.match(/PUBLIC_KEY=([0-9a-f]+)/)[1], 'hex'),
-        secretKey: b4a.from(dotenvContent.match(/SECRET_KEY=([0-9a-f]+)/)[1], 'hex')
-    };
-    if (!crypto.validateKeyPair(keyPair)) {
-        throw new Error('Key pair not valid');
-    }
-    console.log('Parsed key pair!');
-    return keyPair;
-}
-
-async function parsePeers(peersDirectoryPath) {
-    console.log('Parsing peers...');
-    const peers = fs.readdirSync(peersDirectoryPath).map(peersFileName => {
-        const peerDirectoryPath = path.join(peersDirectoryPath, peersFileName);
-        if (!fs.statSync(peerDirectoryPath).isDirectory()) {
-            throw new Error(`${peersFileName} is not a directory`);
-        }
-        if (!/^[^-]+-[a-f0-9]{64}$/.test(peersFileName)) {
-            throw new Error(`${peersFileName} does not satisfy the ALIAS-PUBLIC_KEY format`);
-        }
-        const [peerAlias, peerPublicKey] = peersFileName.split('-');
-        const expectedPeerDirectoryNames = ['incoming', 'outgoing'];
-        const peerDirectoryContents = fs.readdirSync(peerDirectoryPath);
-        if (peerDirectoryContents.length !== expectedPeerDirectoryNames.length) {
-            throw new Error(`Unexpected number of contents in peers/${peerPublicKey}`);
-        }
-        expectedPeerDirectoryNames.map(expectedPeerDirectoryName => {
-            if (!peerDirectoryContents.includes(expectedPeerDirectoryName)) {
-                throw new Error(`Missing ${expectedPeerDirectoryName} in peers/${peerPublicKey}`);
-            }
-            if (!fs.statSync(path.join(peerDirectoryPath, expectedPeerDirectoryName)).isDirectory()) {
-                throw new Error(`peers/${peerPublicKey}/${expectedPeerDirectoryName} is not a directory`);
-            }
-        });
-        return { alias: peerAlias, publicKey: peerPublicKey };
-    });
-    console.log(`Parsed ${peers.length} peers!`);
-    return peers;
-}
-
 async function main() {
-    const keyPair = await parseKeyPairFromEnv();
+    const { keyPair, peerSizeLimitMB: envFilePeerSizeLimitMB } = await parseEnvFile();
     const peersDirectoryPath = path.join('data', 'peers');
-    const peers = await parsePeers(peersDirectoryPath);
+    console.log('Parsing peers...');
+    const peerSizeLimitMB = envFilePeerSizeLimitMB ?? 1024;
+    const peers = await parsePeers(peersDirectoryPath, peerSizeLimitMB);
+    console.log(`Parsed ${peers.length} peers!`);
     setInterval(async () => {
-        const currentPeers = await parsePeers(peersDirectoryPath);
+        const currentPeers = await parsePeers(peersDirectoryPath, peerSizeLimitMB);
         if (peers.map(peer => `${peer.alias}-${peer.publicKey}`).sort().toString() !== currentPeers.map(peer => `${peer.alias}-${peer.publicKey}`).sort().toString()) {
             console.log('Peers have changed. Exiting to allow restart.');
             process.exit(0);

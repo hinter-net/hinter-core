@@ -17,7 +17,7 @@
     "docker:build": "docker build -t bbenligiray/hinter-core:latest .",
     "docker:build-and-push:multiplatform": "docker buildx build --platform linux/amd64,linux/arm64 -t bbenligiray/hinter-core:latest --push .",
     "docker:generate-keys": "docker run -it --rm -v /app/node_modules -v .:/app bbenligiray/hinter-core:latest npm run generate-keys",
-    "docker:start": "docker run -it --rm -v ./data/peers:/app/data/peers -v ./.env:/app/.env bbenligiray/hinter-core:latest",
+    "docker:start": "docker run -it --rm -v ./data/peers:/app/data/peers -v ./.env:/app/.env -v ./.storage:/app/.storage bbenligiray/hinter-core:latest",
     "generate-keys": "node src/generate-keys.js",
     "start": "pear run src/index.js"
   },
