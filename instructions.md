@@ -42,7 +42,7 @@ One way to do this is:
 
 7. Initialize the `data/` directory (which includes your [keypair](#keypair)) using:
     ```sh
-    docker run -it --rm -v /app/node_modules -v "$(pwd)":/app bbenligiray/hinter-core:latest npm run initialize
+    docker run -it --rm -v "$(pwd)/data":/app/data bbenligiray/hinter-core:latest npm run initialize
     ```
 
 > [!TIP]
