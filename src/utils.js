@@ -36,10 +36,11 @@ export function calculateDirectorySize(dirPath) {
 }
 
 export async function parseEnvFile() {
-    if (!fs.existsSync('.env')) {
-        throw new Error('Generate .env first!');
+    const envFilePath = path.join('data', '.env');
+    if (!fs.existsSync(envFilePath)) {
+        throw new Error('data/.env file not found.');
     }
-    const envFileContent = fs.readFileSync('.env', 'utf8');
+    const envFileContent = fs.readFileSync(envFilePath, 'utf8');
     const keyPair = {
         publicKey: b4a.from(envFileContent.match(/PUBLIC_KEY=([0-9a-f]+)/)[1], 'hex'),
         secretKey: b4a.from(envFileContent.match(/SECRET_KEY=([0-9a-f]+)/)[1], 'hex')
