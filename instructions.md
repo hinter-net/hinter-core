@@ -103,14 +103,24 @@ docker rm my-hinter-core
 - Click File → Open Folder and open the cloned repository
 - Click the Cline icon in the sidebar
 
-The main thing to know about Cline is the Plan/Act toggle button.
-In Plan mode, Cline can read files in the repository but cannot make changes or run commands.
-In Act mode, it can do anything but requires confirmation on each action by default.
+Now ask Cline to help you get started.
+
+There are two important concepts to be aware of while using Cline:
+
+### Plan/Act toggle button
+
+You can chat with the AI about the contents of your repo in Plan Mode.
+For Cline to be able to make changes (for example, to execute predefined hinter workflows), you will need to switch to Act Mode.
+Switching between Plan and Act Mode retains the context, so you will likely want to switch between the two during use.
+
 
 > [!TIP]
 > Using git for version control will enable you to track and revert changes that Cline makes in a powerful way.
 
-Now just ask Cline to help you get started.
+### Tasks
+Whenever you want Cline to start as a clean slate, start a new task (for example, by clicking the plus sign on the Cline extension).
+Doing this between independent hinter workflows will cause Cline to perform in a more consistent manner.
+However, you may want to continue using the same task during multiple dependent hinter workflows, such as revising the same report multiple times.
 
 > [!TIP]
 > If you have already checked out the example `data/` contents, say `start-fresh` for Cline to clean it up.
