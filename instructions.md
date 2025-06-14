@@ -40,49 +40,30 @@ One way to do this is:
 
 6. (OPTIONAL) The technically inclined may choose to build the Docker image locally.
 
-7. Create a `.env` file that contains your [keypair](#keypair) using:
+7. Initialize the `data/` directory (which includes your [keypair](#keypair)) using:
     ```sh
-    docker run -it --rm -v /app/node_modules -v "$(pwd)":/app bbenligiray/hinter-core:latest npm run generate-keys
-    ```
-
-8. Start `hinter-core` using:
-    ```sh
-    docker run -it --rm --network host -v "$(pwd)/data/peers":/app/data/peers -v "$(pwd)/.env":/app/.env -v "$(pwd)/.storage":/app/.storage bbenligiray/hinter-core:latest
+    docker run -it --rm -v /app/node_modules -v "$(pwd)":/app bbenligiray/hinter-core:latest npm run initialize
     ```
 
 > [!TIP]
-> Retry the final Docker command until you see the `hinter-core` ASCII art (related to [this issue](https://github.com/bbenligiray/hinter-core/issues/5)).
+> If you already have a `data/` directory from past usage, you should copy it into the repository after cloning, instead of running the initialize command.
 
-If the second Docker command prints the following, you can consider the installation complete and stop the container (for example, by closing the terminal):
-
-```
-Parsing key pair...
-Parsed key pair!
-Parsing peers...
-Parsed 2 peers!
-Preparing to connect...
-Ready to connect!
-alice initial incoming: {"files":0,"add":0,"remove":2,"change":0}
-bob initial incoming: {"files":0,"add":0,"remove":2,"change":0}
-alice initial outgoing: {"files":2,"add":2,"remove":0,"change":0}
-bob initial outgoing: {"files":2,"add":2,"remove":0,"change":0}
-```
+8. Start `hinter-core` in [always restart mode](#always-restart-mode) using:
+    ```sh
+    docker run -d --name my-hinter-core --restart=always --network host -v "$(pwd)/data":/app/data bbenligiray/hinter-core:latest
+    ```
 
 ### Keypair
 
-Your keypair is composed of a `PUBLIC_KEY` and `SECRET_KEY`, and is stored in the `.env` file.
+Your keypair is composed of a `PUBLIC_KEY` and `SECRET_KEY`, and is stored in the `data/.env` file.
 Give your `PUBLIC_KEY` to your peers so they can connect to your machine.
 Do not expose your `SECRET_KEY` to anyone.
 
-## `hinter-core` Operation
+### Always restart mode
 
 For you to be able to exchange reports with another hinter, you need to be running `hinter-core` concurrently.
 This is easy to achieve if both of you are running `hinter-core` at all times, or at least while your machines are running.
-
-Run `hinter-core` in the background in "always restart" mode using:
-```sh
-docker run -d --name my-hinter-core --restart=always --network host -v "$(pwd)/data/peers":/app/data/peers -v "$(pwd)/.env":/app/.env -v "$(pwd)/.storage":/app/.storage bbenligiray/hinter-core:latest
-```
+Therefore, you are recommended to run `hinter-core` in the background, in always restart mode.
 
 Note that you will not see its logs when the container is running in the background.
 However, since the command above names the container `my-hinter-core`, you can print its logs at any time using:
@@ -90,7 +71,7 @@ However, since the command above names the container `my-hinter-core`, you can p
 docker logs my-hinter-core
 ```
 
-In "always restart" mode, the container will start automatically when your system boots up.
+In always restart mode, the container will start automatically when your system boots up.
 Stop and remove it using:
 ```sh
 docker stop my-hinter-core
@@ -121,6 +102,3 @@ Switching between Plan and Act Mode retains the context, so you will likely want
 Whenever you want Cline to start as a clean slate, start a new task (for example, by clicking the plus sign on the Cline extension).
 Doing this between independent hinter workflows will cause Cline to perform in a more consistent manner.
 However, you may want to continue using the same task during multiple dependent hinter workflows, such as revising the same report multiple times.
-
-> [!TIP]
-> If you have already checked out the example `data/` contents, say `start-fresh` for Cline to clean it up.
