@@ -22,6 +22,8 @@ However, given the advanced nature of the underlying technology, setup and usage
       - Create an API key
       - Configure Cline to use [`deepseek/deepseek-chat-v3-0324:free`](https://openrouter.ai/deepseek/deepseek-chat-v3-0324:free)
 
+    If you are using Windows, skip this step and do it as a part of the [additional steps for Windows](#additional-steps-for-windows).
+
 4. Install [Docker](https://docs.docker.com/engine/install/).
 
 5. Clone this repository and navigate into it.
@@ -77,6 +79,30 @@ Stop and remove it using:
 docker stop my-hinter-core
 docker rm my-hinter-core
 ```
+
+### Additional Steps for Windows
+
+1. [Install Ubuntu using WSL](https://learn.microsoft.com/en-us/windows/wsl/install) by running Command Prompt as administrator and using
+```pwsh
+wsl --install
+```
+
+2. Install the VS Code extension named "WSL" similar to how you did it with Cline.
+
+3. Follow these steps to open Code to interact with the AI assistant:
+    - Open Command Prompt and switch from PowerShell to bash using:
+      ```pwsh
+      wsl
+      ```
+    - Navigate to the hinter-core directory using `cd` commands
+    - Open VS Code using
+      ```sh
+      code .
+      ```
+
+4. The first time you are doing this, install Cline.
+
+This enables Cline to use the tools written in bash.
 
 ## AI Assistant Operation
 
