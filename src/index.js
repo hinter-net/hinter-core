@@ -30,11 +30,11 @@ async function main() {
     console.log('Preparing to connect...');
     // Create 2 Corestore instances per peer in a local directory
     await Promise.all(peers.map(async (peer) => {
-        const incomingCorestore = new Corestore(path.join('.storage', peer.publicKey, 'incoming'));
+        const incomingCorestore = new Corestore(path.join('data', '.storage', peer.publicKey, 'incoming'));
         await incomingCorestore.ready();
         peer.incomingCorestore = incomingCorestore;
 
-        const outgoingCorestore = new Corestore(path.join('.storage', peer.publicKey, 'outgoing'));
+        const outgoingCorestore = new Corestore(path.join('data', '.storage', peer.publicKey, 'outgoing'));
         await outgoingCorestore.ready();
         peer.outgoingCorestore = outgoingCorestore;
     }));

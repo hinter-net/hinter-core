@@ -13,32 +13,36 @@ This repo contains:
 - AI scaffolding that enables hinters to use generic coding assistants for hinter operations
 
 See [instructions](./instructions.md) for installation.
-Inspect the [`1425-ad`](https://github.com/bbenligiray/hinter-core/tree/1425-ad/data) branch for example user data.
+The `data/` directory, which stores your entries, peer configurations, `.env` file (with your cryptographic keys), and `.storage` (for Hypercore data), is not included in this repository by default. It will be created when you run the initialization script described in the installation instructions.
+For example user data (entries and peer structures), please inspect the [`1425-ad` branch](https://github.com/bbenligiray/hinter-core/tree/1425-ad/data).
 
 ## `data/` Structure
 
 ```
-├── entries
-│    ├── pinned
-│    │    └── *.md                  # Your pinned entries
-│    └── *.md                       # Your regular entries
-└── peers
-     ├── {ALIAS_1}-{PUBLIC_KEY_1}   # Report directory of peer #1
-     │    ├── incoming
-     │    │    └── *.md             # Incoming reports from peer #1 to you
-     │    └── outgoing
-     │         └── *.md             # Outgoing reports from you to peer #1
-     ├── {ALIAS_2}-{PUBLIC_KEY_2}   # Report directory of peer #2
-     │    ├── incoming
-     │    │    └── *.md             # Incoming reports from peer #2 to you
-     │    └── outgoing
-     │         └── *.md             # Outgoing reports from you to peer #2
-     └──  {ALIAS_*}-{PUBLIC_KEY_*}  # Report directories of additional peers
+data/
+├── .env                                # Your keypair
+├── .storage/                           # Internal storage for Hypercores
+├── entries/
+│    ├── pinned/
+│    │    └── *.md                      # Your pinned entries
+│    └── *.md                           # Your regular entries
+└── peers/
+     ├── {ALIAS_1}-{PUBLIC_KEY_1}/      # Report directory of peer #1
+     │    ├── incoming/
+     │    │    └── *.md                 # Incoming reports from peer #1 to you
+     │    └── outgoing/
+     │         └── *.md                 # Outgoing reports from you to peer #1
+     ├── {ALIAS_2}-{PUBLIC_KEY_2}/      # Report directory of peer #2
+     │    ├── incoming/
+     │    │    └── *.md                 # Incoming reports from peer #2 to you
+     │    └── outgoing/
+     │         └── *.md                 # Outgoing reports from you to peer #2
+     └──  {ALIAS_N}-{PUBLIC_KEY_N}/     # Report directories of additional peers
 ```
 
 ### Entries
 
-Your entries reside in the `entries/` directory.
+Your entries reside in the `data/entries/` directory.
 Place your regular entries directly in it, and your pinned (i.e., important) entries in the `pinned/` subdirectory.
 This enables pinned entries to be given priority when the LLM context size is limited.
 
@@ -50,11 +54,11 @@ Your entries are private (to the degree that you are following the best practice
 
 ### Peers
 
-Each peer has a report directory under `peers/`.
+Each peer has a report directory under `data/peers/`.
 The names of these directories are `{ALIAS}-{PUBLIC_KEY}`.
 `ALIAS` is an arbitrary string that is used to identify the peer in logs.
 `ALIAS` cannot include the `-` character.
-`PUBLIC_KEY` is the peer's [public key](#keypair) from their `.env` file, which consists of 64 lowercase hexadecimal characters.
+`PUBLIC_KEY` is the peer's [public key](#keypair) from their `data/.env` file, which consists of 64 lowercase hexadecimal characters.
 
 In each peer directory, there are `incoming/` and `outgoing/` subdirectories.
 While `hinter-core` is running for both you and your peer, the files you place in an `outgoing/` subdirectory on your machine will appear in the respective `incoming/` subdirectory of your peer, and vice versa.
