@@ -12,28 +12,31 @@ import { parsePeers } from './peer.js';
 
 printAsciiArt();
 
-async function parseKeyPairFromEnv() {
+async function parseEnvFile() {
     if (!fs.existsSync('.env')) {
         throw new Error('Generate .env first!');
     }
-    console.log('Parsing key pair...');
-    const dotenvContent = fs.readFileSync('.env', 'utf8');
+    const envFileContent = fs.readFileSync('.env', 'utf8');
     const keyPair = {
-        publicKey: b4a.from(dotenvContent.match(/PUBLIC_KEY=([0-9a-f]+)/)[1], 'hex'),
-        secretKey: b4a.from(dotenvContent.match(/SECRET_KEY=([0-9a-f]+)/)[1], 'hex')
+        publicKey: b4a.from(envFileContent.match(/PUBLIC_KEY=([0-9a-f]+)/)[1], 'hex'),
+        secretKey: b4a.from(envFileContent.match(/SECRET_KEY=([0-9a-f]+)/)[1], 'hex')
     };
     if (!crypto.validateKeyPair(keyPair)) {
         throw new Error('Key pair not valid');
     }
-    console.log('Parsed key pair!');
-    return keyPair;
+    const peerSizeLimitMatch = envFileContent.match(/PEER_SIZE_LIMIT_MB=(\d+)/);
+    const peerSizeLimitMB = peerSizeLimitMatch ? parseInt(peerSizeLimitMatch[1]) : undefined;
+    if (peerSizeLimitMB) {
+        console.log(`Parsed peer size limit: ${peerSizeLimitMB}MB`);
+    }
+    return { keyPair, peerSizeLimitMB };
 }
 
 async function main() {
-    const keyPair = await parseKeyPairFromEnv();
+    const { keyPair, peerSizeLimitMB: envFilePeerSizeLimitMB } = await parseEnvFile();
     const peersDirectoryPath = path.join('data', 'peers');
     console.log('Parsing peers...');
-    const peerSizeLimitMB = parseInt(process.env.PEER_SIZE_LIMIT_MB || '1024');
+    const peerSizeLimitMB = envFilePeerSizeLimitMB ?? 1024;
     const peers = await parsePeers(peersDirectoryPath, peerSizeLimitMB);
     console.log(`Parsed ${peers.length} peers!`);
     setInterval(async () => {
