@@ -22,15 +22,12 @@ function validatePeerDirectory(peerDirectoryPath, peerDirectoryName) {
 
 function checkPeerSizeLimit(peerDirectoryPath, peerAlias, sizeLimitMB) {
     if (fs.existsSync(path.join(peerDirectoryPath, '.blacklisted'))) {
-        console.log(`Skipping blacklisted peer: ${peerAlias}`);
         return { isBlacklisted: true };
     }
     const incomingDirectorySize = calculateDirectorySize(path.join(peerDirectoryPath, 'incoming'));
-
     if (incomingDirectorySize > sizeLimitMB * 1024 * 1024) {
         return { isBlacklisted: false, exceedsSizeLimit: true };
     }
-
     return { isBlacklisted: false, exceedsSizeLimit: false };
 }
 
