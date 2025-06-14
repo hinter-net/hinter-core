@@ -1,7 +1,4 @@
 node_modules
 
-data
-
-# Left below for migration safety (14/06/2025)
 .storage
 .env
