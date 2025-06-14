@@ -7,30 +7,10 @@ import Localdrive from 'localdrive';
 import Corestore from 'corestore';
 import crypto from 'hypercore-crypto';
 import b4a from 'b4a';
-import { printAsciiArt } from './utils';
+import { printAsciiArt, parseEnvFile } from './utils';
 import { parsePeers } from './peer.js';
 
 printAsciiArt();
-
-async function parseEnvFile() {
-    if (!fs.existsSync('.env')) {
-        throw new Error('Generate .env first!');
-    }
-    const envFileContent = fs.readFileSync('.env', 'utf8');
-    const keyPair = {
-        publicKey: b4a.from(envFileContent.match(/PUBLIC_KEY=([0-9a-f]+)/)[1], 'hex'),
-        secretKey: b4a.from(envFileContent.match(/SECRET_KEY=([0-9a-f]+)/)[1], 'hex')
-    };
-    if (!crypto.validateKeyPair(keyPair)) {
-        throw new Error('Key pair not valid');
-    }
-    const peerSizeLimitMatch = envFileContent.match(/PEER_SIZE_LIMIT_MB=(\d+)/);
-    const peerSizeLimitMB = peerSizeLimitMatch ? parseInt(peerSizeLimitMatch[1]) : undefined;
-    if (peerSizeLimitMB) {
-        console.log(`Parsed peer size limit: ${peerSizeLimitMB}MB`);
-    }
-    return { keyPair, peerSizeLimitMB };
-}
 
 async function main() {
     const { keyPair, peerSizeLimitMB: envFilePeerSizeLimitMB } = await parseEnvFile();
