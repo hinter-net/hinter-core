@@ -8,6 +8,7 @@ import Corestore from 'corestore';
 import crypto from 'hypercore-crypto';
 import b4a from 'b4a';
 import { printAsciiArt } from './utils';
+import { parsePeers } from './peer.js';
 
 printAsciiArt();
 
@@ -28,82 +29,6 @@ async function parseKeyPairFromEnv() {
     return keyPair;
 }
 
-async function parsePeers(peersDirectoryPath) {
-    // Parse size limit from environment variable (default 1024MB = 1GB)
-    const sizeLimitMB = parseInt(process.env.PEER_SIZE_LIMIT_MB || '1024');
-    const sizeLimitBytes = sizeLimitMB * 1024 * 1024;
-    
-    const peers = fs.readdirSync(peersDirectoryPath).map(peersFileName => {
-        const peerDirectoryPath = path.join(peersDirectoryPath, peersFileName);
-        if (!fs.statSync(peerDirectoryPath).isDirectory()) {
-            throw new Error(`${peersFileName} is not a directory`);
-        }
-        if (!/^[^-]+-[a-f0-9]{64}$/.test(peersFileName)) {
-            throw new Error(`${peersFileName} does not satisfy the ALIAS-PUBLIC_KEY format`);
-        }
-        
-        const [peerAlias, peerPublicKey] = peersFileName.split('-');
-        const blacklistFilePath = path.join(peerDirectoryPath, '.blacklisted');
-        
-        // Skip if peer is already blacklisted
-        if (fs.existsSync(blacklistFilePath)) {
-            console.log(`Skipping blacklisted peer: ${peerAlias}`);
-            return null;
-        }
-        
-        const expectedPeerDirectoryNames = ['incoming', 'outgoing'];
-        const peerDirectoryContents = fs.readdirSync(peerDirectoryPath);
-        if (peerDirectoryContents.length !== expectedPeerDirectoryNames.length) {
-            throw new Error(`Unexpected number of contents in peers/${peerPublicKey}`);
-        }
-        expectedPeerDirectoryNames.map(expectedPeerDirectoryName => {
-            if (!peerDirectoryContents.includes(expectedPeerDirectoryName)) {
-                throw new Error(`Missing ${expectedPeerDirectoryName} in peers/${peerPublicKey}`);
-            }
-            if (!fs.statSync(path.join(peerDirectoryPath, expectedPeerDirectoryName)).isDirectory()) {
-                throw new Error(`peers/${peerPublicKey}/${expectedPeerDirectoryName} is not a directory`);
-            }
-        });
-        
-        // Calculate incoming directory size
-        const incomingDirectoryPath = path.join(peerDirectoryPath, 'incoming');
-        let totalSize = 0;
-        
-        function calculateDirectorySize(dirPath) {
-            const items = fs.readdirSync(dirPath);
-            for (const item of items) {
-                const itemPath = path.join(dirPath, item);
-                const stats = fs.statSync(itemPath);
-                if (stats.isDirectory()) {
-                    calculateDirectorySize(itemPath);
-                } else {
-                    totalSize += stats.size;
-                }
-            }
-        }
-        
-        calculateDirectorySize(incomingDirectoryPath);
-        
-        // Check if peer exceeds size limit
-        if (totalSize > sizeLimitBytes) {
-            fs.writeFileSync(blacklistFilePath, '');
-            console.log(`Blacklisted peer ${peerAlias} for exceeding ${sizeLimitMB}MB limit (${Math.round(totalSize / 1024 / 1024)}MB used)`);
-            return { alias: peerAlias, publicKey: peerPublicKey, isBlacklisted: true };
-        }
-        
-        return { alias: peerAlias, publicKey: peerPublicKey };
-    }).filter(Boolean); // Remove null entries (already blacklisted peers)
-    
-    // Check for newly blacklisted peers and exit if any found
-    const blacklistedPeers = peers.filter(peer => peer.isBlacklisted);
-    if (blacklistedPeers.length > 0) {
-        const blacklistedAliases = blacklistedPeers.map(peer => peer.alias);
-        console.log(`Blacklisted peers: ${blacklistedAliases.join(', ')}. Exiting for restart.`);
-        process.exit(0);
-    }
-    
-    return peers.filter(peer => !peer.isBlacklisted);
-}
 
 async function main() {
     const keyPair = await parseKeyPairFromEnv();
