@@ -52,7 +52,7 @@ One way to do this is:
 
 8. Start `hinter-core` in [always restart mode](#always-restart-mode) using:
     ```sh
-    docker run -d --name my-hinter-core2 --restart=always --network host -v"$(pwd)/data":/app/data bbenligiray/hinter-core:latest
+    docker run -d --name my-hinter-core --restart=always --network host -v"$(pwd)/data":/app/data bbenligiray/hinter-core:latest
     ```
 
 ### Keypair
