@@ -46,6 +46,10 @@ One way to do this is:
     ```sh
     docker run -it --rm -v"$(pwd)/data":/app/data bbenligiray/hinter-core:latest npm run initialize
     ```
+    If you are on Mac or Linux, claim the ownership of the `data/` directory created by docker using:
+    ```sh
+    sudo chown -R $(id -u):$(id -g) ./data
+    ```
 
 > [!TIP]
 > If you already have a `data/` directory from past usage, you should copy it into the repository after cloning, instead of running the initialize command.
