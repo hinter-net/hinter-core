@@ -24,9 +24,6 @@ However, given the advanced nature of the underlying technology, setup and usage
 4. Open your browser and navigate to `localhost:8080`.
    You should see the VS Code interface, which you will use to interact with the AI assistant.
 
-> [!TIP]
-> You may need to refresh the page a few times while the container boots.
-
 5. Click the Cline icon on the VS Code sidebar.
    Select an API provider and enter your API key.
 
