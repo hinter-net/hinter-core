@@ -36,9 +36,9 @@ export function calculateDirectorySize(dirPath) {
 }
 
 export async function parseEnvFile() {
-    const envFilePath = path.join('data', '.env');
+    const envFilePath = path.join('hinter-core-data', '.env');
     if (!fs.existsSync(envFilePath)) {
-        throw new Error('data/.env file not found.');
+        throw new Error('hinter-core-data/.env file not found.');
     }
     const envFileContent = fs.readFileSync(envFilePath, 'utf8');
     const keyPair = {

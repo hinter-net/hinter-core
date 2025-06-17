@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE_PEERS_DIR="data/peers"
+BASE_PEERS_DIR="hinter-core-data/peers"
 
 if [ ! -d "$BASE_PEERS_DIR" ] || [ -z "$(ls -A "$BASE_PEERS_DIR")" ]; then
     exit 0

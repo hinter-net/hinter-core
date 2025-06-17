@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'hypercore-crypto';
 
-const dataDir = 'data';
+const dataDir = 'hinter-core-data';
 
 if (fs.existsSync(dataDir) && (!fs.statSync(dataDir).isDirectory() || fs.readdirSync(dataDir).length > 0)) {
     throw new Error(`'${dataDir}/' must either not exist or be an empty directory for initialization.`);

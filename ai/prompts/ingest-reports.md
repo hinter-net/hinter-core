@@ -24,7 +24,7 @@ Processes incoming reports from peers (located in `peers/{ALIAS}-{PUBLIC_KEY}/in
     *   The output from `ai/tools/read-incoming-reports.sh` provides a list of all available incoming reports and their content.
     *   If `{SOURCE_PEER_ALIAS}` is specified by the user, filter this list to only include reports where `Peer-Alias` matches `{SOURCE_PEER_ALIAS}`.
     *   For each report obtained from the script:
-        *   Let `{INCOMING_REPORT_PATH}` be constructed as `data/peers/{Peer-Alias}-{Peer-Public-Key}/incoming/{Report-Filename}` using the metadata from the script.
+        *   Let `{INCOMING_REPORT_PATH}` be constructed as `hinter-core-data/peers/{Peer-Alias}-{Peer-Public-Key}/incoming/{Report-Filename}` using the metadata from the script.
         *   Check among the ingested user entries (from `read-entries.sh` output) if an entry already exists in `entries/` that has a `<!-- SOURCE_REPORT: {INCOMING_REPORT_PATH} -->` metadata tag.
         *   If such an entry exists, this report is considered "processed". Otherwise, it's "unprocessed".
     *   Filter the list to include only "unprocessed" reports.
@@ -33,7 +33,7 @@ Processes incoming reports from peers (located in `peers/{ALIAS}-{PUBLIC_KEY}/in
     *   For each unprocessed report (identified in step 2, with its content already available from `read-incoming-reports.sh` output):
         *   Let `{PEER_ALIAS}` be the `Peer-Alias` from the script's metadata for this report.
         *   Let `{REPORT_FILENAME}` be the `Report-Filename` from the script's metadata.
-        *   Let `{INCOMING_REPORT_PATH}` be `data/peers/{PEER_ALIAS}-{Peer-Public-Key}/incoming/{REPORT_FILENAME}`.
+        *   Let `{INCOMING_REPORT_PATH}` be `hinter-core-data/peers/{PEER_ALIAS}-{Peer-Public-Key}/incoming/{REPORT_FILENAME}`.
         *   **Content Analysis**: Analyze the pre-fetched report content to extract key information, entities, opportunities, events, or insights.
         *   **Contextualization**: Cross-reference information with existing user entries (from step 1) to understand its relevance, potential connections, or contradictions.
         *   **Apply Learned Preferences**: Use insights from previous user feedback on ingested entries (see "AI Learning"). Filter or prioritize information based on these learned patterns.
@@ -47,7 +47,7 @@ Processes incoming reports from peers (located in `peers/{ALIAS}-{PUBLIC_KEY}/in
 
 ## Ingested Entry Format (Template to be filled by AI)
 ```markdown
-<!-- SOURCE_REPORT: peers/[peer_alias-PUBLIC_KEY]/incoming/[YYYYMMDDHHMMSS_of_report].md -->
+<!-- SOURCE_REPORT: hinter-core-data/peers/[peer_alias-PUBLIC_KEY]/incoming/[YYYYMMDDHHMMSS_of_report].md -->
 <!-- SOURCE_PEER_ALIAS: [peer_alias] -->
 <!-- INGESTION_TIMESTAMP: [YYYYMMDDHHMMSS of ingestion] -->
 <!-- AI_CONFIDENCE_RELEVANCE: [High/Medium/Low, based on content and learned preferences] -->
@@ -81,7 +81,7 @@ Processes incoming reports from peers (located in `peers/{ALIAS}-{PUBLIC_KEY}/in
 *   If no new reports: "No new reports found to ingest." or "No new reports found from peer `{SOURCE_PEER_ALIAS}`."
 
 ## Error Handling & Responses
-*   **No Peers Directory**: "Error: `peers/` directory not found."
+*   **No Peers Directory**: "Error: `hinter-core-data/peers/` directory not found."
 *   **Invalid Peer Directory**: "Warning: Invalid directory structure for peer `{PEER_DIR_NAME}`. Skipping."
 *   **Corrupted Report File**: "Warning: Could not read or process report `{REPORT_PATH}`. Skipping."
 *   **Entry Creation Failed**: "Error: Failed to create entry for report `{REPORT_PATH}`. Please check permissions."

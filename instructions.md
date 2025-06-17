@@ -7,18 +7,18 @@ However, given the advanced nature of the underlying technology, setup and usage
 
 1. Install [Docker Desktop](https://docs.docker.com/desktop/).
 
-2. Open a terminal, and initialize the `data/` directory (which includes your [keypair](#keypair)) using:
+2. Open a terminal, and initialize the `hinter-core-data/` directory (which includes your [keypair](#keypair)) using:
     ```sh
-    docker run -it --rm -v"$(pwd)/data":/app/data bbenligiray/hinter-core:latest npm run initialize
+    docker run -it --rm -v"$(pwd)/hinter-core-data":/app/hinter-core-data bbenligiray/hinter-core:latest npm run initialize
     ```
-    If you are on Mac or Linux, claim the ownership of the `data/` directory using:
+    If you are on Mac or Linux, claim the ownership of the `hinter-core-data/` directory using:
     ```sh
-    sudo chown -R $(id -u):$(id -g) ./data
+    sudo chown -R $(id -u):$(id -g) ./hinter-core-data
     ```
 
 3. Start `hinter-core` in [always restart mode](#always-restart-mode) using:
     ```sh
-    docker run -d --name my-hinter-core --restart=always --network host -v"$(pwd)/data":/app/data bbenligiray/hinter-core:latest
+    docker run -d --name my-hinter-core --restart=always --network host -v"$(pwd)/hinter-core-data":/app/hinter-core-data bbenligiray/hinter-core:latest
     ```
 
 4. Open your browser and navigate to `localhost:8080`.
@@ -37,7 +37,7 @@ However, given the advanced nature of the underlying technology, setup and usage
 
 ### Keypair
 
-Your keypair is composed of a `PUBLIC_KEY` and `SECRET_KEY`, and is stored in the `data/.env` file.
+Your keypair is composed of a `PUBLIC_KEY` and `SECRET_KEY`, and is stored in the `hinter-core-data/.env` file.
 Give your `PUBLIC_KEY` to your peers so they can connect to your machine.
 Do not expose your `SECRET_KEY` to anyone.
 
