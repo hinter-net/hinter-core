@@ -9,14 +9,14 @@ Your role as the AI assistant is to facilitate these hinter operations through n
 
 ### 2.1. Entries
 *   **Purpose**: Chronological Markdown files where the user records any type of information (notes, observations, communications, ideas, tasks, etc.). They are the fundamental building blocks of the user's information store.
-*   **Location**: Stored in `data/entries/`.
-*   **Pinned Entries**: Critical entries can be "pinned" by placing them in `data/entries/pinned/`. These are often given higher priority in AI analysis.
+*   **Location**: Stored in `hinter-core-data/entries/`.
+*   **Pinned Entries**: Critical entries can be "pinned" by placing them in `hinter-core-data/entries/pinned/`. These are often given higher priority in AI analysis.
 *   **Format**: Filenames are timestamp-based: `YYYYMMDDHHMMSS_optional_suffix.md`.
 *   **AI Interaction**: You will help create, find, delete, pin, and unpin entries. You will also analyze entry content for drafting other entries or reports.
 
 ### 2.2. Peers
 *   **Purpose**: Represent other individuals with whom the hinter exchanges information (reports).
-*   **Directory Structure**: Each peer has a directory: `data/peers/{ALIAS}-{PUBLIC_KEY}/`.
+*   **Directory Structure**: Each peer has a directory: `hinter-core-data/peers/{ALIAS}-{PUBLIC_KEY}/`.
     *   `incoming/`: Contains reports received from this peer. These files are synced from the peer's machine and **must not be modified locally by the AI**.
     *   `outgoing/`: Contains reports composed by the user (with AI help) to be sent to this peer.
 *   **AI Interaction**: You will help add, edit (alias/key), and remove peers.
@@ -24,10 +24,10 @@ Your role as the AI assistant is to facilitate these hinter operations through n
 ### 2.3. Reports
 *   **Purpose**: Curated information exchanged between peers.
 *   **Lifecycle**:
-    1.  **Drafting (Outgoing)**: User, with your help (`draft-reports` command), generates draft report candidates based on their entries. These drafts are saved in `data/entries/`.
+    1.  **Drafting (Outgoing)**: User, with your help (`draft-reports` command), generates draft report candidates based on their entries. These drafts are saved in `hinter-core-data/entries/`.
     2.  **Review & Revision (Outgoing)**: User reviews these drafts. You can assist in revising them based on user feedback (`revise-reports` command).
     3.  **Posting (Outgoing)**: Approved reports are moved to the peer's `outgoing/` directory for P2P synchronization (`post-reports` command).
-    4.  **Ingestion (Incoming)**: Reports received from peers into their `incoming/` directory are processed by you (`ingest-reports` command), creating new entries in `data/entries/` based on the report content.
+    4.  **Ingestion (Incoming)**: Reports received from peers into their `incoming/` directory are processed by you (`ingest-reports` command), creating new entries in `hinter-core-data/entries/` based on the report content.
 
 ### 2.4. Typical Hinter Workflow
 Users will typically:
@@ -80,7 +80,7 @@ This section lists available operations. For detailed execution steps, error han
     *   **Often Needs**: Search criteria.
 
 *   **Command**: `ingest-reports` (see `ai/prompts/ingest-reports.md`)
-    *   **Description**: Processes incoming reports from peers (in `peers/.../incoming/`) that haven't been ingested yet. Creates new entries in `data/entries/` based on report content. Includes a user feedback section in generated entries.
+    *   **Description**: Processes incoming reports from peers (in `peers/.../incoming/`) that haven't been ingested yet. Creates new entries in `hinter-core-data/entries/` based on report content. Includes a user feedback section in generated entries.
     *   **User Might Say**: "Check for new reports," "Ingest messages from Alice."
     *   **Often Needs**: Optional specific peer alias to process.
 

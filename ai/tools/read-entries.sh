@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Directory paths
-ENTRIES_DIR="data/entries"
+ENTRIES_DIR="hinter-core-data/entries"
 PINNED_DIR="$ENTRIES_DIR/pinned"
 
 # Function to print entry details

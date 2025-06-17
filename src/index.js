@@ -14,7 +14,7 @@ printAsciiArt();
 
 async function main() {
     const { keyPair, peerSizeLimitMB: envFilePeerSizeLimitMB } = await parseEnvFile();
-    const peersDirectoryPath = path.join('data', 'peers');
+    const peersDirectoryPath = path.join('hinter-core-data', 'peers');
     console.log('Parsing peers...');
     const peerSizeLimitMB = envFilePeerSizeLimitMB ?? 1024;
     const peers = await parsePeers(peersDirectoryPath, peerSizeLimitMB);
@@ -30,11 +30,11 @@ async function main() {
     console.log('Preparing to connect...');
     // Create 2 Corestore instances per peer in a local directory
     await Promise.all(peers.map(async (peer) => {
-        const incomingCorestore = new Corestore(path.join('data', '.storage', peer.publicKey, 'incoming'));
+        const incomingCorestore = new Corestore(path.join('hinter-core-data', '.storage', peer.publicKey, 'incoming'));
         await incomingCorestore.ready();
         peer.incomingCorestore = incomingCorestore;
 
-        const outgoingCorestore = new Corestore(path.join('data', '.storage', peer.publicKey, 'outgoing'));
+        const outgoingCorestore = new Corestore(path.join('hinter-core-data', '.storage', peer.publicKey, 'outgoing'));
         await outgoingCorestore.ready();
         peer.outgoingCorestore = outgoingCorestore;
     }));

@@ -21,8 +21,8 @@ Creates a new Markdown entry file with a timestamp-based name in the appropriate
     *   If `{OPTIONAL_SUFFIX}` is provided, construct filename as: `{TIMESTAMP}{OPTIONAL_SUFFIX}.md`.
     *   If `{OPTIONAL_SUFFIX}` is not provided, construct filename as: `{TIMESTAMP}.md`.
 3.  **Determine Directory**:
-    *   If `{OPTIONAL_PIN_FLAG}` is present, set target directory to `entries/pinned/`.
-    *   Otherwise, set target directory to `entries/`.
+    *   If `{OPTIONAL_PIN_FLAG}` is present, set target directory to `hinter-core-data/entries/pinned/`.
+    *   Otherwise, set target directory to `hinter-core-data/entries/`.
 4.  **Construct Full Path**: Combine the target directory and the filename.
 5.  **Check for File Collision**:
     *   Although timestamp-based names are usually unique, if the exact full path already exists, append a small, unique counter (e.g., `_1`, `_2`) to `{OPTIONAL_SUFFIX}` (or create a suffix like `_1` if none existed) and reconstruct the filename and full path. Repeat if necessary.
@@ -37,7 +37,7 @@ Creates a new Markdown entry file with a timestamp-based name in the appropriate
 ## Success Output
 *   If not pinned: "Created new entry: `{TARGET_DIRECTORY}{FILENAME}`"
 *   If pinned: "Created new pinned entry: `{TARGET_DIRECTORY}{FILENAME}`"
-    *   (Where `{TARGET_DIRECTORY}` is `entries/` or `entries/pinned/` and `{FILENAME}` is the generated filename)
+    *   (Where `{TARGET_DIRECTORY}` is `hinter-core-data/entries/` or `hinter-core-data/entries/pinned/` and `{FILENAME}` is the generated filename)
 
 ## Error Handling & Responses
 *   **File Creation Failed**: "Error: Could not create entry file at `{FULL_PATH}`. Please check permissions or disk space."
@@ -45,11 +45,11 @@ Creates a new Markdown entry file with a timestamp-based name in the appropriate
 
 ## Examples
 *   **User**: `create-entry meeting_notes`
-    *   **AI (Success)**: "Created new entry: `entries/20250530161500_meeting_notes.md`" (assuming current timestamp)
+    *   **AI (Success)**: "Created new entry: `hinter-core-data/entries/20250530161500_meeting_notes.md`" (assuming current timestamp)
 *   **User**: `create-entry`
-    *   **AI (Success)**: "Created new entry: `entries/20250530161501.md`"
+    *   **AI (Success)**: "Created new entry: `hinter-core-data/entries/20250530161501.md`"
 *   **User**: `create-entry important_contact --pin`
-    *   **AI (Success)**: "Created new pinned entry: `entries/pinned/20250530161502_important_contact.md`"
+    *   **AI (Success)**: "Created new pinned entry: `hinter-core-data/entries/pinned/20250530161502_important_contact.md`"
 
 ## AI Learning
 *   Not applicable for this command.
