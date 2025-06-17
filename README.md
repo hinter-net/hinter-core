@@ -6,7 +6,8 @@
 
 `hinter-core` transforms individual networking into collaborative intelligence.
 When you share contextualized information with trusted peers and they do the same, the network becomes more valuable than the sum of its parts.
-As hinters continuously exchange curated insights, they develop shared knowledge that outsiders don't have access to—creating emergent communities with significant informational advantages over those relying on public platforms and traditional networking methods.
+As hinters continuously exchange curated insights, they develop shared knowledge that outsiders don't have access to.
+This creates emergent communities with significant informational advantages over those relying on public platforms and traditional networking methods.
 
 This repo contains:
 - The `hinter-core` implementation
