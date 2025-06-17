@@ -56,7 +56,7 @@ jobs:
             type=raw,value=${{ steps.package-version.outputs.version }}
           labels: |
             org.opencontainers.image.title=hinter-core
-            org.opencontainers.image.description=A terminal application that is the reference implementation of the hinter protocol
+            org.opencontainers.image.description=Reference implementation of the hinter protocol
             org.opencontainers.image.version=${{ steps.package-version.outputs.version }}
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
