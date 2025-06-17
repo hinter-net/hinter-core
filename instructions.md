@@ -5,59 +5,35 @@ However, given the advanced nature of the underlying technology, setup and usage
 
 ## Installation
 
-1. Install [git](https://git-scm.com/downloads).
+1. Install [Docker Desktop](https://docs.docker.com/desktop/).
 
-2. Install [VS Code](https://code.visualstudio.com/).
-
-3. Install [Cline](https://cline.bot/):
-    - Open VS Code
-    - Click Extensions from the sidebar
-    - Type "cline"
-    - Click Install
-    - Click the Cline icon that appears on the sidebar
-    - Select an API provider and enter your API key
-
-    If you are not a paid subscriber to any of these API providers:
-      - Create an [OpenRouter](https://openrouter.ai/) account
-      - Create an API key
-      - Configure Cline to use [`deepseek/deepseek-chat-v3-0324:free`](https://openrouter.ai/deepseek/deepseek-chat-v3-0324:free)
-
-    If you are using Windows, skip this step and do it as a part of the [additional steps for Windows](#additional-steps-for-windows).
-
-4. Install [Docker](https://docs.docker.com/engine/install/).
-
-5. Clone this repository and navigate into it.
-One way to do this is:
-    - Open VS Code
-    - Click File → Close Folder (ignore this step if you cannot see Close Folder)
-    - Click Source Control from the sidebar
-    - Click Clone Repository
-    - Copy and paste `https://github.com/hinter-net/hinter-core.git`
-    - Choose a destination
-    - Agree to open the cloned repository
-    - Click View → Terminal
-    
-> [!TIP]
-> All Docker commands are designed to be run inside this repository.
-
-6. (OPTIONAL) The technically inclined may choose to build the Docker image locally.
-
-7. Initialize the `data/` directory (which includes your [keypair](#keypair)) using:
+2. Open a terminal, and initialize the `data/` directory (which includes your [keypair](#keypair)) using:
     ```sh
     docker run -it --rm -v"$(pwd)/data":/app/data bbenligiray/hinter-core:latest npm run initialize
     ```
-    If you are on Mac or Linux, claim the ownership of the `data/` directory created by docker using:
+    If you are on Mac or Linux, claim the ownership of the `data/` directory using:
     ```sh
     sudo chown -R $(id -u):$(id -g) ./data
     ```
 
-> [!TIP]
-> If you already have a `data/` directory from past usage, you should copy it into the repository after cloning, instead of running the initialize command.
-
-8. Start `hinter-core` in [always restart mode](#always-restart-mode) using:
+3. Start `hinter-core` in [always restart mode](#always-restart-mode) using:
     ```sh
     docker run -d --name my-hinter-core --restart=always --network host -v"$(pwd)/data":/app/data bbenligiray/hinter-core:latest
     ```
+
+4. Open your browser and navigate to `localhost:8080`.
+   You should see the VS Code interface, which you will use to interact with the AI assistant.
+
+> [!TIP]
+> You may need to refresh the page a few times while the container boots.
+
+5. Click the Cline icon on the VS Code sidebar.
+   Select an API provider and enter your API key.
+
+   If you are not a paid subscriber to any of these API providers:
+   - Create an [OpenRouter](https://openrouter.ai/) account
+   - Create an API key
+   - Configure Cline to use [`deepseek/deepseek-chat-v3-0324:free`](https://openrouter.ai/deepseek/deepseek-chat-v3-0324:free)
 
 ### Keypair
 
@@ -67,7 +43,7 @@ Do not expose your `SECRET_KEY` to anyone.
 
 ### Always restart mode
 
-For you to be able to exchange reports with another hinter, you need to be running `hinter-core` concurrently.
+To exchange reports with another hinter, you need to be running `hinter-core` concurrently.
 This is easy to achieve if both of you are running `hinter-core` at all times, or at least while your machines are running.
 Therefore, you are recommended to run `hinter-core` in the background, in always restart mode.
 
@@ -84,44 +60,17 @@ docker stop my-hinter-core
 docker rm my-hinter-core
 ```
 
-### Additional Steps for Windows
-
-1. [Install Ubuntu using WSL](https://learn.microsoft.com/en-us/windows/wsl/install) by running Command Prompt as administrator and using
-```pwsh
-wsl --install
-```
-
-2. Install the VS Code extension named "WSL" similar to how you did it with Cline.
-
-3. Follow these steps to open Code to interact with the AI assistant:
-    - Open Command Prompt and switch from PowerShell to bash using:
-      ```pwsh
-      wsl
-      ```
-    - Navigate to the hinter-core directory using `cd` commands
-    - Open VS Code using
-      ```sh
-      code .
-      ```
-
-4. The first time you are doing this, install Cline.
-
-This enables Cline to use the tools written in bash.
-
 ## AI Assistant Operation
 
-- Open VS Code
-- Click File → Open Folder and open the cloned repository
-- Click the Cline icon in the sidebar
-
-Now ask Cline to help you get started.
+Click the Cline icon that appears on the VS Code sidebar.
+You can simply ask Cline to help you get started.
 
 There are two important concepts to be aware of while using Cline:
 
 ### Plan/Act toggle button
 
 You can chat with the AI about the contents of your repo in Plan Mode.
-For Cline to be able to make changes (for example, to execute predefined hinter workflows), you will need to switch to Act Mode.
+For Cline to make changes (for example, to execute predefined hinter workflows), you will need to switch to Act Mode.
 Switching between Plan and Act Mode retains the context, so you will likely want to switch between the two during use.
 
 
