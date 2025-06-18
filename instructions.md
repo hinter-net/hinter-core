@@ -7,7 +7,9 @@ However, given the advanced nature of the underlying technology, setup and usage
 
 1. Install [Docker Desktop](https://docs.docker.com/desktop/).
 
-2. Open a terminal, and initialize the `hinter-core-data/` directory (which includes your [keypair](#keypair)) using:
+2. (OPTIONAL) The technically inclined may choose to build the Docker image locally.
+
+3. Open a terminal, and initialize the `hinter-core-data/` directory (which includes your [keypair](#keypair)) using:
     ```sh
     docker run -it --rm -v"$(pwd)/hinter-core-data":/app/hinter-core-data bbenligiray/hinter-core:latest npm run initialize
     ```
@@ -16,21 +18,22 @@ However, given the advanced nature of the underlying technology, setup and usage
     sudo chown -R $(id -u):$(id -g) ./hinter-core-data
     ```
 
-3. Start `hinter-core` in [always restart mode](#always-restart-mode) using:
+4. Start `hinter-core` in [always restart mode](#always-restart-mode) using:
     ```sh
     docker run -d --name my-hinter-core --restart=always --network host -v"$(pwd)/hinter-core-data":/app/hinter-core-data bbenligiray/hinter-core:latest
     ```
 
-4. Open your browser and navigate to `localhost:8080`.
-   You should see the VS Code interface, which you will use to interact with the AI assistant.
+5. Wait a few minutes for `hinter-core` to be set up.
+    Then, Open your browser and navigate to `localhost:8080`.
+    You should see the VS Code interface, which you will use to interact with the AI assistant.
 
-5. Click the Cline icon on the VS Code sidebar.
-   Select an API provider and enter your API key.
+6. Click the Cline icon on the VS Code sidebar.
+    Select an API provider and enter your API key.
 
-   If you are not a paid subscriber to any of these API providers:
-   - Create an [OpenRouter](https://openrouter.ai/) account
-   - Create an API key
-   - Configure Cline to use [`deepseek/deepseek-chat-v3-0324:free`](https://openrouter.ai/deepseek/deepseek-chat-v3-0324:free)
+    If you are not a paid subscriber to any of these API providers:
+    - Create an [OpenRouter](https://openrouter.ai/) account
+    - Create an API key
+    - Configure Cline to use [`deepseek/deepseek-chat-v3-0324:free`](https://openrouter.ai/deepseek/deepseek-chat-v3-0324:free)
 
 ### Keypair
 
