@@ -18,7 +18,7 @@
     "docker:initialize": "docker run -it --rm -v./hinter-core-data:/app/hinter-core-data bbenligiray/hinter-core:latest npm run initialize",
     "docker:start": "docker run -it --rm --network host -v./hinter-core-data:/app/hinter-core-data bbenligiray/hinter-core:latest",
     "initialize": "node src/initialize.js",
-    "start": "pear run src/index.js"
+    "start": "pear sidecar & sleep 5 && pear run src/index.js"
   },
   "dependencies": {
     "b4a": "^1.6.7",
