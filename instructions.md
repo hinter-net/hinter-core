@@ -73,9 +73,17 @@ You can chat with the AI about the contents of your repo in Plan Mode.
 For Cline to make changes (for example, to execute predefined hinter workflows), you will need to switch to Act Mode.
 Switching between Plan and Act Mode retains the context, so you will likely want to switch between the two during use.
 
-
 > [!TIP]
-> Using git for version control will enable you to track and revert changes that Cline makes in a powerful way.
+> Using Git for version control will enable you to track and revert changes that Cline makes in a powerful way.
+To set Git up, run the following commands in VS Code terminal:
+> ```
+> cd hinter-core-data
+> git init
+> echo -e ".storage\n.env" > .gitignore
+> git add .
+> git commit -m "Initial commit"
+> ```
+> From this point on, you can use the Source Control button on the VS Code sidebar to review and commit changes made in your `hinter-core-data/` directory.
 
 ### Tasks
 Whenever you want Cline to start as a clean slate, start a new task (for example, by clicking the plus sign on the Cline extension).
