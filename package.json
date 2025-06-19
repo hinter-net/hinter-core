@@ -1,6 +1,6 @@
 {
   "name": "hinter-core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Reference implementation of the hinter protocol",
   "license": "MIT",
   "repository": {
