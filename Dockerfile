@@ -29,4 +29,5 @@ COPY ai/ ./ai/
 COPY src/ ./src/
 
 # Default command installs pear, starts code-server in the background and starts hinter-core
+# This can be overriden by `npm run start`, which will omit code-server
 CMD ["/bin/sh", "-c", "pear && code-server --auth none --disable-telemetry /app & pear run src/index.js"]
