@@ -23,7 +23,7 @@ However, given the advanced nature of the underlying technology, setup and usage
     docker run -d --name my-hinter-core --restart=always --network host -v"$(pwd)/hinter-core-data":/app/hinter-core-data bbenligiray/hinter-core:latest
     ```
 
-5. Wait a few minutes for `hinter-core` to be set up.
+5. Wait a few minutes for `hinter-core` to boot.
     Then, Open your browser and navigate to [localhost:8080](http://localhost:8080).
     You should see the VS Code interface, which you will use to interact with the AI assistant.
 
