@@ -9,11 +9,11 @@ However, given the advanced nature of the underlying technology, setup and usage
 
 2. (OPTIONAL) The technically inclined may choose to build the Docker image locally.
 
-3. Open a terminal, and initialize the `hinter-core-data/` directory (which includes your [keypair](#keypair)) using:
+3. Open a terminal, and create the `hinter-core-data/` directory (which includes your [keypair](#keypair)) using:
     ```sh
     docker run -it --rm -v"$(pwd)/hinter-core-data":/app/hinter-core-data bbenligiray/hinter-core:latest npm run initialize
     ```
-    If you are on Mac or Linux, claim the ownership of the `hinter-core-data/` directory using:
+    If you are on Mac or Linux, claim the ownership of the created `hinter-core-data/` directory using:
     ```sh
     sudo chown -R $(id -u):$(id -g) ./hinter-core-data
     ```
