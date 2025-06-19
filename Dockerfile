@@ -1,10 +1,12 @@
 FROM ubuntu:24.04
 
-# Install dependencies
+# Install dependencies and apply placeholder git user config
 RUN apt-get update && apt-get install -y curl git libatomic1 \
  && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
  && apt-get install -y nodejs \
- && apt-get clean && rm -rf /var/lib/apt/lists/*
+ && apt-get clean && rm -rf /var/lib/apt/lists/* \
+ && git config --global user.name "hinter-core" \
+ && git config --global user.email "hinter-core"
 
 # Install the pear installer
 RUN npm i -g pear
@@ -17,9 +19,6 @@ RUN mkdir -p /root/.local/share/code-server/User && \
   echo '{\n  "workbench.colorTheme": "Default Dark+",\n  "telemetry.telemetryLevel": "off"\n}' > /root/.local/share/code-server/User/settings.json
 # Cline settings are not stored in settings.json so we can't turn off Cline telemetry here
 # Cline claims to respect the VS Code telemetry settings but the user should turn it off manually as well
-
-# Apply placeholder git user config
-RUN git config --global user.name "hinter-core" && git config --global user.email "hinter-core"
 
 # Copy over and install hinter-core
 WORKDIR /app
