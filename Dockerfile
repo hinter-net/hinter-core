@@ -1,13 +1,13 @@
 FROM ubuntu:24.04
 
-# Install node
-RUN apt-get update && apt-get install -y curl \
-  && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-  && apt-get install -y nodejs
+# Install dependencies
+RUN apt-get update && apt-get install -y curl libatomic1 \
+ && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+ && apt-get install -y nodejs \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install the pear installer
-RUN apt-get install -y libatomic1 \
-  && npm i -g pear
+RUN npm i -g pear
 
 # Install code-server and Cline
 RUN curl -fsSL https://code-server.dev/install.sh | sh
