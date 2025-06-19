@@ -6,6 +6,7 @@ However, given the advanced nature of the underlying technology, setup and usage
 ## Installation
 
 1. Install [Docker Desktop](https://docs.docker.com/desktop/).
+[Enable host networking](https://docs.docker.com/engine/network/drivers/host/#docker-desktop).
 
 2. (OPTIONAL) The technically inclined may choose to build the Docker image locally.
 
