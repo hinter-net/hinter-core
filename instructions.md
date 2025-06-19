@@ -24,7 +24,7 @@ However, given the advanced nature of the underlying technology, setup and usage
     ```
 
 5. Wait a few minutes for `hinter-core` to boot.
-    Then, Open your browser and navigate to [localhost:8080](http://localhost:8080).
+    Then, open your browser and navigate to [localhost:8080](http://localhost:8080).
     You should see the VS Code interface, which you will use to interact with the AI assistant.
 
 6. Click the Cline icon on the VS Code sidebar.
