@@ -47,7 +47,14 @@ async function main() {
     swarm.on('connection', (conn, peerInfo) => {
         const peer = peers.find(peer => peer.publicKey === Buffer.from(peerInfo.publicKey).toString('hex'));
         if (peer) {
-            peer.incomingCorestore.replicate(conn);
+            const incomingStream = peer.incomingCorestore.replicate(conn);
+            incomingStream.on('error', (err) => {
+                if (err.message.includes('conflict detected')) {
+                    console.log(`Conflict detected with ${peer.alias}. Deleting incoming storage and exiting to allow restart.`);
+                    fs.rmSync(path.join('hinter-core-data', '.storage', peer.publicKey, 'incoming'), { recursive: true, force: true });
+                    process.exit(0);
+                }
+            });
             peer.outgoingCorestore.replicate(conn);
             peer.connection = conn;
             console.log(`Connected to ${peer.alias}!`);
