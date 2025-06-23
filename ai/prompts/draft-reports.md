@@ -35,7 +35,7 @@ Analyzes the user's personal entries to identify distinct pieces of valuable inf
     *   For each relevant distinct item identified for a peer:
         *   **Check for Existing Draft**: Scan the ingested existing draft reports for this peer. If a draft report for a highly similar item already exists (e.g., same core information, same source entries), *skip creating a new draft for this item*. The definition of "highly similar" is up to AI judgment based on content and source.
         *   If no similar draft exists:
-            *   Construct the filename: `YYYYMMDDHHMMSS_draft_report_for_[peer_alias]_[item_descriptor].md`. `[item_descriptor]` should be a short, unique keyword/hash for the item (e.g., `_projX_update`, `_introY`).
+            *   Construct the filename: `YYYYMMDDHHMMSS_draft_report_for_[peer_alias]_[item_descriptor].md` using UTC time. `[item_descriptor]` should be a short, unique keyword/hash for the item (e.g., `_projX_update`, `_introY`).
             *   Use the "Report Candidate Format" below, focusing *only* on this single distinct item.
             *   Include metadata: target peer directory name, source entry filenames relevant to *this item*, creation timestamp, status (`draft`).
             *   Save to `entries/`. If creation fails, trigger "File Creation Failed" error for this report but continue.

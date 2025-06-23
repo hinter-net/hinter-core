@@ -38,7 +38,7 @@ Processes incoming reports from peers (located in `peers/{ALIAS}-{PUBLIC_KEY}/in
         *   **Contextualization**: Cross-reference information with existing user entries (from step 1) to understand its relevance, potential connections, or contradictions.
         *   **Apply Learned Preferences**: Use insights from previous user feedback on ingested entries (see "AI Learning"). Filter or prioritize information based on these learned patterns.
         *   **Create New Entry in `entries/`**:
-            *   Construct filename: `YYYYMMDDHHMMSS_from_[peer_alias]_[report_timestamp_short].md` (e.g., `20250530180000_from_alice_202505291030.md`). The first timestamp is current, `report_timestamp_short` is from the incoming report's filename.
+            *   Construct filename: `YYYYMMDDHHMMSS_from_[peer_alias]_[report_timestamp_short].md` (e.g., `20250530180000_from_alice_202505291030.md`). The first timestamp represents the current UTC time, `report_timestamp_short` is from the incoming report's filename.
             *   Use the "Ingested Entry Format" below. Ensure the `<!-- SOURCE_REPORT: ... -->` tag correctly points to the `{INCOMING_REPORT_PATH}`.
             *   Populate with extracted and organized information.
             *   Save to `entries/`. If creation fails, trigger "Entry Creation Failed" error for this report but continue with others.

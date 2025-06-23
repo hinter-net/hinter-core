@@ -16,7 +16,7 @@ Creates a new Markdown entry file with a timestamp-based name in the appropriate
         *   If not provided, the entry is placed in `entries/`.
 
 ## Core Logic / Procedure
-1.  **Determine Timestamp**: Get the current timestamp in `YYYYMMDDHHMMSS` format.
+1.  **Determine Timestamp**: Get the current UTC timestamp in `YYYYMMDDHHMMSS` format.
 2.  **Determine Filename**:
     *   If `{OPTIONAL_SUFFIX}` is provided, construct filename as: `{TIMESTAMP}{OPTIONAL_SUFFIX}.md`.
     *   If `{OPTIONAL_SUFFIX}` is not provided, construct filename as: `{TIMESTAMP}.md`.
