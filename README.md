@@ -47,7 +47,7 @@ Your entries reside in the `hinter-core-data/entries/` directory.
 Place your regular entries directly in it, and your pinned (i.e., important) entries in the `pinned/` subdirectory.
 This enables pinned entries to be given priority when the LLM context size is limited.
 
-Your entries must be Markdown files with filenames following the format `{TIMESTAMP}{OPTIONAL_ARBITRARY_SUFFIX}.md` (where `TIMESTAMP` represents when the entry was composed, in `YYYYMMDDHHMMSS` format).
+Your entries must be Markdown files with filenames following the format `{TIMESTAMP}{OPTIONAL_ARBITRARY_SUFFIX}.md` (where `TIMESTAMP` represents the UTC time when the entry was composed, in `YYYYMMDDHHMMSS` format).
 This enables newer entries to be given priority when the LLM context size is limited.
 
 `hinter-core` only shares your outgoing reports.
@@ -65,5 +65,5 @@ In each peer directory, there are `incoming/` and `outgoing/` subdirectories.
 While `hinter-core` is running for both you and your peer, the files you place in an `outgoing/` subdirectory on your machine will appear in the respective `incoming/` subdirectory of your peer, and vice versa.
 
 `hinter-core` supports syncing arbitrary content.
-However, for the sake of protocolization, you should populate `outgoing/` subdirectories only with Markdown files with filenames following the format `{TIMESTAMP}{OPTIONAL_ARBITRARY_SUFFIX}.md` (where `TIMESTAMP` represents when the report was composed, in `YYYYMMDDHHMMSS` format).
+However, for the sake of protocolization, you should populate `outgoing/` subdirectories only with Markdown files with filenames following the format `{TIMESTAMP}{OPTIONAL_ARBITRARY_SUFFIX}.md` (where `TIMESTAMP` represents the UTC time when the report was composed, in `YYYYMMDDHHMMSS` format).
 This filename will be mirrored on your peer's machine in its entirety, i.e., `OPTIONAL_ARBITRARY_SUFFIX` will be exposed to your peer.

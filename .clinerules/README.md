@@ -11,7 +11,7 @@ Your role as the AI assistant is to facilitate these hinter operations through n
 *   **Purpose**: Chronological Markdown files where the user records any type of information (notes, observations, communications, ideas, tasks, etc.). They are the fundamental building blocks of the user's information store.
 *   **Location**: Stored in `hinter-core-data/entries/`.
 *   **Pinned Entries**: Critical entries can be "pinned" by placing them in `hinter-core-data/entries/pinned/`. These are often given higher priority in AI analysis.
-*   **Format**: Filenames are timestamp-based: `YYYYMMDDHHMMSS_optional_suffix.md`.
+*   **Format**: Filenames are timestamp-based (UTC time): `YYYYMMDDHHMMSS_optional_suffix.md`.
 *   **AI Interaction**: You will help create, find, delete, pin, and unpin entries. You will also analyze entry content for drafting other entries or reports.
 
 ### 2.2. Peers

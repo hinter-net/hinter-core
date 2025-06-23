@@ -37,7 +37,7 @@ Analyzes existing user entries (from `entries/` and `entries/pinned/`) to genera
         *   Adhere to the "AI-Generated Entry Format" specified below, including the user feedback section.
 5.  **File Creation**:
     *   For each generated AI-entry:
-        *   Determine the current timestamp in `YYYYMMDDHHMMSS` format.
+        *   Determine the current UTC timestamp in `YYYYMMDDHHMMSS` format.
         *   Construct the filename: `{TIMESTAMP}_ai_[type].md` (e.g., `20250530170000_ai_summary.md`). The `[type]` should be a short keyword reflecting the entry's purpose (e.g., `summary`, `action`, `insight`, `pattern`).
         *   Save the generated content to this new file in the `entries/` directory.
         *   If file creation fails, trigger "File Creation Failed" error for that specific entry but attempt to continue with others.
