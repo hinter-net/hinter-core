@@ -38,7 +38,13 @@ for peer_dir in "$HINTER_PEERS_DIR"/*; do
             for report in "$incoming_dir"/*.md; do
                 if [ -f "$report" ]; then
                     filename=$(basename "$report")
-                    timestamp=$(echo "$filename" | cut -d'_' -f1)
+                    # Extract first 14 characters as timestamp (YYYYMMDDHHMMSS)
+                    timestamp=${filename:0:14}
+
+                    # Validate timestamp format (14 digits)
+                    if [[ ! "$timestamp" =~ ^[0-9]{14}$ ]]; then
+                        continue  # Skip files with invalid timestamp format
+                    fi
 
                     # Apply timestamp filter
                     if [[ "$timestamp" -ge "$FROM_TIMESTAMP" && "$timestamp" -le "$TO_TIMESTAMP" ]]; then
