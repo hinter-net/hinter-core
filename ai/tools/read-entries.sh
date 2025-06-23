@@ -1,35 +1,54 @@
 #!/bin/bash
 
-# Directory paths
-ENTRIES_DIR="hinter-core-data/entries"
-PINNED_DIR="$ENTRIES_DIR/pinned"
+# Default values
+TYPE="all"
+FROM_TIMESTAMP="00000000000000"
+TO_TIMESTAMP="99999999999999"
+HINTER_DATA_DIR="hinter-core-data"
 
-# Function to print entry details
-print_entry() {
-  local file=$1
-  local is_pinned=$2
-  local filename=$(basename "$file")
-  
-  echo "Filename: $filename"
-  echo "Pinned: $is_pinned"
-  echo "Content:"
-  cat "$file"
-  echo ""
+# Parse command-line arguments
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --type) TYPE="$2"; shift ;;
+        --from) FROM_TIMESTAMP="$2"; shift ;;
+        --to) TO_TIMESTAMP="$2"; shift ;;
+        *) echo "Unknown parameter passed: $1"; exit 1 ;;
+    esac
+    shift
+done
+
+# --- Helper Function to Process Files ---
+process_files() {
+    local dir=$1
+    local entry_type=$2 # "pinned" or "unpinned"
+    for entry in "$dir"/*.md; do
+        if [[ -f "$entry" ]]; then
+            filename=$(basename "$entry")
+            timestamp=$(echo "$filename" | cut -d'_' -f1)
+
+            if [[ "$timestamp" -ge "$FROM_TIMESTAMP" && "$timestamp" -le "$TO_TIMESTAMP" ]]; then
+                echo "---"
+                echo "Entry-Type: $entry_type"
+                echo "Entry-File: $filename"
+                echo "Entry-Path: $entry"
+                echo "---"
+                cat "$entry"
+                echo ""
+            fi
+        fi
+    done
 }
 
-# Process regular entries
-# Ensure chronological order by sorting filenames (YYYYMMDDHHMMSS*.md)
-# 2>/dev/null suppresses errors from ls if no files match (e.g., empty directory)
-for entry in $(ls -1 "$ENTRIES_DIR"/*.md 2>/dev/null | sort); do
-  if [ -f "$entry" ]; then
-    print_entry "$entry" "false"
-  fi
-done
-
-# Process pinned entries
-# Ensure chronological order by sorting filenames
-for entry in $(ls -1 "$PINNED_DIR"/*.md 2>/dev/null | sort); do
-  if [ -f "$entry" ]; then
-    print_entry "$entry" "true"
-  fi
-done
+# --- Main Logic ---
+# Determine which directories to search based on the --type flag
+if [[ "$TYPE" == "pinned" ]]; then
+    process_files "$HINTER_DATA_DIR/entries/pinned" "pinned"
+elif [[ "$TYPE" == "unpinned" ]]; then
+    process_files "$HINTER_DATA_DIR/entries" "unpinned"
+elif [[ "$TYPE" == "all" ]]; then
+    process_files "$HINTER_DATA_DIR/entries" "unpinned"
+    process_files "$HINTER_DATA_DIR/entries/pinned" "pinned"
+else
+    echo "Invalid value for --type: $TYPE. Use 'pinned', 'unpinned', or 'all'."
+    exit 1
+fi
