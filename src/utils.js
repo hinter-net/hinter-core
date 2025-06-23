@@ -53,5 +53,12 @@ export async function parseEnvFile() {
     if (peerSizeLimitMB) {
         console.log(`Parsed peer size limit: ${peerSizeLimitMB}MB`);
     }
-    return { keyPair, peerSizeLimitMB };
+    
+    const disableIncomingReportsMatch = envFileContent.match(/DISABLE_INCOMING_REPORTS=(true|false)/);
+    const disableIncomingReports = disableIncomingReportsMatch ? disableIncomingReportsMatch[1] === 'true' : undefined;
+    if (disableIncomingReports) {
+        console.log('Incoming reports disabled - running in send-only mode');
+    }
+    
+    return { keyPair, peerSizeLimitMB, disableIncomingReports };
 }
