@@ -1,7 +1,7 @@
 # `add-peer`
 
 ## Description
-Creates a new peer directory structure (`peers/{ALIAS}-{PUBLIC_KEY}/`) along with the necessary `incoming/` and `outgoing/` subdirectories for report exchange.
+Creates a new peer directory (`peers/{ALIAS}-{PUBLIC_KEY}/`) for report exchange. The hinter-core app will automatically create the necessary `incoming/` and `outgoing/` subdirectories when needed.
 
 ## Invocation / Arguments
 *   **Invocation**: User typically says: `add-peer {ALIAS} {PUBLIC_KEY}`
@@ -22,11 +22,9 @@ Creates a new peer directory structure (`peers/{ALIAS}-{PUBLIC_KEY}/`) along wit
 4.  **Construct Directory Path**: Form the full peer directory path: `hinter-core-data/peers/{ALIAS}-{PUBLIC_KEY}`.
 5.  **Check for Existing Peer**:
     *   If the directory path from step 4 already exists, trigger "Peer Already Exists" error.
-6.  **Create Directories**:
+6.  **Create Directory**:
     *   Create the main peer directory: `hinter-core-data/peers/{ALIAS}-{PUBLIC_KEY}/`
-    *   Create the incoming reports subdirectory: `hinter-core-data/peers/{ALIAS}-{PUBLIC_KEY}/incoming/`
-    *   Create the outgoing reports subdirectory: `hinter-core-data/peers/{ALIAS}-{PUBLIC_KEY}/outgoing/`
-    *   If any directory creation fails, trigger "Directory Creation Failed" error.
+    *   If directory creation fails, trigger "Directory Creation Failed" error.
 7.  **Confirm Success**: If all steps complete without error, provide the success output.
 
 ## User Interaction & Confirmation
@@ -39,7 +37,7 @@ Creates a new peer directory structure (`peers/{ALIAS}-{PUBLIC_KEY}/`) along wit
 *   **Peer Already Exists**: "Error: Peer `{ALIAS}-{PUBLIC_KEY}` already exists."
 *   **Invalid Alias Format**: "Error: Alias cannot contain the `-` character. Please use an alias like 'johnsmith' or 'john_smith'."
 *   **Invalid Public Key Format**: "Error: Public key must be 64 lowercase hexadecimal characters."
-*   **Directory Creation Failed**: "Error: Could not create directory structure for peer `{ALIAS}-{PUBLIC_KEY}`. Please check permissions or disk space."
+*   **Directory Creation Failed**: "Error: Could not create directory for peer `{ALIAS}-{PUBLIC_KEY}`. Please check permissions or disk space."
 *   **General Error**: "Error: An unexpected issue occurred while trying to add peer `{ALIAS}-{PUBLIC_KEY}`."
 
 ## Examples
