@@ -1,31 +1,57 @@
 #!/bin/bash
 
-BASE_PEERS_DIR="hinter-core-data/peers"
+# Default values
+FROM_TIMESTAMP="00000000000000"
+TO_TIMESTAMP="99999999999999"
+PEER_ALIAS_FILTER=""
+HINTER_PEERS_DIR="hinter-core-data/peers"
 
-if [ ! -d "$BASE_PEERS_DIR" ] || [ -z "$(ls -A "$BASE_PEERS_DIR")" ]; then
-    exit 0
+# Parse command-line arguments
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --from) FROM_TIMESTAMP="$2"; shift ;;
+        --to) TO_TIMESTAMP="$2"; shift ;;
+        --peer) PEER_ALIAS_FILTER="$2"; shift ;;
+        *) echo "Unknown parameter passed: $1"; exit 1 ;;
+    esac
+    shift
+done
+
+if [ ! -d "$HINTER_PEERS_DIR" ]; then
+    echo "Peers directory not found at $HINTER_PEERS_DIR"
+    exit 1
 fi
 
-find "$BASE_PEERS_DIR" -mindepth 1 -maxdepth 1 -type d | while IFS= read -r peer_dir_path; do
-    if [ ! -d "$peer_dir_path/incoming" ] || [ -z "$(ls -A "$peer_dir_path/incoming")" ]; then
-        continue
-    fi
+for peer_dir in "$HINTER_PEERS_DIR"/*; do
+    if [ -d "$peer_dir" ]; then
+        dir_name=$(basename "$peer_dir")
+        peer_alias=$(echo "$dir_name" | cut -d'-' -f1)
+        public_key=$(echo "$dir_name" | cut -d'-' -f2)
 
-    peer_dir_name=$(basename "$peer_dir_path")
-    peer_alias="${peer_dir_name%-*}"
-    peer_public_key="${peer_dir_name#*-}"
-
-    find "$peer_dir_path/incoming" -type f -name "*.md" | while IFS= read -r report_file_path; do
-        report_filename=$(basename "$report_file_path")
-        
-        echo "---"
-        echo "Peer-Alias: $peer_alias"
-        echo "Peer-Public-Key: $peer_public_key"
-        echo "Report-Filename: $report_filename"
-        echo "---"
-        cat "$report_file_path"
-        if [ "$(tail -c1 "$report_file_path" | wc -l)" -eq 0 ]; then
-            echo
+        # Apply peer alias filter
+        if [ -n "$PEER_ALIAS_FILTER" ] && [ "$peer_alias" != "$PEER_ALIAS_FILTER" ]; then
+            continue
         fi
-    done
+
+        incoming_dir="$peer_dir/incoming"
+        if [ -d "$incoming_dir" ]; then
+            for report in "$incoming_dir"/*.md; do
+                if [ -f "$report" ]; then
+                    filename=$(basename "$report")
+                    timestamp=$(echo "$filename" | cut -d'_' -f1)
+
+                    # Apply timestamp filter
+                    if [[ "$timestamp" -ge "$FROM_TIMESTAMP" && "$timestamp" -le "$TO_TIMESTAMP" ]]; then
+                        echo "---"
+                        echo "Peer-Alias: $peer_alias"
+                        echo "Peer-Public-Key: $public_key"
+                        echo "Report-Filename: $filename"
+                        echo "---"
+                        cat "$report"
+                        echo ""
+                    fi
+                fi
+            done
+        fi
+    fi
 done

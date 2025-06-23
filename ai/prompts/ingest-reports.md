@@ -4,25 +4,28 @@
 Processes incoming reports from peers (located in `peers/{ALIAS}-{PUBLIC_KEY}/incoming/`). For each report not previously ingested, it analyzes the content and creates a new corresponding entry in the user's `entries/` directory. The AI learns from user feedback on these ingested entries to improve future processing.
 
 ## Invocation / Arguments
-*   **Invocation**: User typically says: `ingest-reports [source_peer_alias]`
-    *   Example: `ingest-reports` (processes all unprocessed reports from all peers)
-    *   Example: `ingest-reports alice` (processes unprocessed reports only from peer 'alice')
+*   **Invocation**: User typically says: `ingest-reports [source_peer_alias] [time_window]`
+    *   Example: `ingest-reports` (processes all reports from all peers)
+    *   Example: `ingest-reports alice` (processes reports only from 'alice')
+    *   Example: `ingest-reports from yesterday`
+    *   Example: `ingest-reports bob from 2025-06-01 to 2025-06-15`
 *   **Parameters**:
-    *   `{SOURCE_PEER_ALIAS}` (optional):
-        *   The alias of a specific peer whose incoming reports should be processed.
-        *   If not provided, reports from all peers are considered.
+    *   `{SOURCE_PEER_ALIAS}` (optional): The alias of a specific peer.
+    *   `{TIME_WINDOW}` (optional): A time frame, which can be relative (e.g., "today", "last week") or absolute (e.g., "from YYYY-MM-DD to YYYY-MM-DD").
 
 ## Core Logic / Procedure
 1.  **Data Retrieval**:
     *   **User Entries (for Context & Processed Status Check)**:
-        *   Execute `ai/tools/read-entries.sh --type unpinned` to get all existing unpinned user entries. This provides context for understanding incoming report information AND allows checking for already ingested reports (those with `_from_[alias]` in filename and correct `SOURCE_REPORT` metadata).
+        *   Execute `ai/tools/read-entries.sh --type unpinned` to get all existing unpinned user entries. This provides context and allows checking for already ingested reports.
         *   Ingest the COMPLETE output.
     *   **Incoming Reports Content**:
-        *   Execute `ai/tools/read-incoming-reports.sh` to get the content of all incoming reports from all peers, along with their metadata (Peer-Alias, Peer-Public-Key, Report-Filename).
-        *   Ingest the COMPLETE output. This script handles iterating through peer directories.
+        *   Construct the `ai/tools/read-incoming-reports.sh` command with the appropriate flags based on user input.
+        *   If `{SOURCE_PEER_ALIAS}` is provided, add `--peer {SOURCE_PEER_ALIAS}`.
+        *   If `{TIME_WINDOW}` is provided, parse it and add the corresponding `--from` and `--to` flags with `YYYYMMDDHHMMSS` timestamps.
+        *   Execute the constructed command (e.g., `ai/tools/read-incoming-reports.sh --peer alice --from 20250601000000`).
+        *   Ingest the COMPLETE output.
 2.  **Identify Target Reports & Determine Processing Status**:
-    *   The output from `ai/tools/read-incoming-reports.sh` provides a list of all available incoming reports and their content.
-    *   If `{SOURCE_PEER_ALIAS}` is specified by the user, filter this list to only include reports where `Peer-Alias` matches `{SOURCE_PEER_ALIAS}`.
+    *   The output from the script provides a filtered list of incoming reports.
     *   For each report obtained from the script:
         *   Let `{INCOMING_REPORT_PATH}` be constructed as `hinter-core-data/peers/{Peer-Alias}-{Peer-Public-Key}/incoming/{Report-Filename}` using the metadata from the script.
         *   Check among the ingested user entries (from `read-entries.sh` output) if an entry already exists in `entries/` that has a `<!-- SOURCE_REPORT: {INCOMING_REPORT_PATH} -->` metadata tag.

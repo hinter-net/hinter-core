@@ -125,9 +125,16 @@ This section lists available operations. For detailed execution steps, error han
     *   **Important**: Always ingest the COMPLETE output of this script into your context when analysis is needed. Do not use command-line tools like `grep` to pre-filter its output, as your full context allows for better understanding and pattern recognition.
 
 *   **`ai/tools/read-incoming-reports.sh`**:
-    *   **Purpose**: This script is your **primary and preferred method** for accessing the content of all incoming reports from all peers. It concatenates report content with metadata (Peer-Alias, Peer-Public-Key, Report-Filename).
-    *   **Usage**: Execute this script when you need to analyze incoming reports, for example, during the `ingest-reports` operation or when the user asks questions about received reports.
-    *   **Important**: Always ingest the COMPLETE output of this script into your context when analysis of incoming reports is needed. This provides a comprehensive view of all received information.
+    *   **Purpose**: This script is your **primary and preferred method** for accessing incoming reports from peers. It allows for flexible filtering by peer alias and timestamp.
+    *   **Usage**: Execute this script when you need to analyze incoming reports. By default, it reads all reports from all peers. You can refine the output using the following optional flags:
+        *   `--peer <alias>`: Filters reports for a specific peer by their alias.
+        *   `--from <timestamp>`: Retrieves reports created on or after this timestamp. Format: `YYYYMMDDHHMMSS`.
+        *   `--to <timestamp>`: Retrieves reports created on or before this timestamp. Format: `YYYYMMDDHHMMSS`.
+    *   **Examples**:
+        *   To read all incoming reports: `ai/tools/read-incoming-reports.sh`
+        *   To read reports only from peer 'alice': `ai/tools/read-incoming-reports.sh --peer alice`
+        *   To read all reports from last month: `ai/tools/read-incoming-reports.sh --from 20250501000000 --to 20250531235959`
+    *   **Important**: Always ingest the COMPLETE output of this script into your context when analysis of incoming reports is needed.
 
 ## 5. Guidelines for the AI Assistant
 
