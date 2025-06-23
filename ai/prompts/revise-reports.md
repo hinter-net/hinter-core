@@ -19,9 +19,9 @@ Processes user-edited draft report candidates (located in `entries/` with filena
     *   Execute `ai/tools/read-entries.sh --type unpinned` to get the content and metadata of all unpinned entries, specifically looking for draft reports.
     *   Ingest the COMPLETE output.
     *   Filter these drafts based on `{TARGET_IDENTIFIER}`:
-        *   If no identifier, select all drafts with `<!-- STATUS: draft -->`. The AI might need to infer which of these have been user-edited (this could be challenging without file system metadata like modification times; alternatively, this command might primarily operate on explicitly named drafts or drafts for a specific peer as indicated by the user).
-        *   If identifier is a peer alias, select drafts for that peer with `<!-- STATUS: draft -->`.
-        *   If identifier is a filename, select that specific draft (it must have `<!-- STATUS: draft -->`).
+        *   If no identifier, select all drafts with `<!-- STATUS: draft -->`, `<!-- STATUS: revised -->`, or `<!-- STATUS: on_hold -->`. Do NOT process reports with `<!-- STATUS: denied -->`, `<!-- STATUS: approved -->`, or `<!-- STATUS: posted -->`. The AI might need to infer which of these have been user-edited (this could be challenging without file system metadata like modification times; alternatively, this command might primarily operate on explicitly named drafts or drafts for a specific peer as indicated by the user).
+        *   If identifier is a peer alias, select drafts for that peer with `<!-- STATUS: draft -->`, `<!-- STATUS: revised -->`, or `<!-- STATUS: on_hold -->`.
+        *   If identifier is a filename, select that specific draft (it must have `<!-- STATUS: draft -->`, `<!-- STATUS: revised -->`, or `<!-- STATUS: on_hold -->`).
     *   If no suitable draft reports are found (or none appear to need revision), trigger "No Drafts Found for Revision" error.
 2.  **Process Each Targeted Draft Report**:
     *   For each selected draft report (let its filename be `{DRAFT_FILENAME}`):
@@ -33,7 +33,7 @@ Processes user-edited draft report candidates (located in `entries/` with filena
             *   The AI should intelligently merge user's direct edits with instructions from the feedback section.
             *   **Preserve Revision History**: In the "User Feedback Section", preserve all previous revision notes and add new ones. Use format: `<!-- REVISION N: User feedback: "[exact feedback]" -->` followed by `<!-- REVISION N INCORPORATED: [what was done] -->`. Do not overwrite previous revision history.
             *   Ensure the core information intended for the peer remains clear and accurate.
-        *   **Update Metadata**: Change `<!-- STATUS: draft -->` to `<!-- STATUS: revised -->` within the file content.
+        *   **Update Metadata**: Change `<!-- STATUS: draft -->`, `<!-- STATUS: revised -->`, or `<!-- STATUS: on_hold -->` to `<!-- STATUS: revised -->` within the file content.
         *   Overwrite `entries/{DRAFT_FILENAME}` with the revised content and updated metadata. If save fails, trigger "File Save Failed" error.
 3.  **Confirm Success**: After processing all targeted reports, provide a summary success output.
 

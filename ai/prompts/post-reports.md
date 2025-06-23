@@ -19,9 +19,9 @@ Moves finalized and approved draft report candidates from the `entries/` directo
     *   Execute `ai/tools/read-entries.sh --type unpinned` to get the content and metadata of all unpinned entries, specifically looking for draft reports (e.g., files named `*_draft_report_for_*.md` or identified by metadata).
     *   Ingest the COMPLETE output.
     *   Filter these drafts based on `{TARGET_IDENTIFIER}`:
-        *   If no identifier, select all drafts with `<!-- STATUS: approved -->` (or a similar confirmed ready-to-send status).
+        *   If no identifier, select all drafts with `<!-- STATUS: approved -->` ONLY. Do not consider drafts with any other status (`draft`, `revised`, `on_hold`, `denied`, `posted`).
         *   If identifier is a peer alias, select approved drafts where `<!-- DRAFT REPORT FOR: [alias] -->` or `<!-- TARGET PEER DIR: [alias-...] -->` matches.
-        *   If identifier is a filename, select that specific draft (it must also be approved).
+        *   If identifier is a filename, select that specific draft (it must also have `<!-- STATUS: approved -->`).
     *   If no suitable approved drafts are found, trigger "No Approved Reports Found" error.
 2.  **User Confirmation (Pre-Posting Summary)**:
     *   For each selected draft report, extract its target peer alias and item focus/summary from its metadata.
