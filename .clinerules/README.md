@@ -23,10 +23,17 @@ Your role as the AI assistant is to facilitate these hinter operations through n
 
 ### 2.3. Reports
 *   **Purpose**: Curated information exchanged between peers.
+*   **Status System**: Reports progress through defined statuses during their lifecycle:
+    *   `draft` - Initial AI-generated report
+    *   `on_hold` - Draft paused by user (not ready for review/posting)
+    *   `revised` - User has edited and AI has processed changes
+    *   `approved` - Ready for posting to peer (user manually sets this)
+    *   `denied` - Poor quality report kept as negative example (prevents re-generation)
+    *   `posted` - Successfully sent to peer
 *   **Lifecycle**:
-    1.  **Drafting (Outgoing)**: User, with your help (`draft-reports` command), generates draft report candidates based on their entries. These drafts are saved in `hinter-core-data/entries/`.
-    2.  **Review & Revision (Outgoing)**: User reviews these drafts. You can assist in revising them based on user feedback (`revise-reports` command).
-    3.  **Posting (Outgoing)**: Approved reports are moved to the peer's `outgoing/` directory for P2P synchronization (`post-reports` command).
+    1.  **Drafting (Outgoing)**: User, with your help (`draft-reports` command), generates draft report candidates based on their entries. These drafts are saved in `hinter-core-data/entries/` with status `draft`.
+    2.  **Review & Revision (Outgoing)**: User reviews these drafts. You can assist in revising them based on user feedback (`revise-reports` command), updating status to `revised`. Users may also manually set status to `on_hold` (to pause) or `denied` (for poor quality examples).
+    3.  **Posting (Outgoing)**: Only reports with status `approved` are moved to the peer's `outgoing/` directory for P2P synchronization (`post-reports` command), updating status to `posted`.
     4.  **Ingestion (Incoming)**: Reports received from peers into their `incoming/` directory are processed by you (`ingest-reports` command), creating new entries in `hinter-core-data/entries/` based on the report content.
 
 ### 2.4. Typical Hinter Workflow

@@ -33,7 +33,7 @@ Analyzes the user's personal entries to identify distinct pieces of valuable inf
         *   Filter out sensitive or "do not share" information.
 4.  **Draft Report Candidate Creation (One per Distinct Item, Avoiding Duplicates)**:
     *   For each relevant distinct item identified for a peer:
-        *   **Check for Existing Draft**: Scan the ingested existing draft reports for this peer. If a draft report for a highly similar item already exists (e.g., same core information, same source entries), *skip creating a new draft for this item*. The definition of "highly similar" is up to AI judgment based on content and source.
+        *   **Check for Existing Draft**: Scan the ingested existing draft reports for this peer. If a draft report for a highly similar item already exists (e.g., same core information, same source entries), *skip creating a new draft for this item*. This includes reports with ANY status (`draft`, `revised`, `approved`, `posted`, `on_hold`, `denied`). Pay special attention to reports with `<!-- STATUS: denied -->` - these represent poor quality attempts that should NOT be recreated. The definition of "highly similar" is up to AI judgment based on content and source.
         *   If no similar draft exists:
             *   Construct the filename: `YYYYMMDDHHMMSS_draft_report_for_[peer_alias]_[item_descriptor].md` using UTC time. `[item_descriptor]` should be a short, unique keyword/hash for the item (e.g., `_projX_update`, `_introY`).
             *   Use the "Report Candidate Format" below, focusing *only* on this single distinct item.
