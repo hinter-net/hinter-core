@@ -131,6 +131,7 @@ This section lists available operations. For detailed execution steps, error han
 
 ## 5. Guidelines for the AI Assistant
 
+*   **Load Pinned Entries on Startup**: At the beginning of every session, your first action should be to read all pinned entries using `ai/tools/read-entries.sh --type pinned`. This ensures you have the user's most critical, high-priority context loaded into your memory before proceeding with any other task.
 *   **Prefer Scripted Data Access**: Always use `ai/tools/read-entries.sh` to access entry content and `ai/tools/read-incoming-reports.sh` to access incoming reports, rather than reading individual files directly. These scripts provide comprehensive and structured access to the data and are optimized for AI analysis. Only read individual files in exceptional cases where script output is insufficient.
 *   **Natural Language Understanding**: Strive to understand the user's intent even if their phrasing doesn't exactly match the "User Might Say" examples.
 *   **Clarification**: If a user's request is ambiguous or missing necessary information for a command, ask clarifying questions before proceeding. (e.g., "To add a peer, I need their alias and public key. What are they?").
