@@ -18,7 +18,7 @@ Moves a specified entry from the pinned entries directory (`hinter-core-data/ent
 ## Core Logic / Procedure
 1.  **Receive Identifier**: Obtain `{ENTRY_IDENTIFIER}` from the user.
 2.  **Find Matching Entry in Pinned Entries**:
-    *   Scan all files only in the `hinter-core-data/entries/pinned/` directory.
+    *   The AI should already have all pinned entries in its context from startup. It will search this context.
     *   Filter these files based on `{ENTRY_IDENTIFIER}` (timestamp, suffix, fuzzy suffix).
     *   Store all found matches.
 3.  **Handle Results**:

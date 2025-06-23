@@ -16,7 +16,7 @@ Processes user-edited draft report candidates (located in `entries/` with filena
 
 ## Core Logic / Procedure
 1.  **Identify Target Draft Reports for Revision**:
-    *   Execute `ai/tools/read-entries.sh` to get the content and metadata of all entries, specifically looking for draft reports.
+    *   Execute `ai/tools/read-entries.sh --type unpinned` to get the content and metadata of all unpinned entries, specifically looking for draft reports.
     *   Ingest the COMPLETE output.
     *   Filter these drafts based on `{TARGET_IDENTIFIER}`:
         *   If no identifier, select all drafts with `<!-- STATUS: draft -->`. The AI might need to infer which of these have been user-edited (this could be challenging without file system metadata like modification times; alternatively, this command might primarily operate on explicitly named drafts or drafts for a specific peer as indicated by the user).

@@ -18,7 +18,7 @@ Permanently removes a specified entry file from either the `entries/` or `entrie
 ## Core Logic / Procedure
 1.  **Receive Identifier**: Obtain `{ENTRY_IDENTIFIER}` from the user.
 2.  **Find Matching Entries**:
-    *   Execute `ai/tools/read-entries.sh` to get all entries with their content. Ingest the COMPLETE output.
+    *   Execute `ai/tools/read-entries.sh --type unpinned` to get all unpinned entries with their content. Ingest the COMPLETE output.
     *   Filter these entries based on `{ENTRY_IDENTIFIER}`. This can involve:
         *   Exact timestamp match.
         *   Partial timestamp match (e.g., filename starts with the partial timestamp).

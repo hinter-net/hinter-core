@@ -112,18 +112,37 @@ This section lists available operations. For detailed execution steps, error han
 ## 4. Available AI Tools
 
 *   **`ai/tools/read-entries.sh`**:
-    *   **Purpose**: This script is your **primary and preferred method** for accessing the content of all user entries (both regular and pinned) and existing draft reports in `entries/`. Use this script instead of reading individual entry files.
-    *   **Usage**: Execute this script whenever you need to access entry content for any task, including finding entries, drafting new entries, drafting reports, ingesting reports, or answering questions about existing entries.
-    *   **Important**: Always ingest the COMPLETE output of this script into your context when analysis is needed. Do not use command-line tools like `grep` to pre-filter its output, as your full context allows for better understanding and pattern recognition. Only read individual entry files in exceptional cases where the script output is insufficient.
+    *   **Purpose**: This script is your **primary and preferred method** for accessing the content of user entries. It allows for flexible filtering based on type (pinned/unpinned) and timestamp. Use this script instead of reading individual entry files.
+    *   **Usage**: Execute this script whenever you need to access entry content. By default, it reads all entries. You can refine the output using the following optional flags:
+        *   `--type <type>`: Filters entries by type. Valid options are `pinned`, `unpinned`, or `all`. (Default: `all`)
+        *   `--from <timestamp>`: Retrieves entries created on or after this timestamp. Format: `YYYYMMDDHHMMSS`.
+        *   `--to <timestamp>`: Retrieves entries created on or before this timestamp. Format: `YYYYMMDDHHMMSS`.
+    *   **Examples**:
+        *   To read all entries (default behavior): `ai/tools/read-entries.sh`
+        *   To read only pinned entries: `ai/tools/read-entries.sh --type pinned`
+        *   To read all entries from June 2025: `ai/tools/read-entries.sh --from 20250601000000 --to 20250630235959`
+        *   To read unpinned entries from the last hour: `ai/tools/read-entries.sh --type unpinned --from $(date -d '1 hour ago' +%Y%m%d%H%M%S)`
+    *   **Important**: Always ingest the COMPLETE output of this script into your context when analysis is needed. Do not use command-line tools like `grep` to pre-filter its output, as your full context allows for better understanding and pattern recognition.
 
 *   **`ai/tools/read-incoming-reports.sh`**:
-    *   **Purpose**: This script is your **primary and preferred method** for accessing the content of all incoming reports from all peers. It concatenates report content with metadata (Peer-Alias, Peer-Public-Key, Report-Filename).
-    *   **Usage**: Execute this script when you need to analyze incoming reports, for example, during the `ingest-reports` operation or when the user asks questions about received reports.
-    *   **Important**: Always ingest the COMPLETE output of this script into your context when analysis of incoming reports is needed. This provides a comprehensive view of all received information.
+    *   **Purpose**: This script is your **primary and preferred method** for accessing incoming reports from peers. It allows for flexible filtering by peer alias and timestamp.
+    *   **Usage**: Execute this script when you need to analyze incoming reports. By default, it reads all reports from all peers. You can refine the output using the following optional flags:
+        *   `--peer <alias>`: Filters reports for a specific peer by their alias.
+        *   `--from <timestamp>`: Retrieves reports created on or after this timestamp. Format: `YYYYMMDDHHMMSS`.
+        *   `--to <timestamp>`: Retrieves reports created on or before this timestamp. Format: `YYYYMMDDHHMMSS`.
+    *   **Examples**:
+        *   To read all incoming reports: `ai/tools/read-incoming-reports.sh`
+        *   To read reports only from peer 'alice': `ai/tools/read-incoming-reports.sh --peer alice`
+        *   To read all reports from last month: `ai/tools/read-incoming-reports.sh --from 20250501000000 --to 20250531235959`
+    *   **Important**: Always ingest the COMPLETE output of this script into your context when analysis of incoming reports is needed.
 
 ## 5. Guidelines for the AI Assistant
 
-*   **Prefer Scripted Data Access**: Always use `ai/tools/read-entries.sh` to access entry content and `ai/tools/read-incoming-reports.sh` to access incoming reports, rather than reading individual files directly. These scripts provide comprehensive and structured access to the data and are optimized for AI analysis. Only read individual files in exceptional cases where script output is insufficient.
+### 5.1. Session Startup Checklist
+1.  **[MANDATORY] Load Pinned Entries**: Your first action in any new session **MUST** be to execute `ai/tools/read-entries.sh --type pinned`. This is not optional. It provides the foundational context for all subsequent operations.
+
+### 5.2. General Guidelines
+*   **Efficient Entry Access**: After loading pinned entries at startup, do not read them again. When you need to analyze other entries for a task, use `ai/tools/read-entries.sh --type unpinned` to access only the unpinned entries. Use other filters like `--from` and `--to` as needed to further scope your search.
 *   **Natural Language Understanding**: Strive to understand the user's intent even if their phrasing doesn't exactly match the "User Might Say" examples.
 *   **Clarification**: If a user's request is ambiguous or missing necessary information for a command, ask clarifying questions before proceeding. (e.g., "To add a peer, I need their alias and public key. What are they?").
 *   **Confirmation for Destructive Actions**: Always seek explicit user confirmation (e.g., "yes/no") before executing operations that delete data (e.g., `delete-entry`, `remove-peer`) or send information externally (e.g., `post-reports`). Show a summary of what will be affected.

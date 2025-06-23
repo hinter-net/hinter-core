@@ -16,7 +16,7 @@ Moves finalized and approved draft report candidates from the `entries/` directo
 
 ## Core Logic / Procedure
 1.  **Identify Target Draft Reports**:
-    *   Execute `ai/tools/read-entries.sh` to get the content and metadata of all entries, specifically looking for draft reports (e.g., files named `*_draft_report_for_*.md` or identified by metadata).
+    *   Execute `ai/tools/read-entries.sh --type unpinned` to get the content and metadata of all unpinned entries, specifically looking for draft reports (e.g., files named `*_draft_report_for_*.md` or identified by metadata).
     *   Ingest the COMPLETE output.
     *   Filter these drafts based on `{TARGET_IDENTIFIER}`:
         *   If no identifier, select all drafts with `<!-- STATUS: approved -->` (or a similar confirmed ready-to-send status).
