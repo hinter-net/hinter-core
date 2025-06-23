@@ -35,7 +35,7 @@ export function parsePeers(peersDirectoryPath, peerSizeLimitMB) {
     const peers = fs.readdirSync(peersDirectoryPath).map(peerDirectoryName => {
         const peerDirectoryPath = path.join(peersDirectoryPath, peerDirectoryName);
         if (!fs.statSync(peerDirectoryPath).isDirectory()) {
-            throw new Error(`${peerDirectoryName} is not a directory`);
+            return null;
         }
         const { peerAlias, peerPublicKey } = validatePeerDirectory(peerDirectoryPath, peerDirectoryName);
         const sizeCheckResult = checkPeerSizeLimit(peerDirectoryPath, peerAlias, peerSizeLimitMB);
