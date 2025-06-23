@@ -18,7 +18,7 @@ Analyzes the user's personal entries to identify distinct pieces of valuable inf
 
 ## Core Logic / Procedure
 1.  **Data Retrieval (User Entries & Existing Drafts)**:
-    *   Execute `ai/tools/read-entries.sh` to get all user entries (source material) AND existing draft reports (e.g., files matching `*_draft_report_for_*.md` in `entries/`).
+    *   Execute `ai/tools/read-entries.sh --type unpinned` to get all unpinned user entries (source material) AND existing draft reports (e.g., files matching `*_draft_report_for_*.md` in `entries/`).
     *   Ingest the COMPLETE output.
     *   If `entries/` (excluding existing drafts) is empty, trigger "No Source Entries for Report Content" error.
 2.  **Identify Target Peers**:

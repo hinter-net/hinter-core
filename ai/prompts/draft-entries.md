@@ -15,7 +15,7 @@ Analyzes existing user entries (from `entries/` and `entries/pinned/`) to genera
 
 ## Core Logic / Procedure
 1.  **Data Retrieval**:
-    *   Execute `ai/tools/read-entries.sh` to get the full content of all entries from `entries/` and `entries/pinned/`.
+    *   Execute `ai/tools/read-entries.sh --type unpinned` to get the full content of all unpinned entries from `entries/`.
     *   Ingest the COMPLETE output into the AI's context. Do NOT use command-line tools like `grep` to pre-filter.
 2.  **Contextual Analysis**:
     *   If `entries/` is empty, trigger "No Entries for Analysis" error.

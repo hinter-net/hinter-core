@@ -20,7 +20,7 @@ Searches for entries in `entries/` and `entries/pinned/` matching specified crit
 ## Core Logic / Procedure
 1.  **Receive Search Criteria**: Obtain `{SEARCH_CRITERIA}` from the user.
 2.  **Data Retrieval**:
-    *   Execute `ai/tools/read-entries.sh` to get the full content of all entries from `entries/` and `entries/pinned/`.
+    *   Execute `ai/tools/read-entries.sh --type unpinned` to get the full content of all unpinned entries from `entries/`.
     *   Ingest the COMPLETE output into the AI's context.
 3.  **Filter Entries**:
     *   For each entry in the ingested data:

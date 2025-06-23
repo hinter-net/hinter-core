@@ -18,7 +18,7 @@ Moves a specified entry from the regular entries directory (`hinter-core-data/en
 ## Core Logic / Procedure
 1.  **Receive Identifier**: Obtain `{ENTRY_IDENTIFIER}` from the user.
 2.  **Find Matching Entry in Regular Entries**:
-    *   Scan all files only in the `hinter-core-data/entries/` directory.
+    *   Execute `ai/tools/read-entries.sh --type unpinned` to get all unpinned entries.
     *   Filter these files based on `{ENTRY_IDENTIFIER}` (timestamp, suffix, fuzzy suffix).
     *   Store all found matches.
 3.  **Handle Results**:

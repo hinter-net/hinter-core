@@ -15,7 +15,7 @@ Processes incoming reports from peers (located in `peers/{ALIAS}-{PUBLIC_KEY}/in
 ## Core Logic / Procedure
 1.  **Data Retrieval**:
     *   **User Entries (for Context & Processed Status Check)**:
-        *   Execute `ai/tools/read-entries.sh` to get all existing user entries. This provides context for understanding incoming report information AND allows checking for already ingested reports (those with `_from_[alias]` in filename and correct `SOURCE_REPORT` metadata).
+        *   Execute `ai/tools/read-entries.sh --type unpinned` to get all existing unpinned user entries. This provides context for understanding incoming report information AND allows checking for already ingested reports (those with `_from_[alias]` in filename and correct `SOURCE_REPORT` metadata).
         *   Ingest the COMPLETE output.
     *   **Incoming Reports Content**:
         *   Execute `ai/tools/read-incoming-reports.sh` to get the content of all incoming reports from all peers, along with their metadata (Peer-Alias, Peer-Public-Key, Report-Filename).
