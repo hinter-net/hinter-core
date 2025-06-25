@@ -16,8 +16,8 @@ Moves finalized and approved draft report candidates from the `entries/` directo
 
 ## Core Logic / Procedure
 1.  **Identify Target Draft Reports**:
-    *   Execute `ai/tools/read-entries.sh --type unpinned` to get the content and metadata of all unpinned entries, specifically looking for draft reports (e.g., files named `*_draft_report_for_*.md` or identified by metadata).
-    *   Ingest the COMPLETE output.
+    *   Execute `ai/tools/echo-entries.sh --type unpinned > .clinerules/unpinned-entries.md` to get the content and metadata of all unpinned entries, specifically looking for draft reports (e.g., files named `*_draft_report_for_*.md` or identified by metadata).
+    *   The generated file will be automatically available in your context without needing to explicitly read it.
     *   Filter these drafts based on `{TARGET_IDENTIFIER}`:
         *   If no identifier, select all drafts with `<!-- STATUS: approved -->` ONLY. Do not consider drafts with any other status (`draft`, `revised`, `on_hold`, `denied`, `posted`).
         *   If identifier is a peer alias, select approved drafts where `<!-- DRAFT REPORT FOR: [alias] -->` or `<!-- TARGET PEER DIR: [alias-...] -->` matches.
@@ -63,4 +63,4 @@ Moves finalized and approved draft report candidates from the `entries/` directo
 ## Dependencies
 *   Relies on draft reports existing in `entries/` (typically created by `draft-reports` and refined by `revise-reports`).
 *   Draft reports must contain `<!-- STATUS: approved -->` and `<!-- TARGET PEER DIR: ... -->` metadata.
-*   May use `ai/tools/read-entries.sh` to efficiently access draft report content and metadata.
+*   May use `ai/tools/echo-entries.sh` piped to `.clinerules/unpinned-entries.md` to efficiently access draft report content and metadata.

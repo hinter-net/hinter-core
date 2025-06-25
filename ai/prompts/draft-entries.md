@@ -15,8 +15,8 @@ Analyzes existing user entries (from `entries/` and `entries/pinned/`) to genera
 
 ## Core Logic / Procedure
 1.  **Data Retrieval**:
-    *   Execute `ai/tools/read-entries.sh --type unpinned` to get the full content of all unpinned entries from `entries/`.
-    *   Ingest the COMPLETE output into the AI's context. Do NOT use command-line tools like `grep` to pre-filter.
+    *   Execute `ai/tools/echo-entries.sh --type unpinned > .clinerules/unpinned-entries.md` to get the full content of all unpinned entries from `entries/`.
+    *   The generated file will be automatically available in your context without needing to explicitly read it.
 2.  **Contextual Analysis**:
     *   If `entries/` is empty, trigger "No Entries for Analysis" error.
     *   Analyze all ingested entries to understand their primary content, themes, entities, and any explicit or implicit tasks or information flows.
@@ -65,7 +65,6 @@ Analyzes existing user entries (from `entries/` and `entries/pinned/`) to genera
     - Is this type of AI-generated entry useful?
     - Any other notes for future AI learning?
 -->
-[Leave this section blank for the user to fill in]
 ```
 
 ## User Interaction & Confirmation
@@ -89,5 +88,5 @@ Analyzes existing user entries (from `entries/` and `entries/pinned/`) to genera
 *   This feedback helps refine the AI's understanding of what constitutes a valuable insight, useful suggestion, or relevant pattern for the user, thereby improving future `draft-entries` operations.
 
 ## Dependencies
-*   Relies heavily on `ai/tools/read-entries.sh` (or a similar mechanism) to access the full content of all user entries.
+*   Relies heavily on `ai/tools/echo-entries.sh` piped to `.clinerules/unpinned-entries.md` to access the full content of all user entries.
 *   Requires AI analytical capabilities adaptable to the domain reflected in the user's entries, including pattern recognition and summarization.

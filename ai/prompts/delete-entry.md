@@ -18,7 +18,7 @@ Permanently removes a specified entry file from either the `entries/` or `entrie
 ## Core Logic / Procedure
 1.  **Receive Identifier**: Obtain `{ENTRY_IDENTIFIER}` from the user.
 2.  **Find Matching Entries**:
-    *   Execute `ai/tools/read-entries.sh --type unpinned` to get all unpinned entries with their content. Ingest the COMPLETE output.
+    *   Execute `ai/tools/echo-entries.sh --type unpinned > .clinerules/unpinned-entries.md` to get all unpinned entries with their content. The generated file will be automatically available in your context without needing to explicitly read it.
     *   Filter these entries based on `{ENTRY_IDENTIFIER}`. This can involve:
         *   Exact timestamp match.
         *   Partial timestamp match (e.g., filename starts with the partial timestamp).
@@ -69,5 +69,5 @@ Permanently removes a specified entry file from either the `entries/` or `entrie
 *   Not applicable for this command.
 
 ## Dependencies
-*   Relies on `ai/tools/read-entries.sh` (or a similar mechanism) to access the full content of entries for summarization.
+*   Relies on `ai/tools/echo-entries.sh` piped to `.clinerules/unpinned-entries.md` to access the full content of entries for summarization.
 *   Requires AI capability to generate concise summaries from text content.
