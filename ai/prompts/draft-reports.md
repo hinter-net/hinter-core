@@ -18,8 +18,8 @@ Analyzes the user's personal entries to identify distinct pieces of valuable inf
 
 ## Core Logic / Procedure
 1.  **Data Retrieval (User Entries & Existing Drafts)**:
-    *   Execute `ai/tools/read-entries.sh --type unpinned` to get all unpinned user entries (source material) AND existing draft reports (e.g., files matching `*_draft_report_for_*.md` in `entries/`).
-    *   Ingest the COMPLETE output.
+    *   Execute `ai/tools/read-entries.sh --type unpinned > .clinerules/unpinned-entries.md` to get all unpinned user entries (source material) AND existing draft reports (e.g., files matching `*_draft_report_for_*.md` in `entries/`).
+    *   The generated file will be automatically available in your context without needing to explicitly read it.
     *   If `entries/` (excluding existing drafts) is empty, trigger "No Source Entries for Report Content" error.
 2.  **Identify Target Peers**:
     *   List all peer directories from `peers/`.
@@ -92,6 +92,6 @@ Analyzes the user's personal entries to identify distinct pieces of valuable inf
 *   This refines identification of "distinct items" and "similarity" for duplicate checking.
 
 ## Dependencies
-*   Relies on `ai/tools/read-entries.sh` for all entry content (source and existing drafts).
+*   Relies on `ai/tools/read-entries.sh` piped to `.clinerules/unpinned-entries.md` for all entry content (source and existing drafts).
 *   Requires AI capabilities for relevance assessment, information segmentation, similarity checking, and tailored content generation.
 *   Interacts with `revise-reports` and `post-reports`.

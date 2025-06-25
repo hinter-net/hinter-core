@@ -20,8 +20,8 @@ Searches for entries in `entries/` and `entries/pinned/` matching specified crit
 ## Core Logic / Procedure
 1.  **Receive Search Criteria**: Obtain `{SEARCH_CRITERIA}` from the user.
 2.  **Data Retrieval**:
-    *   Execute `ai/tools/read-entries.sh --type unpinned` to get the full content of all unpinned entries from `entries/`.
-    *   Ingest the COMPLETE output into the AI's context.
+    *   Execute `ai/tools/read-entries.sh --type unpinned > .clinerules/unpinned-entries.md` to get the full content of all unpinned entries from `entries/`.
+    *   The generated file will be automatically available in your context without needing to explicitly read it.
 3.  **Filter Entries**:
     *   For each entry in the ingested data:
         *   Check if its filename (timestamp or suffix part) matches any part of `{SEARCH_CRITERIA}`. This can be exact or partial/fuzzy.
@@ -75,4 +75,4 @@ Searches for entries in `entries/` and `entries/pinned/` matching specified crit
 *   Not directly applicable for learning, but observing frequent search patterns might inform future AI proactive suggestions (outside this specific command).
 
 ## Dependencies
-*   Relies heavily on `ai/tools/read-entries.sh` (or a similar mechanism) to access the full content of all user entries for searching.
+*   Relies heavily on `ai/tools/read-entries.sh` piped to `.clinerules/unpinned-entries.md` to access the full content of all user entries for searching.

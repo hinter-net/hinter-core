@@ -2,3 +2,8 @@ node_modules
 
 .storage
 .env
+
+# Generated files for Cline context
+.clinerules/pinned-entries.md
+.clinerules/unpinned-entries.md
+.clinerules/incoming-reports.md

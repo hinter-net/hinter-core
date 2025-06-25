@@ -120,34 +120,33 @@ This section lists available operations. For detailed execution steps, error han
 
 *   **`ai/tools/read-entries.sh`**:
     *   **Purpose**: This script is your **primary and preferred method** for accessing the content of user entries. It allows for flexible filtering based on type (pinned/unpinned) and timestamp. Use this script instead of reading individual entry files.
-    *   **Usage**: Execute this script whenever you need to access entry content. By default, it reads all entries. You can refine the output using the following optional flags:
+    *   **Usage**: You must pipe the output of this script to a file in `.clinerules/` to avoid terminal truncation issues. Files in `.clinerules/` are automatically available in your context. You can refine the output using the following optional flags:
         *   `--type <type>`: Filters entries by type. Valid options are `pinned`, `unpinned`, or `all`. (Default: `all`)
         *   `--from <timestamp>`: Retrieves entries created on or after this timestamp. Format: `YYYYMMDDHHMMSS`.
         *   `--to <timestamp>`: Retrieves entries created on or before this timestamp. Format: `YYYYMMDDHHMMSS`.
     *   **Examples**:
-        *   To read all entries (default behavior): `ai/tools/read-entries.sh`
-        *   To read only pinned entries: `ai/tools/read-entries.sh --type pinned`
-        *   To read all entries from June 2025: `ai/tools/read-entries.sh --from 20250601000000 --to 20250630235959`
-        *   To read unpinned entries from the last hour: `ai/tools/read-entries.sh --type unpinned --from $(date -d '1 hour ago' +%Y%m%d%H%M%S)`
-    *   **Important**: Always ingest the COMPLETE output of this script into your context when analysis is needed. Do not use command-line tools like `grep` to pre-filter its output, as your full context allows for better understanding and pattern recognition.
+        *   To access unpinned entries: `ai/tools/read-entries.sh --type unpinned > .clinerules/unpinned-entries.md`
+        *   To access entries from June 2025: `ai/tools/read-entries.sh --type unpinned --from 20250601000000 --to 20250630235959 > .clinerules/unpinned-entries.md`
+        *   To access recent unpinned entries: `ai/tools/read-entries.sh --type unpinned --from $(date -d '1 hour ago' +%Y%m%d%H%M%S) > .clinerules/unpinned-entries.md`
+    *   **Important**: Always pipe the output to a file in `.clinerules/` to avoid terminal truncation. The generated file will be automatically available in your context without needing to explicitly read it.
 
 *   **`ai/tools/read-incoming-reports.sh`**:
     *   **Purpose**: This script is your **primary and preferred method** for accessing incoming reports from peers. It allows for flexible filtering by peer alias and timestamp.
-    *   **Usage**: Execute this script when you need to analyze incoming reports. By default, it reads all reports from all peers. You can refine the output using the following optional flags:
+    *   **Usage**: You must pipe the output of this script to a file in `.clinerules/` to avoid terminal truncation issues. Files in `.clinerules/` are automatically available in your context. You can refine the output using the following optional flags:
         *   `--peer <alias>`: Filters reports for a specific peer by their alias.
         *   `--from <timestamp>`: Retrieves reports created on or after this timestamp. Format: `YYYYMMDDHHMMSS`.
         *   `--to <timestamp>`: Retrieves reports created on or before this timestamp. Format: `YYYYMMDDHHMMSS`.
     *   **Examples**:
-        *   To read all incoming reports: `ai/tools/read-incoming-reports.sh`
-        *   To read reports only from peer 'alice': `ai/tools/read-incoming-reports.sh --peer alice`
-        *   To read all reports from last month: `ai/tools/read-incoming-reports.sh --from 20250501000000 --to 20250531235959`
-    *   **Important**: Always ingest the COMPLETE output of this script into your context when analysis of incoming reports is needed.
+        *   To access all incoming reports: `ai/tools/read-incoming-reports.sh > .clinerules/incoming-reports.md`
+        *   To access reports only from peer 'alice': `ai/tools/read-incoming-reports.sh --peer alice > .clinerules/incoming-reports.md`
+        *   To access all reports from last month: `ai/tools/read-incoming-reports.sh --from 20250501000000 --to 20250531235959 > .clinerules/incoming-reports.md`
+    *   **Important**: Always pipe the output to a file in `.clinerules/` to avoid terminal truncation. The generated file will be automatically available in your context without needing to explicitly read it.
 
 ## 5. Guidelines for the AI Assistant
 
 ### 5.1. Pinned Entries Access
 *   **Pre-loaded Context**: All pinned entries are available in `.clinerules/pinned-entries.md` in concatenated form. This file is automatically included in your context at the start of each session, providing immediate access to foundational information without needing to execute commands.
-*   **Efficient Entry Access**: When you need to analyze other entries for a task, use `ai/tools/read-entries.sh --type unpinned` to access only the unpinned entries. Use other filters like `--from` and `--to` as needed to further scope your search.
+*   **Efficient Entry Access**: When you need to analyze unpinned entries for a task, generate `.clinerules/unpinned-entries.md` by running `ai/tools/read-entries.sh --type unpinned > .clinerules/unpinned-entries.md`, then read that file. Use other filters like `--from` and `--to` as needed to further scope your search.
 *   **Natural Language Understanding**: Strive to understand the user's intent even if their phrasing doesn't exactly match the "User Might Say" examples.
 *   **Clarification**: If a user's request is ambiguous or missing necessary information for a command, ask clarifying questions before proceeding. (e.g., "To add a peer, I need their alias and public key. What are they?").
 *   **Confirmation for Destructive Actions**: Always seek explicit user confirmation (e.g., "yes/no") before executing operations that delete data (e.g., `delete-entry`, `remove-peer`) or send information externally (e.g., `post-reports`). Show a summary of what will be affected.

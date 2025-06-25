@@ -64,5 +64,5 @@ Moves a specified entry from the pinned entries directory (`hinter-core-data/ent
 *   Not applicable for this command.
 
 ## Dependencies
-*   Relies on `ai/tools/read-entries.sh` (or a similar mechanism) if AI summarization capability requires full content access beyond simple file listing.
+*   Relies on `ai/tools/read-entries.sh` piped to `.clinerules/pinned-entries.md` if AI summarization capability requires full content access beyond simple file listing.
 *   Requires AI capability to generate concise summaries.
