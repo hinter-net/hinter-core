@@ -55,10 +55,10 @@ Analyzes the user's personal entries to identify distinct pieces of valuable inf
 ## Information / Opportunity / Insight
 [Present the core information for THIS SPECIFIC ITEM. Be clear and concise, focusing only on this single piece of information or opportunity.]
 
-## Context / Background (If necessary for this item)
+## Context / Background
 [Briefly provide any necessary context for this specific item.]
 
-## Suggested Action / Next Steps (If applicable to this item)
+## Suggested Action / Next Steps
 [Any suggested action related to this specific item.]
 
 ## User Feedback Section
@@ -67,7 +67,6 @@ Analyzes the user's personal entries to identify distinct pieces of valuable inf
     - Is this information accurate and appropriate for [PeerAlias]?
     - Should anything be added, removed, or rephrased for this specific item?
 -->
-[Leave this section blank for the user to fill in]
 ```
 
 ## Peer-Specific Customization & Privacy

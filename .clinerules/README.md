@@ -1,9 +1,9 @@
 # AI Assistant Guide for `hinter-core`
 
 ## 1. Introduction
-This document serves as the primary guide for an AI assistant helping users manage and interact with the `hinter-core` system. `hinter-core` is a tool designed for individuals ("hinters") to meticulously manage information, exchange peer-to-peer reports, and leverage AI for insights and operational assistance.
+This document serves as the primary guide for an AI assistant helping users manage and interact with the `hinter-core` app. `hinter-core` is a tool designed for individuals ("hinters") to meticulously manage information, exchange peer-to-peer reports, and leverage AI for insights and operational assistance.
 
-Your role as the AI assistant is to facilitate these hinter operations through natural language interaction, making the system accessible and efficient for the user. You should understand the core concepts, the typical workflow, and the available commands, using this guide for high-level understanding and the specific prompt files in `ai/prompts/` for detailed execution logic.
+Your role as the AI assistant is to facilitate these hinter operations through natural language interaction, making the app accessible and efficient for the user. You should understand the core concepts, the typical workflow, and the available commands, using this guide for high-level understanding and the specific prompt files in `ai/prompts/` for detailed execution logic.
 
 ## 2. Core Hinter Concepts & Workflow
 
@@ -126,7 +126,7 @@ This section lists available operations. For detailed execution steps, error han
         *   `--to <timestamp>`: Retrieves entries created on or before this timestamp. Format: `YYYYMMDDHHMMSS`.
     *   **Examples**:
         *   To access unpinned entries: `ai/tools/echo-entries.sh --type unpinned > .clinerules/unpinned-entries.md`
-        *   To access entries from June 2025: `ai/tools/echo-entries.sh --type unpinned --from 20250601000000 --to 20250630235959 > .clinerules/unpinned-entries.md`
+        *   To access unpinned entries from June 2025: `ai/tools/echo-entries.sh --type unpinned --from 20250601000000 --to 20250630235959 > .clinerules/unpinned-entries.md`
         *   To access recent unpinned entries: `ai/tools/echo-entries.sh --type unpinned --from $(date -d '1 hour ago' +%Y%m%d%H%M%S) > .clinerules/unpinned-entries.md`
     *   **Important**: Always pipe the output to a file in `.clinerules/` to avoid terminal truncation. The generated file will be automatically available in your context without needing to explicitly read it.
 
@@ -157,7 +157,7 @@ This section lists available operations. For detailed execution steps, error han
 *   **Using This README vs. Prompt Files**: Use this README (the AI Assistant Guide for `hinter-core`) for a high-level understanding of commands, their purpose, and how users might ask for them. **Crucially, once you've identified a command the user might be requesting, you MUST read the specific `ai/prompts/{command-name}.md` file. This file contains the definitive instructions for execution, including detailed step-by-step procedures, exact metadata formats, error handling, and output messages. Do not attempt to perform the command based solely on the information in this README.**
 *   **Error Reporting**: If an operation fails, clearly state the error based on the "Error Handling & Responses" section of the relevant prompt file.
 *   **Learning from User Feedback**: For commands like `draft-entries`, `ingest-reports`, and `revise-reports`, the corresponding prompt files detail how to incorporate user feedback (often from "User Feedback & Notes" sections in entries). Actively look for these opportunities to adapt and improve the relevance and quality of your assistance.
-*   **Responding to "Help" Requests**: If the user asks for help (e.g., "What can you do?", "hinter --help"), use Section 3 of this README to summarize available operations and provide examples of how to invoke them. You can list the command names and their brief user-facing descriptions.
+*   **Responding to "Help" Requests**: If the user asks for help (e.g., "What can you do?", "hinter --help"), use Section 2.4 and 3 of this README to summarize available operations and provide examples of how to invoke them. You can list the command names and their brief user-facing descriptions.
 
 ## 6. Privacy and Data Handling
 *   All user data within the `hinter-core` system (entries, peer information, reports) is stored locally on the user's machine.

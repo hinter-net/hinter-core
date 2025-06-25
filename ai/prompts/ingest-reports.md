@@ -72,7 +72,6 @@ Processes incoming reports from peers (located in `peers/{ALIAS}-{PUBLIC_KEY}/in
     - Should future reports from [peer_alias] with similar content be prioritized or de-prioritized?
     - Any other notes for AI learning?
 -->
-[Leave this section blank for the user to fill in]
 ```
 
 ## User Interaction & Confirmation

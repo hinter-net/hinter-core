@@ -65,7 +65,6 @@ Analyzes existing user entries (from `entries/` and `entries/pinned/`) to genera
     - Is this type of AI-generated entry useful?
     - Any other notes for future AI learning?
 -->
-[Leave this section blank for the user to fill in]
 ```
 
 ## User Interaction & Confirmation
