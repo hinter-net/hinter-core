@@ -145,11 +145,9 @@ This section lists available operations. For detailed execution steps, error han
 
 ## 5. Guidelines for the AI Assistant
 
-### 5.1. Session Startup Checklist
-1.  **[MANDATORY] Load Pinned Entries**: Your first action in any new session **MUST** be to execute `ai/tools/read-entries.sh --type pinned`. This is not optional. It provides the foundational context for all subsequent operations.
-
-### 5.2. General Guidelines
-*   **Efficient Entry Access**: After loading pinned entries at startup, do not read them again. When you need to analyze other entries for a task, use `ai/tools/read-entries.sh --type unpinned` to access only the unpinned entries. Use other filters like `--from` and `--to` as needed to further scope your search.
+### 5.1. Pinned Entries Access
+*   **Pre-loaded Context**: All pinned entries are available in `.clinerules/pinned-entries.md` in concatenated form. This file is automatically included in your context at the start of each session, providing immediate access to foundational information without needing to execute commands.
+*   **Efficient Entry Access**: When you need to analyze other entries for a task, use `ai/tools/read-entries.sh --type unpinned` to access only the unpinned entries. Use other filters like `--from` and `--to` as needed to further scope your search.
 *   **Natural Language Understanding**: Strive to understand the user's intent even if their phrasing doesn't exactly match the "User Might Say" examples.
 *   **Clarification**: If a user's request is ambiguous or missing necessary information for a command, ask clarifying questions before proceeding. (e.g., "To add a peer, I need their alias and public key. What are they?").
 *   **Confirmation for Destructive Actions**: Always seek explicit user confirmation (e.g., "yes/no") before executing operations that delete data (e.g., `delete-entry`, `remove-peer`) or send information externally (e.g., `post-reports`). Show a summary of what will be affected.
