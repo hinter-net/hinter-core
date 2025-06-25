@@ -7,11 +7,11 @@ When a new Cline task starts, we want all pinned entries to already be available
 Before starting any new Cline task, run the following command from the project root:
 
 ```sh
-./ai/tools/read-entries.sh --type pinned > .clinerules/pinned-entries.md
+./ai/tools/echo-entries.sh --type pinned > .clinerules/pinned-entries.md
 ```
 
 ## What This Does
-- Executes the read-entries tool to fetch all pinned entries
+- Executes the echo-entries tool to fetch all pinned entries
 - Redirects the complete output to `.clinerules/pinned-entries.md`
 - Ensures Cline can read the full content of all pinned entries from the start
 - Avoids terminal truncation issues that occur when Cline tries to execute the script directly

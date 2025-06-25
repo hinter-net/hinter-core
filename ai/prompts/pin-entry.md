@@ -18,7 +18,7 @@ Moves a specified entry from the regular entries directory (`hinter-core-data/en
 ## Core Logic / Procedure
 1.  **Receive Identifier**: Obtain `{ENTRY_IDENTIFIER}` from the user.
 2.  **Find Matching Entry in Regular Entries**:
-    *   Execute `ai/tools/read-entries.sh --type unpinned > .clinerules/unpinned-entries.md` to get all unpinned entries. The generated file will be automatically available in your context without needing to explicitly read it.
+    *   Execute `ai/tools/echo-entries.sh --type unpinned > .clinerules/unpinned-entries.md` to get all unpinned entries. The generated file will be automatically available in your context without needing to explicitly read it.
     *   Filter these files based on `{ENTRY_IDENTIFIER}` (timestamp, suffix, fuzzy suffix).
     *   Store all found matches.
 3.  **Handle Results**:
@@ -64,5 +64,5 @@ Moves a specified entry from the regular entries directory (`hinter-core-data/en
 *   Not applicable for this command.
 
 ## Dependencies
-*   Relies on `ai/tools/read-entries.sh` piped to `.clinerules/unpinned-entries.md` if AI summarization capability requires full content access beyond simple file listing.
+*   Relies on `ai/tools/echo-entries.sh` piped to `.clinerules/unpinned-entries.md` if AI summarization capability requires full content access beyond simple file listing.
 *   Requires AI capability to generate concise summaries.

@@ -16,24 +16,24 @@ Processes incoming reports from peers (located in `peers/{ALIAS}-{PUBLIC_KEY}/in
 ## Core Logic / Procedure
 1.  **Data Retrieval**:
     *   **User Entries (for Context & Processed Status Check)**:
-        *   Execute `ai/tools/read-entries.sh --type unpinned > .clinerules/unpinned-entries.md` to get all existing unpinned user entries. This provides context and allows checking for already ingested reports.
+        *   Execute `ai/tools/echo-entries.sh --type unpinned > .clinerules/unpinned-entries.md` to get all existing unpinned user entries. This provides context and allows checking for already ingested reports.
         *   The generated file will be automatically available in your context without needing to explicitly read it.
     *   **Incoming Reports Content**:
-        *   Construct the `ai/tools/read-incoming-reports.sh` command with the appropriate flags based on user input.
+        *   Construct the `ai/tools/echo-incoming-reports.sh` command with the appropriate flags based on user input.
         *   If `{SOURCE_PEER_ALIAS}` is provided, add `--peer {SOURCE_PEER_ALIAS}`.
         *   If `{TIME_WINDOW}` is provided, parse it and add the corresponding `--from` and `--to` flags with `YYYYMMDDHHMMSS` timestamps.
-        *   Execute the constructed command and pipe to a file (e.g., `ai/tools/read-incoming-reports.sh --peer alice --from 20250601000000 > .clinerules/incoming-reports.md`).
+        *   Execute the constructed command and pipe to a file (e.g., `ai/tools/echo-incoming-reports.sh --peer alice --from 20250601000000 > .clinerules/incoming-reports.md`).
         *   The generated file will be automatically available in your context without needing to explicitly read it.
 2.  **Identify Target Reports & Determine Processing Status**:
     *   The output from the script provides a filtered list of incoming reports.
     *   For each report obtained from the script:
         *   Let `{INCOMING_REPORT_PATH}` be constructed as `hinter-core-data/peers/{Peer-Alias}-{Peer-Public-Key}/incoming/{Report-Filename}` using the metadata from the script.
-        *   Check among the ingested user entries (from `read-entries.sh` output) if an entry already exists in `entries/` that has a `<!-- SOURCE_REPORT: {INCOMING_REPORT_PATH} -->` metadata tag.
+        *   Check among the ingested user entries (from `echo-entries.sh` output) if an entry already exists in `entries/` that has a `<!-- SOURCE_REPORT: {INCOMING_REPORT_PATH} -->` metadata tag.
         *   If such an entry exists, this report is considered "processed". Otherwise, it's "unprocessed".
     *   Filter the list to include only "unprocessed" reports.
     *   If no unprocessed reports are found for the given scope, provide "No New Reports" output.
 3.  **Process Each Unprocessed Report**:
-    *   For each unprocessed report (identified in step 2, with its content already available from `read-incoming-reports.sh` output):
+    *   For each unprocessed report (identified in step 2, with its content already available from `echo-incoming-reports.sh` output):
         *   Let `{PEER_ALIAS}` be the `Peer-Alias` from the script's metadata for this report.
         *   Let `{REPORT_FILENAME}` be the `Report-Filename` from the script's metadata.
         *   Let `{INCOMING_REPORT_PATH}` be `hinter-core-data/peers/{PEER_ALIAS}-{Peer-Public-Key}/incoming/{REPORT_FILENAME}`.
@@ -99,6 +99,6 @@ Processes incoming reports from peers (located in `peers/{ALIAS}-{PUBLIC_KEY}/in
 *   This feedback loop is critical for improving the quality and relevance of future report ingestions.
 
 ## Dependencies
-*   Relies on `ai/tools/read-entries.sh` piped to `.clinerules/unpinned-entries.md` for context from existing user entries and for checking the processed status of incoming reports.
-*   Relies on `ai/tools/read-incoming-reports.sh` piped to `.clinerules/incoming-reports.md` for accessing the content and metadata of all incoming reports.
+*   Relies on `ai/tools/echo-entries.sh` piped to `.clinerules/unpinned-entries.md` for context from existing user entries and for checking the processed status of incoming reports.
+*   Relies on `ai/tools/echo-incoming-reports.sh` piped to `.clinerules/incoming-reports.md` for accessing the content and metadata of all incoming reports.
 *   Needs AI capabilities for information extraction, summarization, relevance assessment, and learning from feedback.

@@ -16,7 +16,7 @@ Processes user-edited draft report candidates (located in `entries/` with filena
 
 ## Core Logic / Procedure
 1.  **Identify Target Draft Reports for Revision**:
-    *   Execute `ai/tools/read-entries.sh --type unpinned > .clinerules/unpinned-entries.md` to get the content and metadata of all unpinned entries, specifically looking for draft reports.
+    *   Execute `ai/tools/echo-entries.sh --type unpinned > .clinerules/unpinned-entries.md` to get the content and metadata of all unpinned entries, specifically looking for draft reports.
     *   The generated file will be automatically available in your context without needing to explicitly read it.
     *   Filter these drafts based on `{TARGET_IDENTIFIER}`:
         *   If no identifier, select all drafts with `<!-- STATUS: draft -->`, `<!-- STATUS: revised -->`, or `<!-- STATUS: on_hold -->`. Do NOT process reports with `<!-- STATUS: denied -->`, `<!-- STATUS: approved -->`, or `<!-- STATUS: posted -->`. The AI might need to infer which of these have been user-edited (this could be challenging without file system metadata like modification times; alternatively, this command might primarily operate on explicitly named drafts or drafts for a specific peer as indicated by the user).
@@ -64,4 +64,4 @@ Processes user-edited draft report candidates (located in `entries/` with filena
 ## Dependencies
 *   Relies on draft reports existing in `entries/` (typically from `draft-reports`).
 *   Drafts should have `<!-- STATUS: draft -->` and other relevant metadata.
-*   May use `ai/tools/read-entries.sh` piped to `.clinerules/unpinned-entries.md` to access draft report content.
+*   May use `ai/tools/echo-entries.sh` piped to `.clinerules/unpinned-entries.md` to access draft report content.

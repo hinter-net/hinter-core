@@ -20,12 +20,12 @@ Searches for entries in `entries/` and `entries/pinned/` matching specified crit
 ## Core Logic / Procedure
 1.  **Receive Search Criteria**: Obtain `{SEARCH_CRITERIA}` from the user.
 2.  **Data Retrieval**:
-    *   Execute `ai/tools/read-entries.sh --type unpinned > .clinerules/unpinned-entries.md` to get the full content of all unpinned entries from `entries/`.
+    *   Execute `ai/tools/echo-entries.sh --type unpinned > .clinerules/unpinned-entries.md` to get the full content of all unpinned entries from `entries/`.
     *   The generated file will be automatically available in your context without needing to explicitly read it.
 3.  **Filter Entries**:
     *   For each entry in the ingested data:
         *   Check if its filename (timestamp or suffix part) matches any part of `{SEARCH_CRITERIA}`. This can be exact or partial/fuzzy.
-        *   Check if its content (as provided by `read-entries.sh`) contains keywords or phrases from `{SEARCH_CRITERIA}`.
+        *   Check if its content (as provided by `echo-entries.sh`) contains keywords or phrases from `{SEARCH_CRITERIA}`.
         *   An entry is considered a match if any of its attributes (filename, content) align with the search criteria. The AI should use its judgment for relevance in fuzzy matches.
     *   Collect all matching entries.
 4.  **Display Results**:
@@ -60,7 +60,7 @@ Searches for entries in `entries/` and `entries/pinned/` matching specified crit
 
 ## Error Handling & Responses
 *   **No Matches Found**: "No entries found matching your criteria: `{SEARCH_CRITERIA}`."
-*   **Read Entries Failed**: "Error: Could not read entries. Please check the `read-entries.sh` script or data directory."
+*   **Read Entries Failed**: "Error: Could not read entries. Please check the `echo-entries.sh` script or data directory."
 *   **General Error**: "Error: An unexpected issue occurred while trying to find entries."
 
 ## Examples
@@ -75,4 +75,4 @@ Searches for entries in `entries/` and `entries/pinned/` matching specified crit
 *   Not directly applicable for learning, but observing frequent search patterns might inform future AI proactive suggestions (outside this specific command).
 
 ## Dependencies
-*   Relies heavily on `ai/tools/read-entries.sh` piped to `.clinerules/unpinned-entries.md` to access the full content of all user entries for searching.
+*   Relies heavily on `ai/tools/echo-entries.sh` piped to `.clinerules/unpinned-entries.md` to access the full content of all user entries for searching.
