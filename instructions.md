@@ -80,7 +80,7 @@ To set Git up, run the following commands in VS Code terminal:
 > ```
 > cd hinter-core-data
 > git init
-> echo -e ".storage\n.env" > .gitignore
+> echo -e ".env" > .gitignore
 > git add .
 > git commit -m "Initial commit"
 > ```

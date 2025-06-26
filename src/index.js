@@ -31,12 +31,12 @@ async function main() {
     // Create Corestore instances per peer in a local directory
     await Promise.all(peers.map(async (peer) => {
         if (!disableIncomingReports) {
-            const incomingCorestore = new Corestore(path.join('hinter-core-data', '.storage', peer.publicKey, 'incoming'));
+            const incomingCorestore = new Corestore(path.join('.storage', peer.publicKey, 'incoming'));
             await incomingCorestore.ready();
             peer.incomingCorestore = incomingCorestore;
         }
 
-        const outgoingCorestore = new Corestore(path.join('hinter-core-data', '.storage', peer.publicKey, 'outgoing'));
+        const outgoingCorestore = new Corestore(path.join('.storage', peer.publicKey, 'outgoing'));
         await outgoingCorestore.ready();
         peer.outgoingCorestore = outgoingCorestore;
     }));
@@ -48,23 +48,15 @@ async function main() {
     // On connection with a peer, replicate the respective Corestore instances
     swarm.on('connection', (conn, peerInfo) => {
         const peer = peers.find(peer => peer.publicKey === Buffer.from(peerInfo.publicKey).toString('hex'));
-        if (peer) {
-            if (!disableIncomingReports) {
-                const incomingStream = peer.incomingCorestore.replicate(conn);
-                incomingStream.on('error', (err) => {
-                    if (err.message.includes('conflict detected')) {
-                        console.log(`Conflict detected with ${peer.alias}. Deleting incoming storage and exiting to allow restart.`);
-                        fs.rmSync(path.join('hinter-core-data', '.storage', peer.publicKey, 'incoming'), { recursive: true, force: true });
-                        process.exit(0);
-                    }
-                });
-            }
-            peer.outgoingCorestore.replicate(conn);
-            peer.connection = conn;
-            console.log(`Connected to ${peer.alias}!`);
-        } else {
+        if (!peer) {
             conn.end();
         }
+        if (!disableIncomingReports) {
+            peer.incomingCorestore.replicate(conn);
+        }
+        peer.outgoingCorestore.replicate(conn);
+        peer.connection = conn;
+        console.log(`Connected to ${peer.alias}!`);
     });
 
     await Promise.all(peers.map(async (peer) => {
@@ -94,15 +86,8 @@ async function main() {
 
     await Promise.all(peers.map(async (peer) => {
         // Do the initial mirror
-        if (!disableIncomingReports) {
-            const initialIncomingMirror = peer.incomingHyperdrive.mirror(peer.incomingLocaldrive);
-            await initialIncomingMirror.done();
-            console.log(`${peer.alias} initial incoming: ${JSON.stringify(initialIncomingMirror.count)}`);
-        }
-
         const initialOutgoingMirror = peer.outgoingLocaldrive.mirror(peer.outgoingHyperdrive);
         await initialOutgoingMirror.done();
-        console.log(`${peer.alias} initial outgoing: ${JSON.stringify(initialOutgoingMirror.count)}`);
 
         // Mirror detected incoming changes in hyperdrive
         if (!disableIncomingReports) {
