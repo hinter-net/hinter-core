@@ -88,7 +88,6 @@ async function main() {
         // Do the initial mirror
         const initialOutgoingMirror = peer.outgoingLocaldrive.mirror(peer.outgoingHyperdrive);
         await initialOutgoingMirror.done();
-        console.log(`${peer.alias} initial outgoing: ${JSON.stringify(initialOutgoingMirror.count)}`);
 
         // Mirror detected incoming changes in hyperdrive
         if (!disableIncomingReports) {
