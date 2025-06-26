@@ -31,7 +31,9 @@ async function main() {
     // Create Corestore instances per peer in a local directory
     await Promise.all(peers.map(async (peer) => {
         if (!disableIncomingReports) {
-            const incomingCorestore = new Corestore(path.join('.storage', peer.publicKey, 'incoming'));
+            const incomingCorestorePath = path.join('.storage', peer.publicKey, 'incoming');
+            fs.rmSync(incomingCorestorePath, {recursive: true, force: true});
+            const incomingCorestore = new Corestore(incomingCorestorePath);
             await incomingCorestore.ready();
             peer.incomingCorestore = incomingCorestore;
         }
