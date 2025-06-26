@@ -31,12 +31,12 @@ async function main() {
     // Create Corestore instances per peer in a local directory
     await Promise.all(peers.map(async (peer) => {
         if (!disableIncomingReports) {
-            const incomingCorestore = new Corestore(path.join('hinter-core-data', '.storage', peer.publicKey, 'incoming'));
+            const incomingCorestore = new Corestore(path.join('.storage', peer.publicKey, 'incoming'));
             await incomingCorestore.ready();
             peer.incomingCorestore = incomingCorestore;
         }
 
-        const outgoingCorestore = new Corestore(path.join('hinter-core-data', '.storage', peer.publicKey, 'outgoing'));
+        const outgoingCorestore = new Corestore(path.join('.storage', peer.publicKey, 'outgoing'));
         await outgoingCorestore.ready();
         peer.outgoingCorestore = outgoingCorestore;
     }));
@@ -56,7 +56,7 @@ async function main() {
             incomingStream.on('error', (err) => {
                 if (err.message.includes('conflict detected')) {
                     console.log(`Conflict detected with ${peer.alias}. Deleting incoming storage and exiting to allow restart.`);
-                    fs.rmSync(path.join('hinter-core-data', '.storage', peer.publicKey, 'incoming'), { recursive: true, force: true });
+                    fs.rmSync(path.join('.storage', peer.publicKey, 'incoming'), { recursive: true, force: true });
                     process.exit(0);
                 }
             });

@@ -14,7 +14,7 @@ This repo contains:
 - AI scaffolding that enables hinters to use generic coding assistants for hinter operations
 
 See [instructions](./instructions.md) for installation.
-The `hinter-core-data/` directory, which stores your entries, peer configurations, `.env` file (with your cryptographic keys), and `.storage` (for Hypercore data), is not included in this repository by default. It will be created when you run the initialization script described in the installation instructions.
+The `hinter-core-data/` directory, which stores your entries, peer configurations and `.env` file (with your cryptographic keys) is not included in this repository by default. It will be created when you run the initialization script described in the installation instructions.
 For example user data (entries and peer structures), please inspect the [`1425-ad` branch](https://github.com/bbenligiray/hinter-core/tree/1425-ad/hinter-core-data).
 
 ## `hinter-core-data/` Structure
@@ -22,7 +22,6 @@ For example user data (entries and peer structures), please inspect the [`1425-a
 ```
 hinter-core-data/
 ├── .env                                # Your keypair
-├── .storage/                           # Internal storage for Hypercores
 ├── entries/
 │    ├── pinned/
 │    │    └── *.md                      # Your pinned entries
