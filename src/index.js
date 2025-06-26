@@ -86,12 +86,6 @@ async function main() {
 
     await Promise.all(peers.map(async (peer) => {
         // Do the initial mirror
-        if (!disableIncomingReports) {
-            const initialIncomingMirror = peer.incomingHyperdrive.mirror(peer.incomingLocaldrive);
-            await initialIncomingMirror.done();
-            console.log(`${peer.alias} initial incoming: ${JSON.stringify(initialIncomingMirror.count)}`);
-        }
-
         const initialOutgoingMirror = peer.outgoingLocaldrive.mirror(peer.outgoingHyperdrive);
         await initialOutgoingMirror.done();
         console.log(`${peer.alias} initial outgoing: ${JSON.stringify(initialOutgoingMirror.count)}`);
