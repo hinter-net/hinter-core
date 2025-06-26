@@ -52,14 +52,7 @@ async function main() {
             conn.end();
         }
         if (!disableIncomingReports) {
-            const incomingStream = peer.incomingCorestore.replicate(conn);
-            incomingStream.on('error', (err) => {
-                if (err.message.includes('conflict detected')) {
-                    console.log(`Conflict detected with ${peer.alias}. Deleting incoming storage and exiting to allow restart.`);
-                    fs.rmSync(path.join('.storage', peer.publicKey, 'incoming'), { recursive: true, force: true });
-                    process.exit(0);
-                }
-            });
+            peer.incomingCorestore.replicate(conn);
         }
         peer.outgoingCorestore.replicate(conn);
         peer.connection = conn;
