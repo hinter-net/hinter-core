@@ -12,7 +12,7 @@ However, given the advanced nature of the underlying technology, setup and usage
 
 3. Open a terminal, and create the `hinter-core-data/` directory (which includes your [keypair](#keypair)) using:
     ```sh
-    docker run -it --rm -v"$(pwd)/hinter-core-data":/app/hinter-core-data bbenligiray/hinter-core:0.0.6 npm run initialize
+    docker run -it --rm -v"$(pwd)/hinter-core-data":/app/hinter-core-data bbenligiray/hinter-core:0.0.7 npm run initialize
     ```
     If you are on Mac or Linux, claim the ownership of the created `hinter-core-data/` directory using:
     ```sh
@@ -21,7 +21,7 @@ However, given the advanced nature of the underlying technology, setup and usage
 
 4. Start `hinter-core` in [always restart mode](#always-restart-mode) using:
     ```sh
-    docker run -d --name my-hinter-core --restart=always --network host -v"$(pwd)/hinter-core-data":/app/hinter-core-data bbenligiray/hinter-core:0.0.6
+    docker run -d --name my-hinter-core --restart=always --network host -v"$(pwd)/hinter-core-data":/app/hinter-core-data bbenligiray/hinter-core:0.0.7
     ```
 
 5. Wait a few minutes for `hinter-core` to boot.
