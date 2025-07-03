@@ -19,18 +19,16 @@ jobs:
       - name: Build Docker image
         run: docker build -t hinter-core:test .
 
-      - name: Setup hinter1
+      - name: Setup hinter1 and create report
         run: |
           mkdir -p hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/outgoing
           mkdir -p hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/incoming
           echo "PUBLIC_KEY=${HINTER1_PUBLIC_KEY}" > hinter-core-data/.env
           echo "SECRET_KEY=${HINTER1_SECRET_KEY}" >> hinter-core-data/.env
+          echo "hello from hinter1" > ./hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/outgoing/report-from-1.txt
 
       - name: Run hinter-core in background
         run: docker run -d --name hinter1 --network host -v "$(pwd)/hinter-core-data:/app/hinter-core-data" hinter-core:test
-
-      - name: Create outgoing report for hinter2
-        run: echo "hello from hinter1" > ./hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/outgoing/report-from-1.txt
 
       - name: Wait for sync and verify
         run: |
@@ -63,18 +61,16 @@ jobs:
       - name: Build Docker image
         run: docker build -t hinter-core:test .
 
-      - name: Setup hinter2
+      - name: Setup hinter2 and create report
         run: |
           mkdir -p hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/outgoing
           mkdir -p hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/incoming
           echo "PUBLIC_KEY=${HINTER2_PUBLIC_KEY}" > hinter-core-data/.env
           echo "SECRET_KEY=${HINTER2_SECRET_KEY}" >> hinter-core-data/.env
+          echo "hello from hinter2" > ./hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/outgoing/report-from-2.txt
 
       - name: Run hinter-core in background
         run: docker run -d --name hinter2 --network host -v "$(pwd)/hinter-core-data:/app/hinter-core-data" hinter-core:test
-
-      - name: Create outgoing report for hinter1
-        run: echo "hello from hinter2" > ./hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/outgoing/report-from-2.txt
 
       - name: Wait for sync and verify
         run: |
