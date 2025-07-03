@@ -22,12 +22,12 @@
   },
   "dependencies": {
     "b4a": "^1.6.7",
-    "bare-buffer": "^3.1.4",
+    "bare-buffer": "^3.2.0",
     "bare-fs": "^4.1.5",
     "bare-path": "^3.0.0",
     "bare-process": "^4.2.1",
-    "corestore": "^7.4.2",
-    "hyperdrive": "^12.3.0",
+    "corestore": "^7.4.5",
+    "hyperdrive": "^13.0.1",
     "hyperswarm": "^4.11.7",
     "localdrive": "^2.2.0"
   }
