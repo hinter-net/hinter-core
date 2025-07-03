@@ -1,0 +1,97 @@
+name: End-to-End Test
+
+on:
+  workflow_dispatch:
+
+env:
+  HINTER1_PUBLIC_KEY: 1720090ca74ba7c5100c5c9bf7898171fbae0ede675fa7c3aa248bd1d6c96a8f
+  HINTER1_SECRET_KEY: a580f4d154155ff2947855b7770435015c111bb5e1ae31b0915bded7d9b1ecbb1720090ca74ba7c5100c5c9bf7898171fbae0ede675fa7c3aa248bd1d6c96a8f
+  HINTER2_PUBLIC_KEY: 9e230ac8b403f3861871c2325f3226c930e7e4f0809b6633a6870aa05904ef01
+  HINTER2_SECRET_KEY: 0646dadeeaf79af9aab9954d7c63a52fa2ee1e1c04276cc0b760c6dd5c920d899e230ac8b403f3861871c2325f3226c930e7e4f0809b6633a6870aa05904ef01
+
+jobs:
+  hinter1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t hinter-core:test .
+
+      - name: Setup hinter1
+        run: |
+          mkdir -p hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/outgoing
+          mkdir -p hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/incoming
+          echo "PUBLIC_KEY=${HINTER1_PUBLIC_KEY}" > hinter-core-data/.env
+          echo "SECRET_KEY=${HINTER1_SECRET_KEY}" >> hinter-core-data/.env
+
+      - name: Run hinter-core in background
+        run: docker run -d --name hinter1 --network host -v "$(pwd)/hinter-core-data:/app/hinter-core-data" hinter-core:test
+
+      - name: Create outgoing report for hinter2
+        run: echo "hello from hinter1" > ./hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/outgoing/report-from-1.txt
+
+      - name: Wait for sync and verify
+        run: |
+          echo "Waiting for report from hinter2..."
+          timeout=180
+          interval=5
+          elapsed=0
+          while [ ! -f ./hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/incoming/report-from-2.txt ]; do
+            if [ $elapsed -ge $timeout ]; then
+              echo "Timeout reached. Report from hinter2 not found."
+              docker logs hinter1
+              exit 1
+            fi
+            sleep $interval
+            elapsed=$((elapsed + interval))
+            echo "Still waiting..."
+          done
+          echo "Report received from hinter2!"
+          docker logs hinter1
+          cat ./hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/incoming/report-from-2.txt
+          grep -q "hello from hinter2" ./hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/incoming/report-from-2.txt
+
+  hinter2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t hinter-core:test .
+
+      - name: Setup hinter2
+        run: |
+          mkdir -p hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/outgoing
+          mkdir -p hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/incoming
+          echo "PUBLIC_KEY=${HINTER2_PUBLIC_KEY}" > hinter-core-data/.env
+          echo "SECRET_KEY=${HINTER2_SECRET_KEY}" >> hinter-core-data/.env
+
+      - name: Run hinter-core in background
+        run: docker run -d --name hinter2 --network host -v "$(pwd)/hinter-core-data:/app/hinter-core-data" hinter-core:test
+
+      - name: Create outgoing report for hinter1
+        run: echo "hello from hinter2" > ./hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/outgoing/report-from-2.txt
+
+      - name: Wait for sync and verify
+        run: |
+          echo "Waiting for report from hinter1..."
+          timeout=180
+          interval=5
+          elapsed=0
+          while [ ! -f ./hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/incoming/report-from-1.txt ]; do
+            if [ $elapsed -ge $timeout ]; then
+              echo "Timeout reached. Report from hinter1 not found."
+              docker logs hinter2
+              exit 1
+            fi
+            sleep $interval
+            elapsed=$((elapsed + interval))
+            echo "Still waiting..."
+          done
+          echo "Report received from hinter1!"
+          docker logs hinter2
+          cat ./hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/incoming/report-from-1.txt
+          grep -q "hello from hinter1" ./hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/incoming/report-from-1.txt
