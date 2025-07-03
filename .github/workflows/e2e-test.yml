@@ -38,9 +38,11 @@ jobs:
           timeout=180
           interval=5
           elapsed=0
-          while [ ! -f ./hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/incoming/report-from-2.txt ]; do
+          FILE_PATH="./hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/incoming/report-from-2.txt"
+          EXPECTED_CONTENT="hello from hinter2"
+          while ! ( [ -f "$FILE_PATH" ] && grep -q "$EXPECTED_CONTENT" "$FILE_PATH" ); do
             if [ $elapsed -ge $timeout ]; then
-              echo "Timeout reached. Report from hinter2 not found."
+              echo "Timeout reached. Report with expected content not found."
               docker logs hinter1
               exit 1
             fi
@@ -48,10 +50,9 @@ jobs:
             elapsed=$((elapsed + interval))
             echo "Still waiting..."
           done
-          echo "Report received from hinter2!"
+          echo "Report with correct content received!"
           docker logs hinter1
-          cat ./hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/incoming/report-from-2.txt
-          grep -q "hello from hinter2" ./hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/incoming/report-from-2.txt
+          cat "$FILE_PATH"
 
   hinter2:
     runs-on: ubuntu-latest
@@ -81,9 +82,11 @@ jobs:
           timeout=180
           interval=5
           elapsed=0
-          while [ ! -f ./hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/incoming/report-from-1.txt ]; do
+          FILE_PATH="./hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/incoming/report-from-1.txt"
+          EXPECTED_CONTENT="hello from hinter1"
+          while ! ( [ -f "$FILE_PATH" ] && grep -q "$EXPECTED_CONTENT" "$FILE_PATH" ); do
             if [ $elapsed -ge $timeout ]; then
-              echo "Timeout reached. Report from hinter1 not found."
+              echo "Timeout reached. Report with expected content not found."
               docker logs hinter2
               exit 1
             fi
@@ -91,7 +94,6 @@ jobs:
             elapsed=$((elapsed + interval))
             echo "Still waiting..."
           done
-          echo "Report received from hinter1!"
+          echo "Report with correct content received!"
           docker logs hinter2
-          cat ./hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/incoming/report-from-1.txt
-          grep -q "hello from hinter1" ./hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/incoming/report-from-1.txt
+          cat "$FILE_PATH"
