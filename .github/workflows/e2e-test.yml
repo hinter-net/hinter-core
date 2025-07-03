@@ -52,6 +52,9 @@ jobs:
           docker logs hinter1
           cat "$FILE_PATH"
 
+      - name: Keep container alive for other job
+        run: sleep 30
+
   hinter2:
     runs-on: ubuntu-latest
     steps:
@@ -93,3 +96,6 @@ jobs:
           echo "Report with correct content received!"
           docker logs hinter2
           cat "$FILE_PATH"
+
+      - name: Keep container alive for other job
+        run: sleep 30
