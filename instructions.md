@@ -24,18 +24,6 @@ However, given the advanced nature of the underlying technology, setup and usage
     docker run -d --name my-hinter-core --restart=always --network host -v"$(pwd)/hinter-core-data":/app/hinter-core-data bbenligiray/hinter-core:0.0.7
     ```
 
-5. Wait a few minutes for `hinter-core` to boot.
-    Then, open your browser and navigate to [localhost:8080](http://localhost:8080).
-    You should see the VS Code interface, which you will use to interact with the AI assistant.
-
-6. Click the Cline icon on the VS Code sidebar.
-    Select an API provider and enter your API key.
-
-    If you are not a paid subscriber to any of these API providers:
-    - Create an [OpenRouter](https://openrouter.ai/) account
-    - Create an API key
-    - Configure Cline to use [`deepseek/deepseek-chat-v3-0324:free`](https://openrouter.ai/deepseek/deepseek-chat-v3-0324:free)
-
 ### Keypair
 
 Your keypair is composed of a `PUBLIC_KEY` and `SECRET_KEY`, and is stored in the `hinter-core-data/.env` file.
@@ -61,32 +49,7 @@ docker stop my-hinter-core
 docker rm my-hinter-core
 ```
 
-## AI Assistant Operation
+## Next stop: `hinter-cline`
 
-Click the Cline icon that appears on the VS Code sidebar.
-You can simply ask Cline to help you get started.
-
-There are two important concepts to be aware of while using Cline:
-
-### Plan/Act toggle button
-
-You can chat with the AI about the contents of your repo in Plan Mode.
-For Cline to make changes (for example, to execute predefined hinter workflows), you will need to switch to Act Mode.
-Switching between Plan and Act Mode retains the context, so you will likely want to switch between the two during use.
-
-> [!TIP]
-> Using Git for version control will enable you to track and revert changes that Cline makes in a powerful way.
-To set Git up, run the following commands in VS Code terminal:
-> ```
-> cd hinter-core-data
-> git init
-> echo -e ".env" > .gitignore
-> git add .
-> git commit -m "Initial commit"
-> ```
-> From this point on, you can use the Source Control button on the VS Code sidebar to review and commit changes made in your `hinter-core-data/` directory.
-
-### Tasks
-Whenever you want Cline to start as a clean slate, start a new task (for example, by clicking the plus sign on the Cline extension).
-Doing this between independent hinter workflows will cause Cline to perform in a more consistent manner.
-However, you may want to continue using the same task during multiple dependent hinter workflows, such as revising the same report multiple times.
+`hinter-core` merely enables you to share files with other hinters.
+You are strongly recommended to use it with [`hinter-cline`](https://github.com/bbenligiray/hinter-cline), which enables you to use a generic coding assistant for hinter operations.

@@ -9,8 +9,6 @@ if (fs.existsSync(dataDir) && (!fs.statSync(dataDir).isDirectory() || fs.readdir
 }
 
 fs.mkdirSync(dataDir, { recursive: true });
-fs.mkdirSync(path.join(dataDir, 'entries'), { recursive: true });
-fs.mkdirSync(path.join(dataDir, 'entries', 'pinned'), { recursive: true });
 fs.mkdirSync(path.join(dataDir, 'peers'), { recursive: true });
 
 const { publicKey, secretKey } = crypto.keyPair();
