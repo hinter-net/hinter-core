@@ -1,6 +1,6 @@
 # Instructions
 
-This repo is designed to work across all operating systems and be accessible to non-technical users.
+This project is designed to work across all operating systems and be accessible to non-technical users.
 
 ## Installation
 
