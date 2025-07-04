@@ -1,7 +1,6 @@
 # Instructions
 
 This repo is designed to work across all operating systems and be accessible to non-technical users.
-However, given the advanced nature of the underlying technology, setup and usage may require some effort and patience—grab a cup of coffee and settle in.
 
 ## Installation
 
