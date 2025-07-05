@@ -23,7 +23,7 @@ jobs:
         run: |
           mkdir -p hinter-core-data/peers/hinter2/outgoing
           mkdir -p hinter-core-data/peers/hinter2/incoming
-          echo '{"publicKey":"${HINTER2_PUBLIC_KEY}"}' > hinter-core-data/peers/hinter2/config.json
+          echo "{\"publicKey\":\"${HINTER2_PUBLIC_KEY}\"}" > hinter-core-data/peers/hinter2/config.json
           echo "PUBLIC_KEY=${HINTER1_PUBLIC_KEY}" > hinter-core-data/.env
           echo "SECRET_KEY=${HINTER1_SECRET_KEY}" >> hinter-core-data/.env
 
@@ -76,7 +76,7 @@ jobs:
         run: |
           mkdir -p hinter-core-data/peers/hinter1/outgoing
           mkdir -p hinter-core-data/peers/hinter1/incoming
-          echo '{"publicKey":"${HINTER1_PUBLIC_KEY}"}' > hinter-core-data/peers/hinter1/config.json
+          echo "{\"publicKey\":\"${HINTER1_PUBLIC_KEY}\"}" > hinter-core-data/peers/hinter1/config.json
           echo "PUBLIC_KEY=${HINTER2_PUBLIC_KEY}" > hinter-core-data/.env
           echo "SECRET_KEY=${HINTER2_SECRET_KEY}" >> hinter-core-data/.env
 
