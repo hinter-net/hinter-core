@@ -34,20 +34,20 @@ Peer-specific settings override global settings.
 
 #### Global Configuration
 
-The global `hinter.config.json` file can contain the following optional keys:
+The global `hinter.config.json` file can contain the following keys:
 
-*   `peerSizeLimitMB` (default: `1024`): The maximum size of a peer's incoming directory in megabytes before they get blacklisted.
-*   `disableIncomingReports` (default: `false`): When set to `true`, the application will not receive reports from any peers.
+*   `disableIncomingReports` (optional, default: `false`): When set to `true`, the application will not receive reports.
+*   `peerSizeLimitMB` (optional, default: `1024`): The maximum size of a peer's incoming directory in megabytes before they get blacklisted.
 
 #### Peer-Specific Configuration
 
 The peer-specific `hinter.config.json` file must contain the `publicKey` of the peer.
-It can also override any of the global configuration settings.
+It can also override any of the global configuration settings in a peer-specific manner.
 
 ```jsonc
 {
   "publicKey": "...",
-  "peerSizeLimitMB": 2048,            // Optional
-  "disableIncomingReports": true      // Optional
+  "disableIncomingReports": true,     // Optional
+  "peerSizeLimitMB": 2048             // Optional
 }
 ```
