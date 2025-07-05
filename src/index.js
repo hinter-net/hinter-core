@@ -63,7 +63,7 @@ async function main() {
 
     await Promise.all(peers.map(async (peer) => {
         if (!disableIncomingReports) {
-            peer.incomingLocaldrive = new Localdrive(path.join(peersDirectoryPath, `${peer.alias}-${peer.publicKey}`, 'incoming'));
+            peer.incomingLocaldrive = new Localdrive(path.join(peersDirectoryPath, peer.alias, 'incoming'));
 
             const incomingHyperdriveKeyPair = crypto.keyPair(crypto.data(b4a.concat([b4a.from(peer.publicKey, 'hex'), keyPair.publicKey])));
             peer.incomingHyperdrive = new Hyperdrive(peer.incomingCorestore, incomingHyperdriveKeyPair.publicKey);
@@ -73,7 +73,7 @@ async function main() {
             await peer.incomingDiscovery.flushed();
         }
 
-        peer.outgoingLocaldrive = new Localdrive(path.join(peersDirectoryPath, `${peer.alias}-${peer.publicKey}`, 'outgoing'));
+        peer.outgoingLocaldrive = new Localdrive(path.join(peersDirectoryPath, peer.alias, 'outgoing'));
 
         const outgoingHyperdriveKeyPair = crypto.keyPair(crypto.data(b4a.concat([keyPair.publicKey, b4a.from(peer.publicKey, 'hex')])));
         const outgoingCorestoreMainHypercore = peer.outgoingCorestore.get({ key: outgoingHyperdriveKeyPair.publicKey, keyPair: outgoingHyperdriveKeyPair })
@@ -103,7 +103,7 @@ async function main() {
         }
 
         // Mirror detected outgoing changes in localdrive
-        fs.watch(path.join(peersDirectoryPath, `${peer.alias}-${peer.publicKey}`, 'outgoing'), { recursive: true }, async () => {
+        fs.watch(path.join(peersDirectoryPath, peer.alias, 'outgoing'), { recursive: true }, async () => {
             const outgoingMirror = peer.outgoingLocaldrive.mirror(peer.outgoingHyperdrive);
             await outgoingMirror.done();
             console.log(`${peer.alias} detected outgoing: ${JSON.stringify(outgoingMirror.count)}`);
