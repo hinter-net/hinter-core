@@ -44,10 +44,10 @@ The global `hinter.config.json` file can contain the following optional keys:
 The peer-specific `hinter.config.json` file must contain the `publicKey` of the peer.
 It can also override any of the global configuration settings.
 
-```json
+```jsonc
 {
   "publicKey": "...",
-  "peerSizeLimitMB": 2048,
-  "disableIncomingReports": true
+  "peerSizeLimitMB": 2048,            // Optional
+  "disableIncomingReports": true      // Optional
 }
 ```
