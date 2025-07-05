@@ -4,9 +4,9 @@ import process from 'bare-process';
 import { calculateDirectorySize } from './utils';
 
 function validatePeerDirectory(peerDirectoryPath) {
-    const configPath = path.join(peerDirectoryPath, 'config.json');
+    const configPath = path.join(peerDirectoryPath, 'hinter.config.json');
     if (!fs.existsSync(configPath)) {
-        throw new Error(`config.json not found in ${peerDirectoryPath}`);
+        throw new Error(`hinter.config.json not found in ${peerDirectoryPath}`);
     }
 
     const publicKey = JSON.parse(fs.readFileSync(configPath, 'utf-8')).publicKey;
