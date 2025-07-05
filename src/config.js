@@ -13,7 +13,7 @@ export function parseGlobalConfig() {
     // Unlike the peer config file, the global config file is optional
     if (fs.existsSync(globalConfigPath)) {
         const globalConfig = JSON.parse(fs.readFileSync(globalConfigPath, 'utf-8'));
-        // We allow sidecar applications to overload the global config schema
+        // We allow companion applications to overload the global config schema
         for (const key in globalConfigDefaults) {
             if (globalConfig[key] !== undefined) {
                 // Type validation would be nice here but we don't want more dependencies
@@ -39,7 +39,7 @@ export function parsePeerConfig(peerDirectoryPath, globalConfig) {
 
     const config = { ...globalConfig, publicKey: peerConfig.publicKey };
 
-    // Similar to global config, we allow sidecar applications to overload the peer config schema
+    // Similar to global config, we allow companion applications to overload the peer config schema
     for (const key in globalConfigDefaults) {
         if (peerConfig[key] !== undefined) {
             config[key] = peerConfig[key];
