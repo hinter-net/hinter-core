@@ -17,11 +17,13 @@ async function main() {
     const peersDirectoryPath = path.join('hinter-core-data', 'peers');
     console.log('Parsing peers...');
     const peerSizeLimitMB = envFilePeerSizeLimitMB ?? 1024;
-    const peers = await parsePeers(peersDirectoryPath, peerSizeLimitMB);
+    const initialPeers = await parsePeers(peersDirectoryPath, peerSizeLimitMB);
+    // Clone initialPeers because we will be adding dynamic elements to it
+    const peers = structuredClone(initialPeers);
     console.log(`Parsed ${peers.length} peers!`);
     setInterval(async () => {
         const currentPeers = await parsePeers(peersDirectoryPath, peerSizeLimitMB);
-        if (peers.map(peer => `${peer.alias}-${peer.publicKey}`).sort().toString() !== currentPeers.map(peer => `${peer.alias}-${peer.publicKey}`).sort().toString()) {
+        if (initialPeers.map(peer => peer.toString()).sort().toString() !== currentPeers.map(peer => peer.toString()).sort().toString()) {
             console.log('Peers have changed. Exiting to allow restart.');
             process.exit(0);
         }
