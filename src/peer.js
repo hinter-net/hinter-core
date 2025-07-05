@@ -3,9 +3,15 @@ import path from 'bare-path';
 import process from 'bare-process';
 import { calculateDirectorySize } from './utils';
 
-function validatePeerDirectory(peerDirectoryPath, peerDirectoryName) {
-    if (!/^[^-]+-[a-f0-9]{64}$/.test(peerDirectoryName)) {
-        throw new Error(`${peerDirectoryName} does not satisfy the ALIAS-PUBLIC_KEY format`);
+function validatePeerDirectory(peerDirectoryPath) {
+    const configPath = path.join(peerDirectoryPath, 'config.json');
+    if (!fs.existsSync(configPath)) {
+        throw new Error(`config.json not found in ${peerDirectoryPath}`);
+    }
+
+    const publicKey = JSON.parse(fs.readFileSync(configPath, 'utf-8')).publicKey;
+    if (!publicKey || !/^[a-f0-9]{64}$/.test(publicKey)) {
+        throw new Error(`Invalid or missing publicKey in ${configPath}`);
     }
 
     ['incoming', 'outgoing'].forEach(expectedPeerDirectoryName => {
@@ -16,8 +22,7 @@ function validatePeerDirectory(peerDirectoryPath, peerDirectoryName) {
         }
     });
 
-    const [peerAlias, peerPublicKey] = peerDirectoryName.split('-');
-    return { peerAlias, peerPublicKey };
+    return { peerAlias: path.basename(peerDirectoryPath), peerPublicKey: publicKey };
 }
 
 function checkPeerSizeLimit(peerDirectoryPath, peerAlias, sizeLimitMB) {
@@ -37,7 +42,7 @@ export function parsePeers(peersDirectoryPath, peerSizeLimitMB) {
         if (!fs.statSync(peerDirectoryPath).isDirectory()) {
             return null;
         }
-        const { peerAlias, peerPublicKey } = validatePeerDirectory(peerDirectoryPath, peerDirectoryName);
+        const { peerAlias, peerPublicKey } = validatePeerDirectory(peerDirectoryPath);
         const sizeCheckResult = checkPeerSizeLimit(peerDirectoryPath, peerAlias, peerSizeLimitMB);
         if (sizeCheckResult.isBlacklisted) {
             return null;
@@ -51,7 +56,7 @@ export function parsePeers(peersDirectoryPath, peerSizeLimitMB) {
     const peersToBlacklist = peers.filter(peer => peer.exceedsSizeLimit);
     if (peersToBlacklist.length > 0) {
         const blacklistedAliases = peersToBlacklist.map(peer => {
-            fs.writeFileSync(path.join(peersDirectoryPath, `${peer.alias}-${peer.publicKey}`, '.blacklisted'), '');
+            fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), '');
             return peer.alias;
         });
         console.log(`Peers blacklisted for exceeding the size limit: ${blacklistedAliases.join(', ')}. Exiting for restart.`);

@@ -14,15 +14,28 @@ The `hinter-core-data/` directory, which stores your peer configurations, shared
 hinter-core-data/
 ├── .env                                # Your keypair
 └── peers/
-     ├── {ALIAS_1}-{PUBLIC_KEY_1}/      # Report directory of peer #1
+     ├── {PEER_ALIAS_1}/                # Report directory of peer #1
+     │    ├── config.json               # Configuration for peer #1
      │    ├── incoming/
      │    │    └── **                   # Incoming reports from peer #1 to you
      │    └── outgoing/
      │         └── **                   # Outgoing reports from you to peer #1
-     ├── {ALIAS_2}-{PUBLIC_KEY_2}/      # Report directory of peer #2
+     ├── {PEER_ALIAS_2}/                # Report directory of peer #2
+     │    ├── config.json               # Configuration for peer #2
      │    ├── incoming/
      │    │    └── **                   # Incoming reports from peer #2 to you
      │    └── outgoing/
      │         └── **                   # Outgoing reports from you to peer #2
      └──  **/                           # Report directories of additional peers
+```
+
+### Peer-specific `config.json` file
+
+Each peer directory includes a `config.json` with the public key of the peer and additional optional parameters as required by sidecar applications such as [`hinter-cline`.](https://github.com/bbenligiray/hinter-cline)
+
+```json
+{
+  "publicKey": "45a2...",
+  ...
+}
 ```

@@ -21,8 +21,9 @@ jobs:
 
       - name: Setup hinter1
         run: |
-          mkdir -p hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/outgoing
-          mkdir -p hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/incoming
+          mkdir -p hinter-core-data/peers/hinter2/outgoing
+          mkdir -p hinter-core-data/peers/hinter2/incoming
+          echo '{"publicKey":"${HINTER2_PUBLIC_KEY}"}' > hinter-core-data/peers/hinter2/config.json
           echo "PUBLIC_KEY=${HINTER1_PUBLIC_KEY}" > hinter-core-data/.env
           echo "SECRET_KEY=${HINTER1_SECRET_KEY}" >> hinter-core-data/.env
 
@@ -34,7 +35,7 @@ jobs:
           echo "Waiting for hinter1 to initialize..."
           sleep 30
           echo "Creating report file..."
-          echo "hello from hinter1" > ./hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/outgoing/report-from-1.txt
+          echo "hello from hinter1" > ./hinter-core-data/peers/hinter2/outgoing/report-from-1.txt
           echo "Report file created"
 
       - name: Wait for sync and verify
@@ -43,7 +44,7 @@ jobs:
           timeout=180
           interval=5
           elapsed=0
-          FILE_PATH="./hinter-core-data/peers/hinter2-${HINTER2_PUBLIC_KEY}/incoming/report-from-2.txt"
+          FILE_PATH="./hinter-core-data/peers/hinter2/incoming/report-from-2.txt"
           EXPECTED_CONTENT="hello from hinter2"
           while ! ( [ -f "$FILE_PATH" ] && grep -q "$EXPECTED_CONTENT" "$FILE_PATH" ); do
             if [ $elapsed -ge $timeout ]; then
@@ -73,8 +74,9 @@ jobs:
 
       - name: Setup hinter2
         run: |
-          mkdir -p hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/outgoing
-          mkdir -p hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/incoming
+          mkdir -p hinter-core-data/peers/hinter1/outgoing
+          mkdir -p hinter-core-data/peers/hinter1/incoming
+          echo '{"publicKey":"${HINTER1_PUBLIC_KEY}"}' > hinter-core-data/peers/hinter1/config.json
           echo "PUBLIC_KEY=${HINTER2_PUBLIC_KEY}" > hinter-core-data/.env
           echo "SECRET_KEY=${HINTER2_SECRET_KEY}" >> hinter-core-data/.env
 
@@ -86,7 +88,7 @@ jobs:
           echo "Waiting for hinter2 to initialize..."
           sleep 30
           echo "Creating report file..."
-          echo "hello from hinter2" > ./hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/outgoing/report-from-2.txt
+          echo "hello from hinter2" > ./hinter-core-data/peers/hinter1/outgoing/report-from-2.txt
           echo "Report file created"
 
       - name: Wait for sync and verify
@@ -95,7 +97,7 @@ jobs:
           timeout=180
           interval=5
           elapsed=0
-          FILE_PATH="./hinter-core-data/peers/hinter1-${HINTER1_PUBLIC_KEY}/incoming/report-from-1.txt"
+          FILE_PATH="./hinter-core-data/peers/hinter1/incoming/report-from-1.txt"
           EXPECTED_CONTENT="hello from hinter1"
           while ! ( [ -f "$FILE_PATH" ] && grep -q "$EXPECTED_CONTENT" "$FILE_PATH" ); do
             if [ $elapsed -ge $timeout ]; then
