@@ -9,20 +9,22 @@ import crypto from 'hypercore-crypto';
 import b4a from 'b4a';
 import { printAsciiArt, parseEnvFile } from './utils';
 import { parsePeers } from './peer.js';
+import { parseGlobalConfig } from './config.js';
 
 printAsciiArt();
 
 async function main() {
-    const { keyPair, peerSizeLimitMB: envFilePeerSizeLimitMB, disableIncomingReports } = await parseEnvFile();
+    const { keyPair } = await parseEnvFile();
+    const globalConfig = parseGlobalConfig();
     const peersDirectoryPath = path.join('hinter-core-data', 'peers');
     console.log('Parsing peers...');
-    const peerSizeLimitMB = envFilePeerSizeLimitMB ?? 1024;
-    const initialPeers = await parsePeers(peersDirectoryPath, peerSizeLimitMB);
+    const initialPeers = await parsePeers(peersDirectoryPath, globalConfig);
     // Clone initialPeers because we will be adding dynamic elements to it
     const peers = structuredClone(initialPeers);
-    console.log(`Parsed ${peers.length} peers!`);
+    console.log(`Parsed ${initialPeers.length} peers!`);
     setInterval(async () => {
-        const currentPeers = await parsePeers(peersDirectoryPath, peerSizeLimitMB);
+        const currentPeers = await parsePeers(peersDirectoryPath, globalConfig);
+        // This assumes parsePeers() returns an object that is fully serializable with toString()
         if (initialPeers.map(peer => peer.toString()).sort().toString() !== currentPeers.map(peer => peer.toString()).sort().toString()) {
             console.log('Peers have changed. Exiting to allow restart.');
             process.exit(0);
@@ -32,7 +34,7 @@ async function main() {
     console.log('Preparing to connect...');
     // Create Corestore instances per peer in a local directory
     await Promise.all(peers.map(async (peer) => {
-        if (!disableIncomingReports) {
+        if (!peer.disableIncomingReports) {
             const incomingCorestorePath = path.join('.storage', peer.publicKey, 'incoming');
             fs.rmSync(incomingCorestorePath, {recursive: true, force: true});
             const incomingCorestore = new Corestore(incomingCorestorePath);
@@ -55,7 +57,7 @@ async function main() {
         if (!peer) {
             conn.end();
         }
-        if (!disableIncomingReports) {
+        if (!peer.disableIncomingReports) {
             peer.incomingCorestore.replicate(conn);
         }
         peer.outgoingCorestore.replicate(conn);
@@ -64,7 +66,7 @@ async function main() {
     });
 
     await Promise.all(peers.map(async (peer) => {
-        if (!disableIncomingReports) {
+        if (!peer.disableIncomingReports) {
             peer.incomingLocaldrive = new Localdrive(path.join(peersDirectoryPath, peer.alias, 'incoming'));
 
             const incomingHyperdriveKeyPair = crypto.keyPair(crypto.data(b4a.concat([b4a.from(peer.publicKey, 'hex'), keyPair.publicKey])));
@@ -94,7 +96,7 @@ async function main() {
         await initialOutgoingMirror.done();
 
         // Mirror detected incoming changes in hyperdrive
-        if (!disableIncomingReports) {
+        if (!peer.disableIncomingReports) {
             (async () => {
                 for await (const { } of peer.incomingHyperdrive.watch()) {
                     const incomingMirror = peer.incomingHyperdrive.mirror(peer.incomingLocaldrive);
