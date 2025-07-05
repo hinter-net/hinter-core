@@ -19,7 +19,7 @@ async function main() {
     const peersDirectoryPath = path.join('hinter-core-data', 'peers');
     console.log('Parsing peers...');
     const initialPeers = await parsePeers(peersDirectoryPath, globalConfig);
-    // Clone initialPeers because we will be adding dynamic elements to it
+    // Clone initialPeers to be able to add dynamic elements to it
     const peers = structuredClone(initialPeers);
     console.log(`Parsed ${initialPeers.length} peers!`);
     setInterval(async () => {

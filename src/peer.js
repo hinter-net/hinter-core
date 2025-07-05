@@ -37,7 +37,7 @@ export function parsePeers(peersDirectoryPath, globalConfig) {
         });
 
         const sizeCheckResult = checkPeerSizeLimit(peerDirectoryPath, peer);
-        // Have blacklisted peers are ignored by the .filter(Boolean)
+        // Have blacklisted peers be ignored by the .filter(Boolean) below
         if (sizeCheckResult.isBlacklisted) {
             return null;
         }
