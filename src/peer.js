@@ -47,6 +47,10 @@ export function parsePeers(peersDirectoryPath, globalConfig) {
         return peer;
     }).filter(Boolean);
 
+    if (new Set(peers.map(peer => peer.publicKey)).size !== peers.length) {
+        throw new Error('Duplicate public key found in peer configurations');
+    }
+
     const peersToBlacklist = peers.filter(peer => peer.exceedsSizeLimit);
     if (peersToBlacklist.length > 0) {
         const blacklistedAliases = peersToBlacklist.map(peer => {
