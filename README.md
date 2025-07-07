@@ -17,18 +17,19 @@ hinter-core-data/
 ├── .env                                # Your keypair
 ├── hinter.config.json                  # Global configuration (optional)
 └── peers/
-     ├── {PEER_ALIAS_1}/                # Report directory of peer #1
+     ├── {PEER_ALIAS_1}/                # Directory of peer #1
      │    ├── hinter.config.json        # Configuration for peer #1
      │    ├── incoming/
      │    │    └── **                   # Incoming reports from peer #1 to you
      │    └── outgoing/
      │         └── **                   # Outgoing reports from you to peer #1
-     └──  **/                           # Report directories of additional peers
+     └──  **/                           # Directories of additional peers
 ```
 
 ### Configuration
 
-Configuration is handled by `hinter.config.json` files. A global configuration file can be placed at `hinter-core-data/hinter.config.json`, and peer-specific settings can be configured in `hinter-core-data/peers/{PEER_ALIAS}/hinter.config.json`.
+Configuration is handled by `hinter.config.json` files.
+A global configuration file can be placed at `hinter-core-data/hinter.config.json`, and peer-specific settings must be configured in `hinter-core-data/peers/{PEER_ALIAS}/hinter.config.json`.
 
 Peer-specific settings override global settings.
 
@@ -36,8 +37,8 @@ Peer-specific settings override global settings.
 
 The global `hinter.config.json` file can contain the following keys:
 
-*   `disableIncomingReports` (optional, default: `false`): When set to `true`, the application will not receive reports.
-*   `peerSizeLimitMB` (optional, default: `1024`): The maximum size of a peer's incoming directory in megabytes before they get blacklisted.
+*   `disableIncomingReports` (optional, default: `false`): When set to `true`, the application will not listen for incoming reports.
+*   `peerSizeLimitMB` (optional, default: `1024`): The maximum size of a peer's directory in megabytes before they get blacklisted.
 
 #### Peer-Specific Configuration
 

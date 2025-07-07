@@ -51,4 +51,4 @@ docker rm my-hinter-core
 ## Next stop: `hinter-cline`
 
 `hinter-core` merely enables you to share files with other hinters.
-You are strongly recommended to use it with [`hinter-cline`](https://github.com/bbenligiray/hinter-cline), which enables you to use a generic coding assistant for hinter operations.
+You are strongly recommended to use it with [`hinter-cline`](https://github.com/bbenligiray/hinter-cline), which enables you to leverage a generic coding assistant in hinter operations.
