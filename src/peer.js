@@ -4,12 +4,12 @@ import process from 'bare-process';
 import { calculateDirectorySize } from './utils';
 import { parsePeerConfig } from './config';
 
-function checkPeerSizeLimit(peerDirectoryPath, peer) {
+function checkPeerSizeLimit(peer) {
     // Saving some compute by not calling calculateDirectorySize() on already blacklisted peers
     if (fs.existsSync(path.join(peerDirectoryPath, '.blacklisted'))) {
         return { isBlacklisted: true };
     }
-    const incomingDirectorySize = calculateDirectorySize(path.join(peerDirectoryPath, 'incoming'));
+    const incomingDirectorySize = calculateDirectorySize(path.join('.storage', peer.publicKey, 'incoming'));
     if (incomingDirectorySize > peer.peerSizeLimitMB * 1024 * 1024) {
         return { isBlacklisted: false, exceedsSizeLimit: true };
     }
@@ -36,7 +36,7 @@ export function parsePeers(peersDirectoryPath, globalConfig) {
             }
         });
 
-        const sizeCheckResult = checkPeerSizeLimit(peerDirectoryPath, peer);
+        const sizeCheckResult = checkPeerSizeLimit(peer);
         // Have blacklisted peers be ignored by the .filter(Boolean) below
         if (sizeCheckResult.isBlacklisted) {
             return null;

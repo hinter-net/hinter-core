@@ -38,7 +38,7 @@ Peer-specific settings override global settings.
 The global `hinter.config.json` file can contain the following keys:
 
 *   `disableIncomingReports` (optional, default: `false`): When set to `true`, the application will not listen for incoming reports.
-*   `peerSizeLimitMB` (optional, default: `1024`): The maximum size of a peer's directory in megabytes before they get blacklisted.
+*   `peerSizeLimitMB` (optional, default: `1024`): The maximum size of a peer's incoming Corestore directory in megabytes before they get blacklisted.
 
 #### Peer-Specific Configuration
 
