@@ -5,10 +5,6 @@ import { calculateDirectorySize } from './utils';
 import { parsePeerConfig } from './config';
 
 function checkPeerSizeLimit(peer) {
-    // Saving some compute by not calling calculateDirectorySize() on already blacklisted peers
-    if (fs.existsSync(path.join(peerDirectoryPath, '.blacklisted'))) {
-        return { isBlacklisted: true };
-    }
     const incomingDirectorySize = calculateDirectorySize(path.join('.storage', peer.publicKey, 'incoming'));
     if (incomingDirectorySize > peer.peerSizeLimitMB * 1024 * 1024) {
         return { isBlacklisted: false, exceedsSizeLimit: true };
@@ -36,11 +32,12 @@ export function parsePeers(peersDirectoryPath, globalConfig) {
             }
         });
 
-        const sizeCheckResult = checkPeerSizeLimit(peer);
-        // Have blacklisted peers be ignored by the .filter(Boolean) below
-        if (sizeCheckResult.isBlacklisted) {
+        // Saving some compute by not calling checkPeerSizeLimit() on already blacklisted peers
+        if (fs.existsSync(path.join(peerDirectoryPath, '.blacklisted'))) {
+            // Have blacklisted peers be ignored by the .filter(Boolean) below
             return null;
         }
+        const sizeCheckResult = checkPeerSizeLimit(peer);
         if (sizeCheckResult.exceedsSizeLimit) {
             peer.exceedsSizeLimit = true;
         }
