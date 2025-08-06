@@ -22,7 +22,7 @@ jobs:
           echo "SECRET_KEY=a580f4d154155ff2947855b7770435015c111bb5e1ae31b0915bded7d9b1ecbb1720090ca74ba7c5100c5c9bf7898171fbae0ede675fa7c3aa248bd1d6c96a8f" >> hinter-core-data/.env
 
       - name: Run hinter-core in background
-        run: docker run -d --name hinter1 --network host -v "$(pwd)/hinter-core-data:/app/hinter-core-data" hinter-core:test
+        run: docker run -d --name hinter1 --network host -v "$(pwd)/hinter-core-data:/hinter-core/hinter-core-data" hinter-core:test
 
       - name: Wait for initialization and create report
         run: |
@@ -75,7 +75,7 @@ jobs:
           echo "SECRET_KEY=0646dadeeaf79af9aab9954d7c63a52fa2ee1e1c04276cc0b760c6dd5c920d899e230ac8b403f3861871c2325f3226c930e7e4f0809b6633a6870aa05904ef01" >> hinter-core-data/.env
 
       - name: Run hinter-core in background
-        run: docker run -d --name hinter2 --network host -v "$(pwd)/hinter-core-data:/app/hinter-core-data" hinter-core:test
+        run: docker run -d --name hinter2 --network host -v "$(pwd)/hinter-core-data:/hinter-core/hinter-core-data" hinter-core:test
 
       - name: Wait for initialization and create report
         run: |

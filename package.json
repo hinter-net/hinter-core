@@ -15,8 +15,8 @@
   },
   "scripts": {
     "docker:build": "docker build -t bbenligiray/hinter-core:latest .",
-    "docker:initialize": "docker run -it --rm -v./hinter-core-data:/app/hinter-core-data bbenligiray/hinter-core:latest npm run initialize",
-    "docker:start": "docker run -it --rm --network host -v./hinter-core-data:/app/hinter-core-data bbenligiray/hinter-core:latest",
+    "docker:initialize": "docker run -it --rm -v./hinter-core-data:/hinter-core/hinter-core-data bbenligiray/hinter-core:latest npm run initialize",
+    "docker:start": "docker run -it --rm --network host -v./hinter-core-data:/hinter-core/hinter-core-data bbenligiray/hinter-core:latest",
     "initialize": "node src/initialize.js",
     "start": "pear && pear run src/index.js"
   },
