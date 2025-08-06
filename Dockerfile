@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y curl libatomic1 \
 RUN npm i -g pear
 
 # Copy over and install hinter-core
-WORKDIR /app
+WORKDIR /hinter-core
 COPY package*.json .
 RUN npm i
 COPY src/ ./src/
