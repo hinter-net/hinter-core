@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import crypto from 'hypercore-crypto';
+import hypercoreCrypto from 'hypercore-crypto';
 
 const dataDir = 'hinter-core-data';
 
@@ -11,7 +11,7 @@ if (fs.existsSync(dataDir) && (!fs.statSync(dataDir).isDirectory() || fs.readdir
 fs.mkdirSync(dataDir, { recursive: true });
 fs.mkdirSync(path.join(dataDir, 'peers'), { recursive: true });
 
-const { publicKey, secretKey } = crypto.keyPair();
+const { publicKey, secretKey } = hypercoreCrypto.keyPair();
 const envContent = `PUBLIC_KEY=${Buffer.from(publicKey).toString('hex')}\nSECRET_KEY=${Buffer.from(secretKey).toString('hex')}`;
 const envFilePath = path.join(dataDir, '.env');
 fs.writeFileSync(envFilePath, envContent);

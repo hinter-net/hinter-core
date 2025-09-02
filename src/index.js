@@ -5,7 +5,7 @@ import Hyperswarm from 'hyperswarm';
 import Hyperdrive from 'hyperdrive';
 import Localdrive from 'localdrive';
 import Corestore from 'corestore';
-import crypto from 'hypercore-crypto';
+import hypercoreCrypto from 'hypercore-crypto';
 import b4a from 'b4a';
 import { printAsciiArt, parseEnvFile } from './utils.js';
 import { parsePeers } from './peer.js';
@@ -78,7 +78,7 @@ async function main() {
         if (!peer.disableIncomingReports) {
             peer.incomingLocaldrive = new Localdrive(path.join(peersDirectoryPath, peer.alias, 'incoming'));
 
-            const incomingHyperdriveKeyPair = crypto.keyPair(crypto.data(b4a.concat([b4a.from(peer.publicKey, 'hex'), keyPair.publicKey])));
+            const incomingHyperdriveKeyPair = hypercoreCrypto.keyPair(hypercoreCrypto.data(b4a.concat([b4a.from(peer.publicKey, 'hex'), keyPair.publicKey])));
             peer.incomingHyperdrive = new Hyperdrive(peer.incomingCorestore, incomingHyperdriveKeyPair.publicKey);
             await peer.incomingHyperdrive.ready();
 
@@ -88,7 +88,7 @@ async function main() {
 
         peer.outgoingLocaldrive = new Localdrive(path.join(peersDirectoryPath, peer.alias, 'outgoing'));
 
-        const outgoingHyperdriveKeyPair = crypto.keyPair(crypto.data(b4a.concat([keyPair.publicKey, b4a.from(peer.publicKey, 'hex')])));
+        const outgoingHyperdriveKeyPair = hypercoreCrypto.keyPair(hypercoreCrypto.data(b4a.concat([keyPair.publicKey, b4a.from(peer.publicKey, 'hex')])));
         const outgoingCorestoreMainHypercore = peer.outgoingCorestore.get({ key: outgoingHyperdriveKeyPair.publicKey, keyPair: outgoingHyperdriveKeyPair })
         await outgoingCorestoreMainHypercore.ready()
         peer.outgoingHyperdrive = new Hyperdrive(peer.outgoingCorestore, outgoingHyperdriveKeyPair.publicKey);
