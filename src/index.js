@@ -1,13 +1,13 @@
-import fs from 'bare-fs';
-import path from 'bare-path';
-import process from 'bare-process';
+import fs from 'fs';
+import path from 'path';
+import process from 'process';
 import Hyperswarm from 'hyperswarm';
 import Hyperdrive from 'hyperdrive';
 import Localdrive from 'localdrive';
 import Corestore from 'corestore';
 import crypto from 'hypercore-crypto';
 import b4a from 'b4a';
-import { printAsciiArt, parseEnvFile } from './utils';
+import { printAsciiArt, parseEnvFile } from './utils.js';
 import { parsePeers } from './peer.js';
 import { parseGlobalConfig } from './config.js';
 
@@ -36,7 +36,7 @@ async function main() {
     await Promise.all(peers.map(async (peer) => {
         if (!peer.disableIncomingReports) {
             const incomingCorestorePath = path.join('.storage', peer.publicKey, 'incoming');
-            fs.rmSync(incomingCorestorePath, {recursive: true, force: true});
+            fs.rmSync(incomingCorestorePath, { recursive: true, force: true });
             const incomingCorestore = new Corestore(incomingCorestorePath);
             await incomingCorestore.ready();
             peer.incomingCorestore = incomingCorestore;
@@ -49,7 +49,16 @@ async function main() {
 
     // Create a Hyperswarm instance with key pair
     const swarm = new Hyperswarm({ keyPair });
-    Pear.teardown(() => swarm.destroy());
+
+    const cleanup = async () => {
+        console.log('Closing swarm...');
+        await swarm.destroy();
+        console.log('Closed swarm.');
+        process.exit(0);
+    };
+
+    process.on('SIGINT', cleanup);
+    process.on('SIGTERM', cleanup);
 
     // On connection with a peer, replicate the respective Corestore instances
     swarm.on('connection', (conn, peerInfo) => {

@@ -1,5 +1,5 @@
-import fs from 'bare-fs';
-import path from 'bare-path';
+import fs from 'fs';
+import path from 'path';
 import crypto from 'hypercore-crypto';
 import b4a from 'b4a';
 
