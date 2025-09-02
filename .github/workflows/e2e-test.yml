@@ -24,10 +24,8 @@ jobs:
       - name: Run hinter-core in background
         run: docker run -d --name hinter1 --network host -v "$(pwd)/hinter-core-data:/hinter-core/hinter-core-data" hinter-core:test
 
-      - name: Wait for initialization and create report
+      - name: Create report
         run: |
-          echo "Waiting for hinter1 to initialize..."
-          sleep 30
           echo "Creating report file..."
           echo "hello from hinter1" > ./hinter-core-data/peers/hinter2/outgoing/report-from-1.txt
           echo "Report file created"
@@ -77,10 +75,8 @@ jobs:
       - name: Run hinter-core in background
         run: docker run -d --name hinter2 --network host -v "$(pwd)/hinter-core-data:/hinter-core/hinter-core-data" hinter-core:test
 
-      - name: Wait for initialization and create report
+      - name: Create report
         run: |
-          echo "Waiting for hinter2 to initialize..."
-          sleep 30
           echo "Creating report file..."
           echo "hello from hinter2" > ./hinter-core-data/peers/hinter1/outgoing/report-from-2.txt
           echo "Report file created"
