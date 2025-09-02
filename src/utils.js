@@ -1,6 +1,6 @@
-import fs from 'bare-fs';
-import path from 'bare-path';
-import crypto from 'hypercore-crypto';
+import fs from 'fs';
+import path from 'path';
+import hypercoreCrypto from 'hypercore-crypto';
 import b4a from 'b4a';
 
 export function printAsciiArt() {
@@ -45,9 +45,9 @@ export async function parseEnvFile() {
         publicKey: b4a.from(envFileContent.match(/PUBLIC_KEY=([0-9a-f]+)/)[1], 'hex'),
         secretKey: b4a.from(envFileContent.match(/SECRET_KEY=([0-9a-f]+)/)[1], 'hex')
     };
-    if (!crypto.validateKeyPair(keyPair)) {
+    if (!hypercoreCrypto.validateKeyPair(keyPair)) {
         throw new Error('Key pair not valid');
     }
-    
+
     return { keyPair };
 }

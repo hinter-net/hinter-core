@@ -1,5 +1,5 @@
-import fs from 'bare-fs';
-import path from 'bare-path';
+import fs from 'fs';
+import path from 'path';
 
 const globalConfigDefaults = {
     peerSizeLimitMB: 1024,

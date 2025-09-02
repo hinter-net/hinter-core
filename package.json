@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bbenligiray/hinter-core"
+    "url": "https://github.com/hinter-net/hinter-core"
   },
   "main": "index.js",
   "type": "module",
@@ -18,14 +18,10 @@
     "docker:initialize": "docker run -it --rm -v./hinter-core-data:/hinter-core/hinter-core-data bbenligiray/hinter-core:latest npm run initialize",
     "docker:start": "docker run -it --rm --network host -v./hinter-core-data:/hinter-core/hinter-core-data bbenligiray/hinter-core:latest",
     "initialize": "node src/initialize.js",
-    "start": "pear && pear run src/index.js"
+    "start": "node src/index.js"
   },
   "dependencies": {
     "b4a": "^1.6.7",
-    "bare-buffer": "^3.2.0",
-    "bare-fs": "^4.1.5",
-    "bare-path": "^3.0.0",
-    "bare-process": "^4.2.1",
     "corestore": "^7.4.5",
     "hyperdrive": "^12.3.0",
     "hyperswarm": "^4.11.7",

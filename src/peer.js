@@ -1,8 +1,8 @@
-import fs from 'bare-fs';
-import path from 'bare-path';
-import process from 'bare-process';
-import { calculateDirectorySize } from './utils';
-import { parsePeerConfig } from './config';
+import fs from 'fs';
+import path from 'path';
+import process from 'process';
+import { calculateDirectorySize } from './utils.js';
+import { parsePeerConfig } from './config.js';
 
 function checkPeerSizeLimit(peer) {
     const incomingDirectoryPath = path.join('.storage', peer.publicKey, 'incoming');
