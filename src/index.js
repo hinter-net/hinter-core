@@ -115,12 +115,15 @@ async function main() {
             })();
         }
 
-        // Mirror detected outgoing changes in localdrive
-        fs.watch(path.join(peersDirectoryPath, peer.alias, 'outgoing'), { recursive: true }, async () => {
+        // Mirror outgoing changes in localdrive
+        // We poll because fs.watch is unreliable
+        setInterval(async () => {
             const outgoingMirror = peer.outgoingLocaldrive.mirror(peer.outgoingHyperdrive);
             await outgoingMirror.done();
-            console.log(`${peer.alias} detected outgoing: ${JSON.stringify(outgoingMirror.count)}`);
-        });
+            if (outgoingMirror.count.files > 0) {
+                console.log(`${peer.alias} detected outgoing: ${JSON.stringify(outgoingMirror.count)}`);
+            }
+        }, 60000);
     }));
 }
 
