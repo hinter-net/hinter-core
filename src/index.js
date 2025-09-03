@@ -116,15 +116,11 @@ async function main() {
         }
 
         // Mirror outgoing changes in localdrive
-        // We poll because fs.watch is unreliable
-        (async function pollOutgoing() {
+        fs.watch(path.join(peersDirectoryPath, peer.alias, 'outgoing'), { recursive: true }, async () => {
             const outgoingMirror = peer.outgoingLocaldrive.mirror(peer.outgoingHyperdrive);
             await outgoingMirror.done();
-            if (outgoingMirror.count.files > 0) {
-                console.log(`${peer.alias} detected outgoing: ${JSON.stringify(outgoingMirror.count)}`);
-            }
-            setTimeout(pollOutgoing, 5000);
-        })();
+            console.log(`${peer.alias} detected outgoing: ${JSON.stringify(outgoingMirror.count)}`);
+        });
     }));
 }
 
