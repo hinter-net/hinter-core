@@ -123,7 +123,7 @@ async function main() {
             if (outgoingMirror.count.files > 0) {
                 console.log(`${peer.alias} detected outgoing: ${JSON.stringify(outgoingMirror.count)}`);
             }
-        }, 60000);
+        }, 5000);
     }));
 }
 
