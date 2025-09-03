@@ -24,6 +24,9 @@ jobs:
       - name: Run hinter-core in background
         run: docker run -d --name hinter1 --network host -v "$(pwd)/hinter-core-data:/hinter-core/hinter-core-data" hinter-core:test
 
+      - name: Wait for instance to be ready
+        run: sleep 5
+
       - name: Create report
         run: |
           echo "Creating report file..."
@@ -33,7 +36,7 @@ jobs:
       - name: Wait for sync and verify
         run: |
           echo "Waiting for report from hinter2..."
-          timeout=180
+          timeout=60
           interval=5
           elapsed=0
           FILE_PATH="./hinter-core-data/peers/hinter2/incoming/report-from-2.txt"
@@ -53,7 +56,7 @@ jobs:
           cat "$FILE_PATH"
 
       - name: Keep container alive for other job
-        run: sleep 90
+        run: sleep 30
 
   hinter2:
     runs-on: ubuntu-latest
@@ -75,6 +78,9 @@ jobs:
       - name: Run hinter-core in background
         run: docker run -d --name hinter2 --network host -v "$(pwd)/hinter-core-data:/hinter-core/hinter-core-data" hinter-core:test
 
+      - name: Wait for instance to be ready
+        run: sleep 5
+
       - name: Create report
         run: |
           echo "Creating report file..."
@@ -84,7 +90,7 @@ jobs:
       - name: Wait for sync and verify
         run: |
           echo "Waiting for report from hinter1..."
-          timeout=180
+          timeout=60
           interval=5
           elapsed=0
           FILE_PATH="./hinter-core-data/peers/hinter1/incoming/report-from-1.txt"
@@ -104,4 +110,4 @@ jobs:
           cat "$FILE_PATH"
 
       - name: Keep container alive for other job
-        run: sleep 90
+        run: sleep 30
