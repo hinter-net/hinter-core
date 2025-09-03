@@ -106,7 +106,7 @@ async function main() {
 
         // Mirror detected incoming changes in hyperdrive
         if (!peer.disableIncomingReports) {
-            (async () => {
+            (async function watchIncoming() {
                 for await (const { } of peer.incomingHyperdrive.watch()) {
                     const incomingMirror = peer.incomingHyperdrive.mirror(peer.incomingLocaldrive);
                     await incomingMirror.done();
@@ -117,13 +117,14 @@ async function main() {
 
         // Mirror outgoing changes in localdrive
         // We poll because fs.watch is unreliable
-        setInterval(async () => {
+        (async function pollOutgoing() {
             const outgoingMirror = peer.outgoingLocaldrive.mirror(peer.outgoingHyperdrive);
             await outgoingMirror.done();
             if (outgoingMirror.count.files > 0) {
                 console.log(`${peer.alias} detected outgoing: ${JSON.stringify(outgoingMirror.count)}`);
             }
-        }, 5000);
+            setTimeout(pollOutgoing, 5000);
+        })();
     }));
 }
 
