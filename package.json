@@ -16,10 +16,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "pear": {
-    "name": "hinter-core",
-    "type": "terminal"
-  },
   "scripts": {
     "build:package": "npm pack",
     "initialize": "node src/initialize.js",
