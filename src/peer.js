@@ -1,11 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
-import { calculateDirectorySize } from './utils.js';
+import { calculateDirectorySize, getDataDir } from './utils.js';
 import { parsePeerConfig } from './config.js';
 
 function checkPeerSizeLimit(peer) {
-    const incomingDirectoryPath = path.join('.storage', peer.publicKey, 'incoming');
+    const storageDir = path.join(getDataDir(), '.storage');
+    const incomingDirectoryPath = path.join(storageDir, peer.publicKey, 'incoming');
     if (fs.existsSync(incomingDirectoryPath)) {
         const incomingDirectorySize = calculateDirectorySize(incomingDirectoryPath);
         if (incomingDirectorySize > peer.peerSizeLimitMB * 1024 * 1024) {

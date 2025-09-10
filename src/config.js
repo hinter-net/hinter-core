@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { getDataDir } from './utils.js';
 
 const globalConfigDefaults = {
     peerSizeLimitMB: 1024,
@@ -7,7 +8,7 @@ const globalConfigDefaults = {
 };
 
 export function parseGlobalConfig() {
-    const globalConfigPath = path.join('hinter-core-data', 'hinter.config.json');
+    const globalConfigPath = path.join(getDataDir(), 'hinter.config.json');
     const config = { ...globalConfigDefaults };
 
     // Unlike the peer config file, the global config file is optional

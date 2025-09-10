@@ -1,7 +1,16 @@
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import hypercoreCrypto from 'hypercore-crypto';
 import b4a from 'b4a';
+
+export function getDataDir() {
+    const dataDirIndex = process.argv.indexOf('--data-dir');
+    if (dataDirIndex !== -1 && process.argv.length > dataDirIndex + 1) {
+        return process.argv[dataDirIndex + 1];
+    }
+    return path.join(os.homedir(), 'hinter-core-data');
+}
 
 export function printAsciiArt() {
     console.log(
@@ -36,9 +45,10 @@ export function calculateDirectorySize(dirPath) {
 }
 
 export async function parseEnvFile() {
-    const envFilePath = path.join('hinter-core-data', '.env');
+    const dataDir = getDataDir();
+    const envFilePath = path.join(dataDir, '.env');
     if (!fs.existsSync(envFilePath)) {
-        throw new Error('hinter-core-data/.env file not found.');
+        throw new Error(`${envFilePath} file not found.`);
     }
     const envFileContent = fs.readFileSync(envFilePath, 'utf8');
     const keyPair = {

@@ -7,16 +7,17 @@ import Localdrive from 'localdrive';
 import Corestore from 'corestore';
 import hypercoreCrypto from 'hypercore-crypto';
 import b4a from 'b4a';
-import { printAsciiArt, parseEnvFile } from './utils.js';
+import { printAsciiArt, parseEnvFile, getDataDir } from './utils.js';
 import { parsePeers } from './peer.js';
 import { parseGlobalConfig } from './config.js';
 
 printAsciiArt();
 
 async function main() {
+    const dataDir = getDataDir();
     const { keyPair } = await parseEnvFile();
     const globalConfig = parseGlobalConfig();
-    const peersDirectoryPath = path.join('hinter-core-data', 'peers');
+    const peersDirectoryPath = path.join(dataDir, 'peers');
     console.log('Parsing peers...');
     const initialPeers = await parsePeers(peersDirectoryPath, globalConfig);
     // Clone initialPeers to be able to add dynamic elements to it
@@ -33,16 +34,17 @@ async function main() {
 
     console.log('Preparing to connect...');
     // Create Corestore instances per peer in a local directory
+    const storageDir = path.join(dataDir, '.storage');
     await Promise.all(peers.map(async (peer) => {
         if (!peer.disableIncomingReports) {
-            const incomingCorestorePath = path.join('.storage', peer.publicKey, 'incoming');
+            const incomingCorestorePath = path.join(storageDir, peer.publicKey, 'incoming');
             fs.rmSync(incomingCorestorePath, { recursive: true, force: true });
             const incomingCorestore = new Corestore(incomingCorestorePath);
             await incomingCorestore.ready();
             peer.incomingCorestore = incomingCorestore;
         }
 
-        const outgoingCorestore = new Corestore(path.join('.storage', peer.publicKey, 'outgoing'));
+        const outgoingCorestore = new Corestore(path.join(storageDir, peer.publicKey, 'outgoing'));
         await outgoingCorestore.ready();
         peer.outgoingCorestore = outgoingCorestore;
     }));
