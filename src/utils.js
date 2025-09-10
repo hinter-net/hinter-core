@@ -5,8 +5,13 @@ import hypercoreCrypto from 'hypercore-crypto';
 import b4a from 'b4a';
 
 export function getDataDir() {
-    if (process.argv.includes('--local') || process.argv.includes('-l')) {
-        return path.join(process.cwd(), 'hinter-core-data');
+    const dataDirIndex = process.argv.indexOf('--data-dir');
+    if (dataDirIndex !== -1 && process.argv.length > dataDirIndex + 1) {
+        const dataDir = process.argv[dataDirIndex + 1];
+        if (!path.isAbsolute(dataDir)) {
+            throw new Error('The --data-dir path must be an absolute path.');
+        }
+        return dataDir;
     }
     return path.join(os.homedir(), 'hinter-core-data');
 }

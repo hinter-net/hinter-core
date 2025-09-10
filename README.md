@@ -34,13 +34,17 @@ This will create a `hinter-core-data` directory in your user's home folder (`~/h
 hinter-core-initialize
 ```
 
-**Local (in the current directory):**
+**Custom Location:**
 
-This will create a `hinter-core-data` directory inside the folder you are currently in.
-This is useful for running multiple instances.
+You can specify a custom location for your data directory.
+This is the recommended way to run multiple instances.
 
 ```bash
-hinter-core-initialize --local
+# For a local directory (will create ./my-hinter-core-data)
+hinter-core-initialize --data-dir $(pwd)/my-hinter-core-data
+
+# For any other directory
+hinter-core-initialize --data-dir /path/to/my-hinter-core-data
 ```
 
 ### Running the Service
@@ -53,16 +57,21 @@ To run `hinter-core` as a background service and ensure it restarts automaticall
 pm2 start hinter-core --name my-hinter-core
 ```
 
-**Local Instance:**
+**Custom Instance:**
 
-Make sure you are in the same directory where you ran the `hinter-core-initialize --local` command.
+To run an instance with a custom data directory, pass the `--data-dir` argument.
+Using an absolute path is required to ensure `pm2` can find the directory after a system reboot.
 
 ```bash
-pm2 start hinter-core --name my-hinter-core -- --local
+# For the local directory created above
+pm2 start hinter-core --name my-hinter-core -- --data-dir $(pwd)/my-hinter-core-data
+
+# For any other directory
+pm2 start hinter-core --name my-other-hinter-core -- --data-dir /path/to/my-hinter-core-data
 ```
 
 > **Note:** The `--` is important.
-It tells `pm2` to stop parsing arguments for itself and pass the remaining arguments (in this case, `--local`) directly to the `hinter-core` application.
+It tells `pm2` to stop parsing arguments for itself and pass the remaining arguments (in this case, `--data-dir ...`) directly to the `hinter-core` application.
 
 ### Enabling Auto-Restart on System Reboot
 
