@@ -1,0 +1,59 @@
+name: NPM Publish
+
+on:
+  workflow_dispatch:
+
+jobs:
+  npm-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version from package.json
+        id: package-version
+        run: |
+          set -e
+          VERSION=$(grep '"version"' package.json | cut -d '"' -f 4)
+          if [ -z "$VERSION" ]; then
+            echo "Error: Could not extract version from package.json"
+            exit 1
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build package
+        run: npm run build:package
+
+      - name: Publish to NPM
+        run: npm publish --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create and push git tag
+        run: |
+          set -e
+          VERSION=${{ steps.package-version.outputs.version }}
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION already exists, skipping tag creation"
+          else
+            git tag -a "v$VERSION" -m "Release version $VERSION"
+            git push origin "v$VERSION"
+            echo "Created and pushed tag v$VERSION"
+          fi

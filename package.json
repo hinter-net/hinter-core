@@ -1,5 +1,5 @@
 {
-  "name": "hinter-core",
+  "name": "@hinter-net/hinter-core",
   "version": "0.1.1",
   "description": "Reference implementation of the hinter protocol",
   "license": "MIT",
@@ -7,16 +7,21 @@
     "type": "git",
     "url": "https://github.com/hinter-net/hinter-core"
   },
-  "main": "index.js",
+  "main": "src/index.js",
   "type": "module",
+  "bin": {
+    "hinter-core": "src/index.js",
+    "hinter-core-initialize": "src/initialize.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "pear": {
     "name": "hinter-core",
     "type": "terminal"
   },
   "scripts": {
-    "docker:build": "docker build -t bbenligiray/hinter-core:latest .",
-    "docker:initialize": "docker run -it --rm -v./hinter-core-data:/hinter-core/hinter-core-data bbenligiray/hinter-core:latest npm run initialize",
-    "docker:start": "docker run -it --rm --network host -v./hinter-core-data:/hinter-core/hinter-core-data bbenligiray/hinter-core:latest",
+    "build:package": "npm pack",
     "initialize": "node src/initialize.js",
     "start": "node src/index.js"
   },
