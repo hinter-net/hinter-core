@@ -5,9 +5,8 @@ import hypercoreCrypto from 'hypercore-crypto';
 import b4a from 'b4a';
 
 export function getDataDir() {
-    const dataDirIndex = process.argv.indexOf('--data-dir');
-    if (dataDirIndex !== -1 && process.argv.length > dataDirIndex + 1) {
-        return process.argv[dataDirIndex + 1];
+    if (process.argv.includes('--local') || process.argv.includes('-l')) {
+        return path.join(process.cwd(), 'hinter-core-data');
     }
     return path.join(os.homedir(), 'hinter-core-data');
 }
