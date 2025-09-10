@@ -18,8 +18,8 @@
   },
   "scripts": {
     "build:package": "npm pack",
-    "initialize": "node src/initialize.js",
-    "start": "node src/index.js"
+    "initialize": "node src/initialize.js  --local",
+    "start": "node src/index.js --local"
   },
   "dependencies": {
     "b4a": "^1.6.7",
