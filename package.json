@@ -7,13 +7,21 @@
     "type": "git",
     "url": "https://github.com/hinter-net/hinter-core"
   },
-  "main": "index.js",
+  "main": "src/index.js",
   "type": "module",
+  "bin": {
+    "hinter-core": "src/index.js",
+    "hinter-core-initialize": "src/initialize.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "pear": {
     "name": "hinter-core",
     "type": "terminal"
   },
   "scripts": {
+    "build:package": "npm pack",
     "initialize": "node src/initialize.js",
     "start": "node src/index.js"
   },
