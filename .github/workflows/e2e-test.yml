@@ -27,13 +27,13 @@ jobs:
 
       - name: Setup hinter1
         run: |
-          hinter-core-initialize
+          hinter-core-initialize --local
           mkdir -p hinter-core-data/peers/hinter2/outgoing
           mkdir -p hinter-core-data/peers/hinter2/incoming
           echo "{\"publicKey\":\"9e230ac8b403f3861871c2325f3226c930e7e4f0809b6633a6870aa05904ef01\"}" > hinter-core-data/peers/hinter2/hinter.config.json
 
       - name: Run hinter-core in background
-        run: pm2 start hinter-core --name hinter1
+        run: pm2 start hinter-core --name hinter1 -- --local
 
       - name: Wait for instance to be ready
         run: sleep 10
@@ -92,13 +92,13 @@ jobs:
 
       - name: Setup hinter2
         run: |
-          hinter-core-initialize
+          hinter-core-initialize --local
           mkdir -p hinter-core-data/peers/hinter1/outgoing
           mkdir -p hinter-core-data/peers/hinter1/incoming
           echo "{\"publicKey\":\"1720090ca74ba7c5100c5c9bf7898171fbae0ede675fa7c3aa248bd1d6c96a8f\"}" > hinter-core-data/peers/hinter1/hinter.config.json
 
       - name: Run hinter-core in background
-        run: pm2 start hinter-core --name hinter2
+        run: pm2 start hinter-core --name hinter2 -- --local
 
       - name: Wait for instance to be ready
         run: sleep 10
