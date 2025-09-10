@@ -1,4 +1,5 @@
 node_modules
 
+.storage
 hinter-core-data
 .env
