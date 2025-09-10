@@ -68,6 +68,7 @@ async function main() {
         const peer = peers.find(peer => peer.publicKey === Buffer.from(peerInfo.publicKey).toString('hex'));
         if (!peer) {
             conn.end();
+            return;
         }
         if (!peer.disableIncomingReports) {
             peer.incomingCorestore.replicate(conn);
