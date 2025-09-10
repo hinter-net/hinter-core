@@ -10,19 +10,30 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      - name: Build Docker image
-        run: docker build -t hinter-core:test .
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies and build package
+        run: |
+          npm install
+          npm run build:package
+
+      - name: Install package globally and pm2
+        run: |
+          npm install -g hinter-net-hinter-core-*.tgz
+          npm install -g pm2
 
       - name: Setup hinter1
         run: |
+          hinter-core-initialize
           mkdir -p hinter-core-data/peers/hinter2/outgoing
           mkdir -p hinter-core-data/peers/hinter2/incoming
           echo "{\"publicKey\":\"9e230ac8b403f3861871c2325f3226c930e7e4f0809b6633a6870aa05904ef01\"}" > hinter-core-data/peers/hinter2/hinter.config.json
-          echo "PUBLIC_KEY=1720090ca74ba7c5100c5c9bf7898171fbae0ede675fa7c3aa248bd1d6c96a8f" > hinter-core-data/.env
-          echo "SECRET_KEY=a580f4d154155ff2947855b7770435015c111bb5e1ae31b0915bded7d9b1ecbb1720090ca74ba7c5100c5c9bf7898171fbae0ede675fa7c3aa248bd1d6c96a8f" >> hinter-core-data/.env
 
       - name: Run hinter-core in background
-        run: docker run -d --name hinter1 --network host -v "$(pwd)/hinter-core-data:/hinter-core/hinter-core-data" hinter-core:test
+        run: pm2 start hinter-core --name hinter1
 
       - name: Wait for instance to be ready
         run: sleep 10
@@ -44,7 +55,7 @@ jobs:
           while ! ( [ -f "$FILE_PATH" ] && grep -q "$EXPECTED_CONTENT" "$FILE_PATH" ); do
             if [ $elapsed -ge $timeout ]; then
               echo "Timeout reached. Report with expected content not found."
-              docker logs hinter1
+              pm2 logs hinter1
               exit 1
             fi
             sleep $interval
@@ -52,7 +63,7 @@ jobs:
             echo "Still waiting..."
           done
           echo "Report with correct content received!"
-          docker logs hinter1
+          pm2 logs hinter1
           cat "$FILE_PATH"
 
       - name: Keep container alive for other job
@@ -64,19 +75,30 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      - name: Build Docker image
-        run: docker build -t hinter-core:test .
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies and build package
+        run: |
+          npm install
+          npm run build:package
+
+      - name: Install package globally and pm2
+        run: |
+          npm install -g hinter-net-hinter-core-*.tgz
+          npm install -g pm2
 
       - name: Setup hinter2
         run: |
+          hinter-core-initialize
           mkdir -p hinter-core-data/peers/hinter1/outgoing
           mkdir -p hinter-core-data/peers/hinter1/incoming
           echo "{\"publicKey\":\"1720090ca74ba7c5100c5c9bf7898171fbae0ede675fa7c3aa248bd1d6c96a8f\"}" > hinter-core-data/peers/hinter1/hinter.config.json
-          echo "PUBLIC_KEY=9e230ac8b403f3861871c2325f3226c930e7e4f0809b6633a6870aa05904ef01" > hinter-core-data/.env
-          echo "SECRET_KEY=0646dadeeaf79af9aab9954d7c63a52fa2ee1e1c04276cc0b760c6dd5c920d899e230ac8b403f3861871c2325f3226c930e7e4f0809b6633a6870aa05904ef01" >> hinter-core-data/.env
 
       - name: Run hinter-core in background
-        run: docker run -d --name hinter2 --network host -v "$(pwd)/hinter-core-data:/hinter-core/hinter-core-data" hinter-core:test
+        run: pm2 start hinter-core --name hinter2
 
       - name: Wait for instance to be ready
         run: sleep 10
@@ -98,7 +120,7 @@ jobs:
           while ! ( [ -f "$FILE_PATH" ] && grep -q "$EXPECTED_CONTENT" "$FILE_PATH" ); do
             if [ $elapsed -ge $timeout ]; then
               echo "Timeout reached. Report with expected content not found."
-              docker logs hinter2
+              pm2 logs hinter2
               exit 1
             fi
             sleep $interval
@@ -106,7 +128,7 @@ jobs:
             echo "Still waiting..."
           done
           echo "Report with correct content received!"
-          docker logs hinter2
+          pm2 logs hinter2
           cat "$FILE_PATH"
 
       - name: Keep container alive for other job
