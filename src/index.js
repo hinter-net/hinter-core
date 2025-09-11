@@ -38,9 +38,7 @@ async function main() {
     const storageDir = path.join(dataDir, '.storage');
     await Promise.all(peers.map(async (peer) => {
         if (!peer.disableIncomingReports) {
-            const incomingCorestorePath = path.join(storageDir, peer.publicKey, 'incoming');
-            fs.rmSync(incomingCorestorePath, { recursive: true, force: true });
-            const incomingCorestore = new Corestore(incomingCorestorePath);
+            const incomingCorestore = new Corestore(path.join(storageDir, peer.publicKey, 'incoming'));
             await incomingCorestore.ready();
             peer.incomingCorestore = incomingCorestore;
         }
