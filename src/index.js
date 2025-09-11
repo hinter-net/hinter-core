@@ -54,6 +54,17 @@ async function main() {
     const swarm = new Hyperswarm({ keyPair });
 
     const cleanup = async () => {
+        console.log('Closing drives...');
+        await Promise.all(peers.map(async (peer) => {
+            // Closing hyperdrives also closes the underlying corestores
+            if (peer.incomingHyperdrive) {
+                await peer.incomingHyperdrive.close();
+            }
+            if (peer.outgoingHyperdrive) {
+                await peer.outgoingHyperdrive.close();
+            }
+        }));
+        console.log('Closed drives.');
         console.log('Closing swarm...');
         await swarm.destroy();
         console.log('Closed swarm.');
