@@ -88,7 +88,8 @@ async function main() {
     });
 
     const handleConflict = async (peer) => {
-        console.error(`Conflict detected with peer ${peer.alias}!`);
+        console.error(`Conflict detected with peer ${peer.alias}! Blacklisting and initiating recovery.`);
+        fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), '');
         if (peer.incomingHyperdrive) {
             await peer.incomingHyperdrive.close();
         }
