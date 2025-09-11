@@ -56,7 +56,7 @@ jobs:
           while ! ( [ -f "$FILE_PATH" ] && grep -q "$EXPECTED_CONTENT" "$FILE_PATH" ); do
             if [ $elapsed -ge $timeout ]; then
               echo "Timeout reached. Report with expected content not found."
-              pm2 logs hinter1
+              pm2 logs hinter1 --lines 200 --nostream
               exit 1
             fi
             sleep $interval
@@ -64,7 +64,7 @@ jobs:
             echo "Still waiting..."
           done
           echo "Report with correct content received!"
-          pm2 logs hinter1
+          pm2 logs hinter1 --lines 200 --nostream
           cat "$FILE_PATH"
 
       - name: Keep container alive for other job
@@ -122,7 +122,7 @@ jobs:
           while ! ( [ -f "$FILE_PATH" ] && grep -q "$EXPECTED_CONTENT" "$FILE_PATH" ); do
             if [ $elapsed -ge $timeout ]; then
               echo "Timeout reached. Report with expected content not found."
-              pm2 logs hinter2
+              pm2 logs hinter2 --lines 200 --nostream
               exit 1
             fi
             sleep $interval
@@ -130,7 +130,7 @@ jobs:
             echo "Still waiting..."
           done
           echo "Report with correct content received!"
-          pm2 logs hinter2
+          pm2 logs hinter2 --lines 200 --nostream
           cat "$FILE_PATH"
 
       - name: Keep container alive for other job
