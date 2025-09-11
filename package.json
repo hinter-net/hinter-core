@@ -18,8 +18,8 @@
   },
   "scripts": {
     "build:package": "npm pack",
-    "initialize": "node src/initialize.js  --local",
-    "start": "node src/index.js --local"
+    "initialize": "node src/initialize.js  --data-dir $(pwd)/hinter-core-data",
+    "start": "node src/index.js --data-dir $(pwd)/hinter-core-data"
   },
   "dependencies": {
     "b4a": "^1.6.7",
