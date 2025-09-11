@@ -48,7 +48,7 @@ jobs:
       - name: Wait for sync and verify
         run: |
           echo "Waiting for report from hinter2..."
-          timeout=180
+          timeout=60
           interval=5
           elapsed=0
           FILE_PATH="./hinter-core-data/peers/hinter2/incoming/report-from-2.txt"
@@ -68,7 +68,7 @@ jobs:
           cat "$FILE_PATH"
 
       - name: Keep container alive for other job
-        run: sleep 180
+        run: sleep 30
 
   hinter2:
     runs-on: ubuntu-latest
@@ -114,7 +114,7 @@ jobs:
       - name: Wait for sync and verify
         run: |
           echo "Waiting for report from hinter1..."
-          timeout=180
+          timeout=60
           interval=5
           elapsed=0
           FILE_PATH="./hinter-core-data/peers/hinter1/incoming/report-from-1.txt"
@@ -134,4 +134,4 @@ jobs:
           cat "$FILE_PATH"
 
       - name: Keep container alive for other job
-        run: sleep 180
+        run: sleep 30
