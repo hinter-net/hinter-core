@@ -128,8 +128,11 @@ async function main() {
     console.log('Ready to connect!');
 
     await Promise.all(peers.map(async (peer) => {
-        // Mirror detected incoming changes in hyperdrive
         if (!peer.disableIncomingReports) {
+            // Force an initial mirror
+            const initialMirror = peer.incomingHyperdrive.mirror(peer.incomingLocaldrive);
+            await initialMirror.done();
+            // Mirror detected incoming changes in hyperdrive
             (async function watchIncoming() {
                 for await (const { } of peer.incomingHyperdrive.watch()) {
                     const incomingMirror = peer.incomingHyperdrive.mirror(peer.incomingLocaldrive);
