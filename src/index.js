@@ -8,6 +8,7 @@ import Localdrive from 'localdrive';
 import Corestore from 'corestore';
 import hypercoreCrypto from 'hypercore-crypto';
 import b4a from 'b4a';
+import chokidar from 'chokidar';
 import { printAsciiArt, parseEnvFile, getDataDir } from './utils.js';
 import { parsePeers } from './peer.js';
 import { parseGlobalConfig } from './config.js';
@@ -127,10 +128,6 @@ async function main() {
     console.log('Ready to connect!');
 
     await Promise.all(peers.map(async (peer) => {
-        // Do the initial mirror
-        const initialOutgoingMirror = peer.outgoingLocaldrive.mirror(peer.outgoingHyperdrive);
-        await initialOutgoingMirror.done();
-
         // Mirror detected incoming changes in hyperdrive
         if (!peer.disableIncomingReports) {
             (async function watchIncoming() {
@@ -143,10 +140,17 @@ async function main() {
         }
 
         // Mirror outgoing changes in localdrive
-        fs.watch(path.join(peersDirectoryPath, peer.alias, 'outgoing'), { recursive: true }, async () => {
+        chokidar.watch(path.join(peersDirectoryPath, peer.alias, 'outgoing'), {
+            persistent: true,
+            ignoreInitial: false,
+            awaitWriteFinish: {
+                stabilityThreshold: 2000,
+                pollInterval: 100
+            }
+        }).on('all', async (event, path) => {
+            console.log(`Detected ${event} at ${path}`);
             const outgoingMirror = peer.outgoingLocaldrive.mirror(peer.outgoingHyperdrive);
             await outgoingMirror.done();
-            console.log(`${peer.alias} detected outgoing: ${JSON.stringify(outgoingMirror.count)}`);
         });
     }));
 }
