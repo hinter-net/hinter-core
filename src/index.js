@@ -136,10 +136,10 @@ async function main() {
 
     await Promise.all(peers.map(async (peer) => {
         if (!peer.disableIncomingReports) {
-            // Force an initial mirror
+            // Force an initial incoming mirror
             const initialMirror = peer.incomingHyperdrive.mirror(peer.incomingLocaldrive);
             await initialMirror.done();
-            // Mirror detected incoming changes in hyperdrive
+            // Mirror when changes are detected in incoming hyperdrive
             (async function watchIncoming() {
                 for await (const { } of peer.incomingHyperdrive.watch()) {
                     const incomingMirror = peer.incomingHyperdrive.mirror(peer.incomingLocaldrive);
@@ -147,9 +147,22 @@ async function main() {
                     console.log(`${peer.alias} detected incoming: ${JSON.stringify(incomingMirror.count)}`);
                 }
             })();
+            // Mirror when changes are detected in incoming localdrive
+            chokidar.watch(path.join(peersDirectoryPath, peer.alias, 'incoming'), {
+                persistent: true,
+                ignoreInitial: true,
+                awaitWriteFinish: {
+                    stabilityThreshold: 2000,
+                    pollInterval: 100
+                }
+            }).on('all', async (event, path) => {
+                console.log(`Detected ${event} at ${path}`);
+                const incomingMirror = peer.incomingHyperdrive.mirror(peer.incomingLocaldrive);
+                await incomingMirror.done();
+            });
         }
 
-        // Mirror outgoing changes in localdrive
+        // Mirror when changes are detected in outgoing localdrive
         chokidar.watch(path.join(peersDirectoryPath, peer.alias, 'outgoing'), {
             persistent: true,
             ignoreInitial: false,
