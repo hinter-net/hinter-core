@@ -8,6 +8,7 @@ import Localdrive from 'localdrive';
 import Corestore from 'corestore';
 import hypercoreCrypto from 'hypercore-crypto';
 import b4a from 'b4a';
+import chokidar from 'chokidar';
 import { printAsciiArt, parseEnvFile, getDataDir } from './utils.js';
 import { parsePeers } from './peer.js';
 import { parseGlobalConfig } from './config.js';
@@ -54,12 +55,19 @@ async function main() {
     const cleanup = async () => {
         console.log('Closing drives...');
         await Promise.all(peers.map(async (peer) => {
-            // Closing hyperdrives also closes the underlying corestores
             if (peer.incomingHyperdrive) {
-                await peer.incomingHyperdrive.close();
+                try {
+                    await peer.incomingHyperdrive.close();
+                } catch (err) {
+                    console.error(`Error closing incoming drive for ${peer.alias}: ${err.message}`);
+                }
             }
             if (peer.outgoingHyperdrive) {
-                await peer.outgoingHyperdrive.close();
+                try {
+                    await peer.outgoingHyperdrive.close();
+                } catch (err) {
+                    console.error(`Error closing outgoing drive for ${peer.alias}: ${err.message}`);
+                }
             }
         }));
         console.log('Closed drives.');
@@ -80,25 +88,35 @@ async function main() {
             return;
         }
         if (!peer.disableIncomingReports) {
-            peer.incomingCorestore.replicate(conn);
+            const incomingStream = peer.incomingCorestore.replicate(conn);
+            incomingStream.on('error', async (err) => {
+                if (err.message.includes('connection reset by peer')) {
+                    console.log(`${peer.alias} disconnected.`);
+                    return;
+                }
+                const errorMessage = `Incoming replication error with ${peer.alias}: ${err.message}`;
+                console.error(errorMessage);
+                fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), errorMessage);
+                console.log(`Blacklisted ${peer.alias} due to incoming replication error. Exiting for restart.`);
+                process.exit(0);
+            });
         }
-        peer.outgoingCorestore.replicate(conn);
+        const outgoingStream = peer.outgoingCorestore.replicate(conn);
+        outgoingStream.on('error', async (err) => {
+            if (err.message.includes('connection reset by peer')) {
+                console.log(`${peer.alias} disconnected.`);
+                return;
+            }
+            const errorMessage = `Outgoing replication error with ${peer.alias}: ${err.message}`;
+            console.error(errorMessage);
+            fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), errorMessage);
+            console.log(`Blacklisted ${peer.alias} due to outgoing replication error. Exiting for restart.`);
+            process.exit(0);
+        });
+
         peer.connection = conn;
         console.log(`Connected to ${peer.alias}!`);
     });
-
-    const handleConflict = async (peer) => {
-        console.error(`Conflict detected with peer ${peer.alias}! Blacklisting and initiating recovery.`);
-        fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), '');
-        if (peer.incomingHyperdrive) {
-            await peer.incomingHyperdrive.close();
-        }
-        const incomingCorestorePath = path.join(storageDir, peer.publicKey, 'incoming');
-        console.error(`Deleting incoming storage for peer ${peer.alias} at ${incomingCorestorePath}`);
-        fs.rmSync(incomingCorestorePath, { recursive: true, force: true });
-        console.error('Exiting to allow restart.');
-        process.exit(0);
-    };
 
     await Promise.all(peers.map(async (peer) => {
         if (!peer.disableIncomingReports) {
@@ -106,7 +124,6 @@ async function main() {
 
             const incomingHyperdriveKeyPair = hypercoreCrypto.keyPair(hypercoreCrypto.data(b4a.concat([b4a.from(peer.publicKey, 'hex'), keyPair.publicKey])));
             peer.incomingHyperdrive = new Hyperdrive(peer.incomingCorestore, incomingHyperdriveKeyPair.publicKey);
-            peer.incomingHyperdrive.on('conflict', () => handleConflict(peer));
             await peer.incomingHyperdrive.ready();
 
             peer.incomingDiscovery = swarm.join(peer.incomingHyperdrive.discoveryKey, { client: true, server: false });
@@ -127,12 +144,11 @@ async function main() {
     console.log('Ready to connect!');
 
     await Promise.all(peers.map(async (peer) => {
-        // Do the initial mirror
-        const initialOutgoingMirror = peer.outgoingLocaldrive.mirror(peer.outgoingHyperdrive);
-        await initialOutgoingMirror.done();
-
-        // Mirror detected incoming changes in hyperdrive
         if (!peer.disableIncomingReports) {
+            // Force an initial incoming mirror
+            const initialMirror = peer.incomingHyperdrive.mirror(peer.incomingLocaldrive);
+            await initialMirror.done();
+            // Mirror when changes are detected in incoming hyperdrive
             (async function watchIncoming() {
                 for await (const { } of peer.incomingHyperdrive.watch()) {
                     const incomingMirror = peer.incomingHyperdrive.mirror(peer.incomingLocaldrive);
@@ -140,13 +156,33 @@ async function main() {
                     console.log(`${peer.alias} detected incoming: ${JSON.stringify(incomingMirror.count)}`);
                 }
             })();
+            // Mirror when changes are detected in incoming localdrive
+            chokidar.watch(path.join(peersDirectoryPath, peer.alias, 'incoming'), {
+                persistent: true,
+                ignoreInitial: true,
+                awaitWriteFinish: {
+                    stabilityThreshold: 2000,
+                    pollInterval: 100
+                }
+            }).on('all', async (event, path) => {
+                console.log(`Detected ${event} at ${path}`);
+                const incomingMirror = peer.incomingHyperdrive.mirror(peer.incomingLocaldrive);
+                await incomingMirror.done();
+            });
         }
 
-        // Mirror outgoing changes in localdrive
-        fs.watch(path.join(peersDirectoryPath, peer.alias, 'outgoing'), { recursive: true }, async () => {
+        // Mirror when changes are detected in outgoing localdrive
+        chokidar.watch(path.join(peersDirectoryPath, peer.alias, 'outgoing'), {
+            persistent: true,
+            ignoreInitial: false,
+            awaitWriteFinish: {
+                stabilityThreshold: 2000,
+                pollInterval: 100
+            }
+        }).on('all', async (event, path) => {
+            console.log(`Detected ${event} at ${path}`);
             const outgoingMirror = peer.outgoingLocaldrive.mirror(peer.outgoingHyperdrive);
             await outgoingMirror.done();
-            console.log(`${peer.alias} detected outgoing: ${JSON.stringify(outgoingMirror.count)}`);
         });
     }));
 }
