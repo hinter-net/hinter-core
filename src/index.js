@@ -116,26 +116,12 @@ async function main() {
         console.log(`Connected to ${peer.alias}!`);
     });
 
-    const handleConflict = async (peer) => {
-        console.error(`Conflict detected with peer ${peer.alias}! Blacklisting and initiating recovery.`);
-        fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), '');
-        if (peer.incomingHyperdrive) {
-            await peer.incomingHyperdrive.close();
-        }
-        const incomingCorestorePath = path.join(storageDir, peer.publicKey, 'incoming');
-        console.error(`Deleting incoming storage for peer ${peer.alias} at ${incomingCorestorePath}`);
-        fs.rmSync(incomingCorestorePath, { recursive: true, force: true });
-        console.error('Exiting to allow restart.');
-        process.exit(0);
-    };
-
     await Promise.all(peers.map(async (peer) => {
         if (!peer.disableIncomingReports) {
             peer.incomingLocaldrive = new Localdrive(path.join(peersDirectoryPath, peer.alias, 'incoming'));
 
             const incomingHyperdriveKeyPair = hypercoreCrypto.keyPair(hypercoreCrypto.data(b4a.concat([b4a.from(peer.publicKey, 'hex'), keyPair.publicKey])));
             peer.incomingHyperdrive = new Hyperdrive(peer.incomingCorestore, incomingHyperdriveKeyPair.publicKey);
-            peer.incomingHyperdrive.on('conflict', () => handleConflict(peer));
             await peer.incomingHyperdrive.ready();
 
             peer.incomingDiscovery = swarm.join(peer.incomingHyperdrive.discoveryKey, { client: true, server: false });
