@@ -88,9 +88,30 @@ async function main() {
             return;
         }
         if (!peer.disableIncomingReports) {
-            peer.incomingCorestore.replicate(conn);
+            const incomingStream = peer.incomingCorestore.replicate(conn);
+            incomingStream.on('error', async (err) => {
+                if (err.message.includes('connection reset by peer')) {
+                    console.log(`${peer.alias} disconnected.`);
+                    return;
+                }
+                console.error(`Incoming replication error with ${peer.alias}: ${err.message}`);
+                fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), '');
+                console.log(`Blacklisted ${peer.alias} due to incoming replication error. Exiting for restart.`);
+                process.exit(0);
+            });
         }
-        peer.outgoingCorestore.replicate(conn);
+        const outgoingStream = peer.outgoingCorestore.replicate(conn);
+        outgoingStream.on('error', async (err) => {
+            if (err.message.includes('connection reset by peer')) {
+                console.log(`${peer.alias} disconnected.`);
+                return;
+            }
+            console.error(`Outgoing replication error with ${peer.alias}: ${err.message}`);
+            fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), '');
+            console.log(`Blacklisted ${peer.alias} due to outgoing replication error. Exiting for restart.`);
+            process.exit(0);
+        });
+
         peer.connection = conn;
         console.log(`Connected to ${peer.alias}!`);
     });
