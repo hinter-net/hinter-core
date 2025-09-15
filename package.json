@@ -19,7 +19,9 @@
   "scripts": {
     "build:package": "npm pack",
     "initialize": "node src/initialize.js  --data-dir $(pwd)/hinter-core-data",
-    "start": "node src/index.js --data-dir $(pwd)/hinter-core-data"
+    "start": "node src/index.js --data-dir $(pwd)/hinter-core-data",
+    "test:fuzz": "node fuzz/fuzz.js --actions 40",
+    "test:fuzz:reduce": "node fuzz/fuzz.js --reduce"
   },
   "dependencies": {
     "b4a": "^1.6.7",
