@@ -55,12 +55,19 @@ async function main() {
     const cleanup = async () => {
         console.log('Closing drives...');
         await Promise.all(peers.map(async (peer) => {
-            // Closing hyperdrives also closes the underlying corestores
             if (peer.incomingHyperdrive) {
-                await peer.incomingHyperdrive.close();
+                try {
+                    await peer.incomingHyperdrive.close();
+                } catch (err) {
+                    console.error(`Error closing incoming drive for ${peer.alias}: ${err.message}`);
+                }
             }
             if (peer.outgoingHyperdrive) {
-                await peer.outgoingHyperdrive.close();
+                try {
+                    await peer.outgoingHyperdrive.close();
+                } catch (err) {
+                    console.error(`Error closing outgoing drive for ${peer.alias}: ${err.message}`);
+                }
             }
         }));
         console.log('Closed drives.');
