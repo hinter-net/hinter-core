@@ -94,8 +94,9 @@ async function main() {
                     console.log(`${peer.alias} disconnected.`);
                     return;
                 }
-                console.error(`Incoming replication error with ${peer.alias}: ${err.message}`);
-                fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), '');
+                const errorMessage = `Incoming replication error with ${peer.alias}: ${err.message}`;
+                console.error(errorMessage);
+                fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), errorMessage);
                 console.log(`Blacklisted ${peer.alias} due to incoming replication error. Exiting for restart.`);
                 process.exit(0);
             });
@@ -106,8 +107,9 @@ async function main() {
                 console.log(`${peer.alias} disconnected.`);
                 return;
             }
-            console.error(`Outgoing replication error with ${peer.alias}: ${err.message}`);
-            fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), '');
+            const errorMessage = `Outgoing replication error with ${peer.alias}: ${err.message}`;
+            console.error(errorMessage);
+            fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), errorMessage);
             console.log(`Blacklisted ${peer.alias} due to outgoing replication error. Exiting for restart.`);
             process.exit(0);
         });

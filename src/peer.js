@@ -55,7 +55,7 @@ export function parsePeers(peersDirectoryPath, globalConfig) {
     const peersToBlacklist = peers.filter(peer => peer.exceedsSizeLimit);
     if (peersToBlacklist.length > 0) {
         const blacklistedAliases = peersToBlacklist.map(peer => {
-            fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), '');
+            fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), 'Exceeded the size limit');
             return peer.alias;
         });
         console.log(`Peers blacklisted for exceeding the size limit: ${blacklistedAliases.join(', ')}. Exiting for restart.`);
