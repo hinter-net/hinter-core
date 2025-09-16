@@ -146,7 +146,7 @@ async function main() {
         peer.outgoingDiscovery = swarm.join(peer.outgoingHyperdrive.discoveryKey, { client: false, server: true });
         await peer.outgoingDiscovery.flushed();
     }));
-    console.log('Ready to connect!');
+    console.log('Ready to connect all peers!');
 
     await Promise.all(peers.map(async (peer) => {
         if (!peer.disableIncomingReports) {
@@ -158,7 +158,6 @@ async function main() {
                 for await (const { } of peer.incomingHyperdrive.watch()) {
                     const incomingMirror = peer.incomingHyperdrive.mirror(peer.incomingLocaldrive);
                     await incomingMirror.done();
-                    console.log(`${peer.alias} detected incoming: ${JSON.stringify(incomingMirror.count)}`);
                 }
             })();
             // Mirror when changes are detected in incoming localdrive
@@ -169,8 +168,7 @@ async function main() {
                     stabilityThreshold: 2000,
                     pollInterval: 100
                 }
-            }).on('all', async (event, path) => {
-                console.log(`Detected ${event} at ${path}`);
+            }).on('all', async () => {
                 const incomingMirror = peer.incomingHyperdrive.mirror(peer.incomingLocaldrive);
                 await incomingMirror.done();
             });
@@ -184,8 +182,7 @@ async function main() {
                 stabilityThreshold: 2000,
                 pollInterval: 100
             }
-        }).on('all', async (event, path) => {
-            console.log(`Detected ${event} at ${path}`);
+        }).on('all', async () => {
             const outgoingMirror = peer.outgoingLocaldrive.mirror(peer.outgoingHyperdrive);
             await outgoingMirror.done();
         });
