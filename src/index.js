@@ -54,31 +54,8 @@ async function main() {
 
     const cleanup = async () => {
         console.log('Closing swarm...');
-        try {
-            await swarm.destroy();
-        } catch (err) {
-            console.error(`Error closing swarm: ${err.message}`);
-        }
         await swarm.destroy();
         console.log('Closed swarm.');
-        console.log('Closing drives...');
-        await Promise.all(peers.map(async (peer) => {
-            if (peer.incomingHyperdrive) {
-                try {
-                    await peer.incomingHyperdrive.close();
-                } catch (err) {
-                    console.error(`Error closing incoming drive for ${peer.alias}: ${err.message}`);
-                }
-            }
-            if (peer.outgoingHyperdrive) {
-                try {
-                    await peer.outgoingHyperdrive.close();
-                } catch (err) {
-                    console.error(`Error closing outgoing drive for ${peer.alias}: ${err.message}`);
-                }
-            }
-        }));
-        console.log('Closed drives.');
         process.exit(0);
     };
 
