@@ -2,5 +2,5 @@
 "@hinter-net/hinter-core": patch
 ---
 
-The peer gets blacklisted if corestore replication errors for any reason other than a connection reset.
+The peer gets blacklisted if corestore replication errors for any reason other than a connection reset or timeout.
 This covers a variety of cases such as the peer running multiple instances in parallel or an instance with corrupted storage.
