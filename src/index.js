@@ -95,7 +95,7 @@ async function main() {
         if (!peer.disableIncomingReports) {
             const incomingStream = peer.incomingCorestore.replicate(conn);
             incomingStream.on('error', async (err) => {
-                if (err.message.includes('connection reset by peer')) {
+                if (err.message.includes('connection reset by peer') || err.message.includes('connection timed out')) {
                     console.log(`${peer.alias} disconnected.`);
                     return;
                 }
@@ -108,7 +108,7 @@ async function main() {
         }
         const outgoingStream = peer.outgoingCorestore.replicate(conn);
         outgoingStream.on('error', async (err) => {
-            if (err.message.includes('connection reset by peer')) {
+            if (err.message.includes('connection reset by peer') || err.message.includes('connection timed out')) {
                 console.log(`${peer.alias} disconnected.`);
                 return;
             }
