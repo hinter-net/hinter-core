@@ -53,6 +53,14 @@ async function main() {
     const swarm = new Hyperswarm({ keyPair });
 
     const cleanup = async () => {
+        console.log('Closing swarm...');
+        try {
+            await swarm.destroy();
+        } catch (err) {
+            console.error(`Error closing swarm: ${err.message}`);
+        }
+        await swarm.destroy();
+        console.log('Closed swarm.');
         console.log('Closing drives...');
         await Promise.all(peers.map(async (peer) => {
             if (peer.incomingHyperdrive) {
@@ -71,9 +79,6 @@ async function main() {
             }
         }));
         console.log('Closed drives.');
-        console.log('Closing swarm...');
-        await swarm.destroy();
-        console.log('Closed swarm.');
         process.exit(0);
     };
 
