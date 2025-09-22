@@ -62,6 +62,18 @@ async function main() {
     process.on('SIGINT', cleanup);
     process.on('SIGTERM', cleanup);
 
+    const handleReplicationError = (peer, streamName, err) => {
+        if (err.message.includes('connection reset by peer') || err.message.includes('connection timed out')) {
+            console.log(`${peer.alias} (${streamName}) disconnected.`);
+            return;
+        }
+        const errorMessage = `${peer.alias} (${streamName}) replication error: ${err.message}`;
+        console.error(errorMessage);
+        fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), errorMessage);
+        console.log(`Blacklisted ${peer.alias} due to ${streamName} replication error. Exiting for restart.`);
+        process.exit(0);
+    };
+
     // On connection with a peer, replicate the respective Corestore instances
     swarm.on('connection', (conn, peerInfo) => {
         const peer = peers.find(peer => peer.publicKey === Buffer.from(peerInfo.publicKey).toString('hex'));
@@ -71,30 +83,10 @@ async function main() {
         }
         if (!peer.disableIncomingReports) {
             const incomingStream = peer.incomingCorestore.replicate(conn);
-            incomingStream.on('error', async (err) => {
-                if (err.message.includes('connection reset by peer') || err.message.includes('connection timed out')) {
-                    console.log(`${peer.alias} disconnected.`);
-                    return;
-                }
-                const errorMessage = `Incoming replication error with ${peer.alias}: ${err.message}`;
-                console.error(errorMessage);
-                fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), errorMessage);
-                console.log(`Blacklisted ${peer.alias} due to incoming replication error. Exiting for restart.`);
-                process.exit(0);
-            });
+            incomingStream.on('error', (err) => handleReplicationError(peer, 'Incoming', err));
         }
         const outgoingStream = peer.outgoingCorestore.replicate(conn);
-        outgoingStream.on('error', async (err) => {
-            if (err.message.includes('connection reset by peer') || err.message.includes('connection timed out')) {
-                console.log(`${peer.alias} disconnected.`);
-                return;
-            }
-            const errorMessage = `Outgoing replication error with ${peer.alias}: ${err.message}`;
-            console.error(errorMessage);
-            fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), errorMessage);
-            console.log(`Blacklisted ${peer.alias} due to outgoing replication error. Exiting for restart.`);
-            process.exit(0);
-        });
+        outgoingStream.on('error', (err) => handleReplicationError(peer, 'Outgoing', err));
 
         peer.connection = conn;
         console.log(`Connected to ${peer.alias}!`);
