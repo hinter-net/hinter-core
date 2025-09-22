@@ -1,5 +1,11 @@
 # hinter-core
 
+## 0.2.1
+
+### Patch Changes
+
+- 4a5b2c6: Duplicate connections are now only logged instead of causing the peer to be blacklisted.
+
 ## 0.2.0
 
 ### Minor Changes
