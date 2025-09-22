@@ -67,6 +67,10 @@ async function main() {
             console.log(`${peer.alias} (${streamName}) disconnected.`);
             return;
         }
+        if (err.message.includes('Duplicate connection')) {
+            console.log(`${peer.alias} (${streamName}) connection duplicated.`);
+            return;
+        }
         const errorMessage = `${peer.alias} (${streamName}) replication error: ${err.message}`;
         console.error(errorMessage);
         fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), errorMessage);
