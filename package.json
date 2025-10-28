@@ -22,14 +22,17 @@
     "start": "node src/index.js --data-dir $(pwd)/hinter-core-data"
   },
   "dependencies": {
+    "@api3/promise-utils": "^0.4.0",
     "b4a": "^1.6.7",
     "chokidar": "^4.0.3",
     "corestore": "^7.4.5",
     "hyperdrive": "^12.3.0",
     "hyperswarm": "^4.11.7",
-    "localdrive": "^2.2.0"
+    "localdrive": "^2.2.0",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.5"
+    "@changesets/cli": "^2.29.5",
+    "prettier": "^3.6.2"
   }
 }
