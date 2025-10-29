@@ -11,7 +11,7 @@ import chokidar from 'chokidar';
 import lodash from 'lodash';
 import { goSync } from '@api3/promise-utils';
 import { printAsciiArt, parseEnvFile, getDataDir, getPeersDir, deriveKeyExchangeTopic } from './utils.js';
-import { checkPeerSizeLimit, parsePeers } from './peer.js';
+import { checkPeerSizeLimit, parsePeersAndMonitorForChanges } from './peer.js';
 import { parseGlobalConfig } from './config.js';
 
 const { debounce } = lodash;
@@ -24,27 +24,11 @@ async function main() {
   const globalConfig = parseGlobalConfig();
   const peersDirectoryPath = getPeersDir(dataDir);
   console.log('Parsing peers...');
-  const initialPeers = await parsePeers(peersDirectoryPath, globalConfig);
-  // Clone initialPeers to be able to add dynamic elements to it
-  const peers = structuredClone(initialPeers);
-  console.log(`Parsed ${initialPeers.length} peers!`);
-  setInterval(async () => {
-    const currentPeers = await parsePeers(peersDirectoryPath, globalConfig);
-    // This assumes parsePeers() returns an object that is fully serializable with JSON.stringify()
-    if (
-      initialPeers
-        .map((peer) => JSON.stringify(peer))
-        .sort()
-        .toString() !==
-      currentPeers
-        .map((peer) => JSON.stringify(peer))
-        .sort()
-        .toString()
-    ) {
-      console.log('Peers have changed. Exiting to allow restart.');
-      process.exit(0);
-    }
-  }, 60_000);
+  const peerConfigs = parsePeersAndMonitorForChanges(peersDirectoryPath, globalConfig, () => {
+    console.log('Peers have changed. Exiting to allow restart.');
+    process.exit(0);
+  });
+  console.log(`Parsed ${peerConfigs.length} peer(s)!`);
 
   console.log('Preparing to connect...');
   const storageDir = path.join(dataDir, '.storage');
@@ -67,28 +51,27 @@ async function main() {
   /*
    * Partially set up our outgoing hyperdrives so that we can exchange their drive keys with our peers
    */
-  const peerInfoMap = new Map();
-  await Promise.all(
-    peers.map(async (peer) => {
-      const outgoingNamespace = store.namespace(`outgoing:${peer.publicKey}`);
+  const peers = await Promise.all(
+    peerConfigs.map(async (peerConfig) => {
+      const outgoingNamespace = store.namespace(`outgoing:${peerConfig.publicKey}`);
       const outgoingHyperdrive = new Hyperdrive(outgoingNamespace);
       await outgoingHyperdrive.ready();
 
-      console.log(`[${peer.alias}] Outgoing drive key: ${outgoingHyperdrive.key.toString('hex')}`);
-      peerInfoMap.set(peer.publicKey, {
-        ...peer,
+      console.log(`[${peerConfig.alias}] Outgoing drive key: ${outgoingHyperdrive.key.toString('hex')}`);
+      return {
+        ...peerConfig,
         outgoingHyperdrive,
         incomingHyperdriveKeyHex: null,
-      });
+      };
     })
   );
 
   /*
-   * Establish peer connections
+   * Establish peer connections, and complete Hyperdrives setup for each peer (upon receiving their drive key)
    */
   swarm.on('connection', (conn, peerInfo) => {
     const peerPublicKey = Buffer.from(peerInfo.publicKey).toString('hex');
-    const peer = peerInfoMap.get(peerPublicKey);
+    const peer = peers.find((p) => p.publicKey === peerPublicKey);
     if (!peer) {
       console.error(`Unknown peer with public key ${peerPublicKey}`);
       conn.end();
@@ -178,7 +161,7 @@ async function main() {
       console.log(`[${peer.alias}] OUT: Successfully mirrored outgoing drive`);
     }
 
-    const deboucedMirrorOutgoing = debounce(mirrorOutgoing, 1000);
+    const debouncedMirrorOutgoing = debounce(mirrorOutgoing, 1000);
     // Mirror when changes are detected in outgoing localdrive
     chokidar
       .watch(path.join(peersDirectoryPath, peer.alias, 'outgoing'), {
@@ -190,11 +173,10 @@ async function main() {
         },
       })
       .on('all', async () => {
-        console.log(`OUT: Detected change in outgoing for ${peer.alias}`);
-        deboucedMirrorOutgoing();
+        console.log(`OUT: Detected change in local outgoing directory for ${peer.alias}`);
+        debouncedMirrorOutgoing();
       });
-
-    await mirrorOutgoing();
+    debouncedMirrorOutgoing();
 
     if (peer.disableIncomingReports) {
       console.log(`[${peer.alias}] Incoming reports are disabled`);
@@ -219,10 +201,10 @@ async function main() {
       console.log(`[${peer.alias}] Calculated incoming drive size: ${size / 1024 / 1024}MB (${size})`);
     }
 
-    const deboucedMirrorIncoming = debounce(mirrorIncoming, 1000);
+    const debouncedMirrorIncoming = debounce(mirrorIncoming, 1000);
     incomingHyperdrive.core.on('append', () => {
-      console.log(`[${peer.alias}] IN: Detected append`);
-      deboucedMirrorIncoming();
+      console.log(`[${peer.alias}] IN: Detected change in incoming drive`);
+      debouncedMirrorIncoming();
     });
     // Mirror when changes are detected in incoming localdrive
     chokidar
@@ -236,10 +218,9 @@ async function main() {
       })
       .on('all', async () => {
         console.log(`[${peer.alias}] IN: Detected change in local incoming directory`);
-        await deboucedMirrorIncoming();
+        debouncedMirrorIncoming();
       });
-
-    deboucedMirrorIncoming();
+    debouncedMirrorIncoming();
   }
 
   console.log('Ready to connect all peers!');

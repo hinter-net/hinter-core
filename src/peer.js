@@ -4,6 +4,31 @@ import process from 'process';
 import { calculateDriveSize, getPeersDir } from './utils.js';
 import { parsePeerConfig } from './config.js';
 
+export function parsePeersAndMonitorForChanges(peersDirectoryPath, globalConfig, callback) {
+  const peers = parsePeers(peersDirectoryPath, globalConfig);
+
+  // Clone initialPeers to make sure mutations elsewhere don't affect this check
+  const initialPeers = structuredClone(peers);
+  setInterval(() => {
+    const currentPeers = parsePeers(peersDirectoryPath, globalConfig);
+    // This assumes parsePeers() returns an object that is fully serializable with JSON.stringify()
+    if (
+      initialPeers
+        .map((peer) => JSON.stringify(peer))
+        .sort()
+        .toString() !==
+      currentPeers
+        .map((peer) => JSON.stringify(peer))
+        .sort()
+        .toString()
+    ) {
+      callback();
+    }
+  }, 60_000);
+
+  return peers;
+}
+
 export function parsePeers(peersDirectoryPath, globalConfig) {
   const peers = fs
     .readdirSync(peersDirectoryPath)
@@ -43,10 +68,9 @@ export function parsePeers(peersDirectoryPath, globalConfig) {
 }
 
 export async function checkPeerSizeLimit(peer, incomingHyperdrive) {
-  const peersDirectoryPath = getPeersDir();
   const incomingDriveSize = await calculateDriveSize(incomingHyperdrive);
   if (incomingDriveSize > peer.peerSizeLimitMB * 1024 * 1024) {
-    fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), 'Exceeded the size limit');
+    fs.writeFileSync(path.join(getPeersDir(), peer.alias, '.blacklisted'), 'Exceeded the size limit');
     console.log(`${peer.alias} blacklisted for exceeding the size limit (${incomingDriveSize}). Exiting for restart.`);
     process.exit(0);
   }
