@@ -89,11 +89,18 @@ export async function calculateDriveSize(hyperdrive) {
       blob.blockOffset,
       blob.blockOffset + Math.max(blob.blockLength - 1, 0)
     );
-    console.log(entry.key, { downloaded, byteLength: blob.byteLength });
     if (downloaded) {
       total += blob.byteLength;
     }
   }
 
   return total;
+}
+
+export function logInfo(message) {
+  console.log('\x1b[2m', new Date().toISOString(), '\x1b[0m', message);
+}
+
+export function logError(message, error) {
+  console.error('\x1b[2m', new Date().toISOString(), '\x1b[0m', message, error);
 }

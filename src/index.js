@@ -10,7 +10,15 @@ import b4a from 'b4a';
 import chokidar from 'chokidar';
 import lodash from 'lodash';
 import { goSync } from '@api3/promise-utils';
-import { printAsciiArt, parseEnvFile, getDataDir, getPeersDir, deriveKeyExchangeTopic } from './utils.js';
+import {
+  deriveKeyExchangeTopic,
+  getDataDir,
+  getPeersDir,
+  logError,
+  logInfo,
+  parseEnvFile,
+  printAsciiArt,
+} from './utils.js';
 import { checkPeerSizeLimit, parsePeersAndMonitorForChanges } from './peer.js';
 import { parseGlobalConfig } from './config.js';
 
@@ -23,14 +31,14 @@ async function main() {
   const { keyPair } = await parseEnvFile();
   const globalConfig = parseGlobalConfig();
   const peersDirectoryPath = getPeersDir(dataDir);
-  console.log('Parsing peers...');
+  logInfo('Parsing peers...');
   const peerConfigs = parsePeersAndMonitorForChanges(peersDirectoryPath, globalConfig, () => {
-    console.log('Peers have changed. Exiting to allow restart.');
+    logInfo('Peers have changed. Exiting to allow restart.');
     process.exit(0);
   });
-  console.log(`Parsed ${peerConfigs.length} peer(s)!`);
+  logInfo(`Parsed ${peerConfigs.length} peer(s)!`);
 
-  console.log('Preparing to connect...');
+  logInfo('Preparing to connect...');
   const storageDir = path.join(dataDir, '.storage');
   const store = new Corestore(storageDir);
   await store.ready();
@@ -39,9 +47,9 @@ async function main() {
   const swarm = new Hyperswarm({ keyPair });
 
   const cleanup = async () => {
-    console.log('Closing swarm...');
+    logInfo('Closing swarm...');
     await swarm.destroy();
-    console.log('Closed swarm.');
+    logInfo('Closed swarm.');
     process.exit(0);
   };
 
@@ -57,7 +65,6 @@ async function main() {
       const outgoingHyperdrive = new Hyperdrive(outgoingNamespace);
       await outgoingHyperdrive.ready();
 
-      console.log(`[${peerConfig.alias}] Outgoing drive key: ${outgoingHyperdrive.key.toString('hex')}`);
       return {
         ...peerConfig,
         outgoingHyperdrive,
@@ -73,38 +80,39 @@ async function main() {
     const peerPublicKey = Buffer.from(peerInfo.publicKey).toString('hex');
     const peer = peers.find((p) => p.publicKey === peerPublicKey);
     if (!peer) {
-      console.error(`Unknown peer with public key ${peerPublicKey}`);
+      logError(`Unknown peer with public key ${peerPublicKey}`);
       conn.end();
       return;
     }
 
     const stream = store.replicate(conn);
     stream.on('error', (err) => handleReplicationError(peer, err));
-    console.log(`Connected to ${peer.alias}!`);
+    logInfo(`Connected to ${peer.alias}!`);
 
+    // Exchange drive keys
     conn.on('data', (buffer) => handleReceiveDriveKeyFromPeer(peer, buffer));
-    console.log(`Sending drive key to ${peer.alias}`);
     const message = {
       type: 'share-drive-key',
       outgoingHyperdriveKeyHex: peer.outgoingHyperdrive.key.toString('hex'),
     };
     conn.write(JSON.stringify(message), 'utf8');
+    logInfo(`Sent drive key to ${peer.alias}`);
   });
 
   function handleReplicationError(peer, err) {
     if (err.message.includes('connection reset by peer') || err.message.includes('connection timed out')) {
-      console.log(`${peer.alias} disconnected.`);
+      logInfo(`[${peer.alias}] Disconnected`);
       return;
     }
     if (err.message.includes('Duplicate connection')) {
-      console.log(`${peer.alias} connection duplicated.`);
+      logInfo(`[${peer.alias}] Connection duplicated`);
       return;
     }
 
     const errorMessage = `${peer.alias} replication error: ${err.message}`;
     console.error(errorMessage);
     fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), errorMessage);
-    console.log(`Blacklisted ${peer.alias} due to replication error. Exiting for restart.`);
+    logInfo(`Blacklisted ${peer.alias} due to replication error. Exiting for restart.`);
     process.exit(0);
   }
 
@@ -118,15 +126,15 @@ async function main() {
       return;
     }
 
-    console.log(`Received drive key exchange message from ${peer.alias}:`, result.data);
+    logInfo(`Received drive key from ${peer.alias}`);
     if (peer.incomingHyperdriveKeyHex) {
       // If a peer deletes their .storage directory they will create a new outgoing Hyperdrive the next time their
       // hinter-core starts up. When that happens it's easier to just restart in order to mirror their new drive.
       if (peer.incomingHyperdriveKeyHex !== result.data.outgoingHyperdriveKeyHex) {
-        console.log(`${peer.alias} has a new outgoing Hyperdrive. Exiting for restart.`);
+        logInfo(`${peer.alias} has a new outgoing Hyperdrive. Exiting for restart.`);
         process.exit(0);
       }
-      console.log(`[${peer.alias}] Already setup`);
+      logInfo(`[${peer.alias}] Already setup`);
       return;
     }
 
@@ -140,25 +148,24 @@ async function main() {
   await Promise.all(
     peers.map(async (peer) => {
       const keyExchangeTopic = deriveKeyExchangeTopic(keyPair.publicKey.toString('hex'), peer.publicKey);
-      console.log(`[${peer.alias}] Joining key exchange: ${keyExchangeTopic.toString('hex')}`);
+      logInfo(`Joining key exchange topic for ${peer.alias}: ${keyExchangeTopic.toString('hex')}`);
       const discovery = swarm.join(keyExchangeTopic, { client: true, server: true });
       await discovery.flushed();
-      console.log(`[${peer.alias}] Joined key exchange`);
     })
   );
 
   async function completeHyperdriveSetup(peer, incomingDriveKeyHex) {
-    console.log(`[${peer.alias}] Setting up drives with incoming drive key: ${incomingDriveKeyHex}`);
+    logInfo(`[${peer.alias}] Setting up drives with incoming drive key: ${incomingDriveKeyHex}`);
 
     const outgoingDiscovery = swarm.join(peer.outgoingHyperdrive.discoveryKey, { client: false, server: true });
     await outgoingDiscovery.flushed();
 
     const outgoingLocaldrive = new Localdrive(path.join(peersDirectoryPath, peer.alias, 'outgoing'));
     async function mirrorOutgoing() {
-      console.log(`[${peer.alias}] OUT: Mirroring outgoing drive`);
+      logInfo(`[${peer.alias}] Mirroring outgoing drive...`);
       const outgoingMirror = outgoingLocaldrive.mirror(peer.outgoingHyperdrive);
       await outgoingMirror.done();
-      console.log(`[${peer.alias}] OUT: Successfully mirrored outgoing drive`);
+      logInfo(`[${peer.alias}] Successfully mirrored outgoing drive`);
     }
 
     const debouncedMirrorOutgoing = debounce(mirrorOutgoing, 1000);
@@ -173,13 +180,13 @@ async function main() {
         },
       })
       .on('all', async () => {
-        console.log(`OUT: Detected change in local outgoing directory for ${peer.alias}`);
+        logInfo(`[${peer.alias}] Detected change in local outgoing directory`);
         debouncedMirrorOutgoing();
       });
     debouncedMirrorOutgoing();
 
     if (peer.disableIncomingReports) {
-      console.log(`[${peer.alias}] Incoming reports are disabled`);
+      logInfo(`[${peer.alias}] Incoming reports are disabled`);
       return;
     }
 
@@ -191,19 +198,18 @@ async function main() {
 
     const incomingLocaldrive = new Localdrive(path.join(peersDirectoryPath, peer.alias, 'incoming'));
     async function mirrorIncoming() {
-      console.log(`[${peer.alias}] IN: Mirroring incoming drive`);
+      logInfo(`[${peer.alias}] Mirroring incoming drive...`);
       const incomingMirror = incomingHyperdrive.mirror(incomingLocaldrive);
       await incomingMirror.done();
-      console.log(`[${peer.alias}] IN: Successfully mirrored incoming drive`);
+      logInfo(`[${peer.alias}] Successfully mirrored incoming drive`);
 
-      console.log(`[${peer.alias}] Calculating incoming drive size`);
       const size = await checkPeerSizeLimit(peer, incomingHyperdrive);
-      console.log(`[${peer.alias}] Calculated incoming drive size: ${size / 1024 / 1024}MB (${size})`);
+      logInfo(`[${peer.alias}] Incoming drive size: ${(size / 1024 / 1024).toFixed(3)} MB (${size} bytes)`);
     }
 
     const debouncedMirrorIncoming = debounce(mirrorIncoming, 1000);
     incomingHyperdrive.core.on('append', () => {
-      console.log(`[${peer.alias}] IN: Detected change in incoming drive`);
+      logInfo(`[${peer.alias}] Detected change in incoming drive`);
       debouncedMirrorIncoming();
     });
     // Mirror when changes are detected in incoming localdrive
@@ -217,13 +223,13 @@ async function main() {
         },
       })
       .on('all', async () => {
-        console.log(`[${peer.alias}] IN: Detected change in local incoming directory`);
+        logInfo(`[${peer.alias}] Detected change in local incoming directory`);
         debouncedMirrorIncoming();
       });
     debouncedMirrorIncoming();
   }
 
-  console.log('Ready to connect all peers!');
+  logInfo('Ready to connect all peers!');
 }
 
 main();

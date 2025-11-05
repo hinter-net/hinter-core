@@ -2,7 +2,7 @@ node_modules
 .DS_Store
 
 .storage
-hinter-core-data
+hinter-core-data*
 fuzz
 .env
 
