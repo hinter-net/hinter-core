@@ -24,6 +24,8 @@ import { parseGlobalConfig } from './config.js';
 
 const { debounce } = lodash;
 
+const KEY_EXCHANGE_MESSAGE_TYPE = 'hinter-core/share-drive-key';
+
 printAsciiArt();
 
 async function main() {
@@ -92,7 +94,7 @@ async function main() {
     // Exchange drive keys
     conn.on('data', (buffer) => handleReceiveDriveKeyFromPeer(peer, buffer));
     const message = {
-      type: 'share-drive-key',
+      type: KEY_EXCHANGE_MESSAGE_TYPE,
       outgoingHyperdriveKeyHex: peer.outgoingHyperdrive.key.toString('hex'),
     };
     conn.write(JSON.stringify(message), 'utf8');
@@ -122,7 +124,7 @@ async function main() {
       // We don't log anything because we expect the parsing to fail for all buffers except the key exchange message
       return;
     }
-    if (result.data?.type !== 'share-drive-key') {
+    if (result.data?.type !== KEY_EXCHANGE_MESSAGE_TYPE) {
       return;
     }
 

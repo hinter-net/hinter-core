@@ -74,7 +74,7 @@ export async function parseEnvFile() {
 // Derive a topic from two identities (order-independent)
 export function deriveKeyExchangeTopic(publicKeyA, publicKeyB) {
   const [x, y] = [publicKeyA.toLowerCase(), publicKeyB.toLowerCase()].sort();
-  return crypto.createHash('sha256').update('key-exchange-topic').update(x).update(y).digest();
+  return crypto.createHash('sha256').update('hinter-core/key-exchange-topic').update(x).update(y).digest();
 }
 
 export async function calculateDriveSize(hyperdrive) {
