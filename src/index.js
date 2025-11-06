@@ -112,7 +112,7 @@ async function main() {
     }
 
     const errorMessage = `${peer.alias} replication error: ${err.message}`;
-    console.error(errorMessage);
+    logError(errorMessage);
     fs.writeFileSync(path.join(peersDirectoryPath, peer.alias, '.blacklisted'), errorMessage);
     logInfo(`Blacklisted ${peer.alias} due to replication error. Exiting for restart.`);
     process.exit(0);
@@ -178,7 +178,7 @@ async function main() {
         ignoreInitial: true,
         awaitWriteFinish: {
           stabilityThreshold: 2000,
-          pollInterval: 1000,
+          pollInterval: 100,
         },
       })
       .on('all', async () => {
@@ -221,7 +221,7 @@ async function main() {
         ignoreInitial: true,
         awaitWriteFinish: {
           stabilityThreshold: 2000,
-          pollInterval: 1000,
+          pollInterval: 100,
         },
       })
       .on('all', async () => {
