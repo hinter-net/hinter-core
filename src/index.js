@@ -157,8 +157,6 @@ async function main() {
   );
 
   async function completeHyperdriveSetup(peer, incomingDriveKeyHex) {
-    logInfo(`[${peer.alias}] Setting up drives with incoming drive key: ${incomingDriveKeyHex}`);
-
     const outgoingDiscovery = swarm.join(peer.outgoingHyperdrive.discoveryKey, { client: false, server: true });
     await outgoingDiscovery.flushed();
 
@@ -181,7 +179,7 @@ async function main() {
           pollInterval: 100,
         },
       })
-      .on('all', async () => {
+      .on('all', () => {
         logInfo(`[${peer.alias}] Detected change in local outgoing directory`);
         debouncedMirrorOutgoing();
       });
@@ -224,7 +222,7 @@ async function main() {
           pollInterval: 100,
         },
       })
-      .on('all', async () => {
+      .on('all', () => {
         logInfo(`[${peer.alias}] Detected change in local incoming directory`);
         debouncedMirrorIncoming();
       });
