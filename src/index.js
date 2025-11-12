@@ -34,7 +34,7 @@ import { detectIncomingStaleness, detectOutgoingStaleness } from './stale-detect
 const { debounce } = lodash;
 
 const KEY_EXCHANGE_MESSAGE_TYPE = 'hinter-core/share-drive-key';
-const PERIODIC_MIRROR_INTERVAL_IN_SECONDS = 180;
+const PERIODIC_MIRROR_INTERVAL_IN_SECONDS = 5 * 60;
 
 printAsciiArt();
 
@@ -82,7 +82,8 @@ async function main() {
   );
 
   /*
-   * Establish peer connections, and complete Hyperdrives setup for each peer (upon receiving their drive key)
+   * Establish peer connections, initiate heartbeats, and complete Hyperdrives setup for each peer (upon
+   * receiving their drive key)
    */
   swarm.on('connection', (conn, peerInfo) => {
     const peerPublicKey = Buffer.from(peerInfo.publicKey).toString('hex');
