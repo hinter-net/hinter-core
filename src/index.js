@@ -21,7 +21,7 @@ import {
 } from './utils.js';
 import { checkPeerSizeLimit, parsePeersAndMonitorForChanges } from './peer.js';
 import { parseGlobalConfig } from './config.js';
-import { HEARTBEAT_MESSAGE_TYPE, pauseHeartbeatForPeer, runHeartbeatForPeerOverConnection } from './heartbeats.js';
+import { pauseHeartbeatForPeer, runHeartbeatForPeerOverConnection } from './heartbeats.js';
 import {
   getIncomingHyperdriveKeyHex,
   recordIncomingMirrorSuccess,
@@ -30,11 +30,9 @@ import {
   setIncomingHyperdriveKeyHex,
 } from './peer-state.js';
 import { detectIncomingStaleness, detectOutgoingStaleness } from './stale-detection.js';
+import { HEARTBEAT_MESSAGE_TYPE, KEY_EXCHANGE_MESSAGE_TYPE, PERIODIC_MIRROR_INTERVAL_IN_SECONDS } from './constants.js';
 
 const { debounce } = lodash;
-
-const KEY_EXCHANGE_MESSAGE_TYPE = 'hinter-core/share-drive-key';
-const PERIODIC_MIRROR_INTERVAL_IN_SECONDS = 5 * 60;
 
 printAsciiArt();
 

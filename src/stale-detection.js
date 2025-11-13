@@ -1,11 +1,13 @@
 import { getIncomingHeartbeat, getLastRecordedIncomingMirror, getLastRecordedOutgoingMirror } from './peer-state.js';
 import { getUnixTimestamp, logInfo, sleep } from './utils.js';
-import { HEARTBEAT_INTERVAL_IN_SECONDS, isRunningHeartbeatForPeer } from './heartbeats.js';
-
-const STALENESS_CHECK_INTERVAL_IN_SECONDS = HEARTBEAT_INTERVAL_IN_SECONDS / 2;
-const GRACE_PERIOD_IN_SECONDS_TO_MIRROR_OUTGOING_DRIVE = 30;
-const GRACE_PERIOD_IN_SECONDS_TO_RECEIVE_NEW_HEARTBEAT = 30;
-const GRACE_PERIOD_IN_SECONDS_TO_MIRROR_INCOMING_DRIVE = 60;
+import { isRunningHeartbeatForPeer } from './heartbeats.js';
+import {
+  GRACE_PERIOD_IN_SECONDS_TO_MIRROR_INCOMING_DRIVE,
+  GRACE_PERIOD_IN_SECONDS_TO_MIRROR_OUTGOING_DRIVE,
+  GRACE_PERIOD_IN_SECONDS_TO_RECEIVE_NEW_HEARTBEAT,
+  HEARTBEAT_INTERVAL_IN_SECONDS,
+  STALENESS_CHECK_INTERVAL_IN_SECONDS,
+} from './constants.js';
 
 export async function detectOutgoingStaleness(peer, { mirrorOutgoing, onStaleDriveDetected }) {
   // We break out of the loop if staleness is detected
@@ -65,7 +67,7 @@ export async function detectIncomingStaleness(peer, { onStaleHeartbeatDetected, 
     // E.g. This periodic staleness check could run just after receiving a heartbeat, but before
     // the incoming drive has had a chance to mirror. So to avoid a false positive, we sleep for
     // a reasonable amount of time that would allow the incoming drive to have been mirrored.
-    await sleep(GRACE_PERIOD_IN_SECONDS_TO_MIRROR_INCOMING_DRIVE);
+    await sleep(GRACE_PERIOD_IN_SECONDS_TO_MIRROR_INCOMING_DRIVE * 1000);
     // If the incoming heartbeat value (i.e. the peer in question's latest drive version) is still
     // greater than the version that was last mirrored by the change detection mechanism, then we
     // know the drive was stale when this periodic staleness check ran.
