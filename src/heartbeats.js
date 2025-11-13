@@ -1,8 +1,6 @@
 import { logInfo } from './utils.js';
 import { getHeartbeatIntervalId, setHeartbeatIntervalId } from './peer-state.js';
-
-export const HEARTBEAT_INTERVAL_IN_SECONDS = 60 * 60;
-export const HEARTBEAT_MESSAGE_TYPE = 'hinter-core/heartbeat';
+import { HEARTBEAT_INTERVAL_IN_SECONDS, HEARTBEAT_MESSAGE_TYPE } from './constants.js';
 
 export function runHeartbeatForPeerOverConnection(conn, peer, outgoingHyperdrive) {
   let heartbeatIntervalId = getHeartbeatIntervalId(peer);
