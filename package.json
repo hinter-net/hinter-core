@@ -24,7 +24,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "eslint:check": "eslint --report-unused-disable-directives --cache --ext js,mjs,cjs . --max-warnings 0",
-    "eslint:fix": "npm run eslint:check --fix"
+    "eslint:fix": "npm run eslint:check --fix",
+    "prepare": "husky"
   },
   "dependencies": {
     "@api3/promise-utils": "^0.4.0",
@@ -42,6 +43,7 @@
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^16.5.0",
+    "husky": "^9.1.7",
     "prettier": "^3.6.2"
   }
 }
