@@ -19,7 +19,12 @@
   "scripts": {
     "build:package": "npm pack",
     "initialize": "node src/initialize.js  --data-dir $(pwd)/hinter-core-data",
-    "start": "node src/index.js --data-dir $(pwd)/hinter-core-data"
+    "start": "node src/index.js --data-dir $(pwd)/hinter-core-data",
+    "lint": "npm run format:check && npm run eslint:check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "eslint:check": "eslint --report-unused-disable-directives --cache --ext js,mjs,cjs . --max-warnings 0",
+    "eslint:fix": "npm run eslint:check --fix"
   },
   "dependencies": {
     "@api3/promise-utils": "^0.4.0",
@@ -33,6 +38,10 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.5",
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^16.5.0",
     "prettier": "^3.6.2"
   }
 }
