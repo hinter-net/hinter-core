@@ -8,4 +8,5 @@ fuzz
 .env
 
 .idea
+.vscode
 tmp
