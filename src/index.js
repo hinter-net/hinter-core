@@ -233,3 +233,5 @@ async function main() {
 }
 
 main();
+
+function unused() {}
