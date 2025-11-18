@@ -16,6 +16,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "engines": {
+    "node": "^22.19.0"
+  },
   "scripts": {
     "build:package": "npm pack",
     "initialize": "node src/initialize.js  --data-dir $(pwd)/hinter-core-data",
