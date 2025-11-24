@@ -37,7 +37,7 @@ export async function detectOutgoingStaleness(peer, { mirrorOutgoing, onStaleDri
     // check ran.
     if (latestDriveVersion > getLastRecordedOutgoingMirror(peer).version) {
       onStaleDriveDetected();
-      break;
+      continue;
     }
     logInfo(`[${peer.alias}] Outgoing drive is up to date`);
   }
@@ -60,7 +60,7 @@ export async function detectIncomingStaleness(peer, { onStaleHeartbeatDetected, 
       nowUnixTimestamp
     ) {
       onStaleHeartbeatDetected();
-      break;
+      continue;
     }
 
     // We sleep to avoid a potential race condition with the change detection mechanism.
@@ -73,7 +73,7 @@ export async function detectIncomingStaleness(peer, { onStaleHeartbeatDetected, 
     // know the drive was stale when this periodic staleness check ran.
     if (incomingHeartbeat.incomingHyperdriveVersion > getLastRecordedIncomingMirror(peer).version) {
       onStaleDriveDetected();
-      break;
+      continue;
     }
 
     logInfo(`[${peer.alias}] Incoming drive is up to date`);

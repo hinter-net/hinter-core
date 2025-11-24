@@ -30,7 +30,7 @@ import {
   setIncomingHyperdriveKeyHex,
 } from './peer-state.js';
 import { detectIncomingStaleness, detectOutgoingStaleness } from './stale-detection.js';
-import { HEARTBEAT_MESSAGE_TYPE, KEY_EXCHANGE_MESSAGE_TYPE, PERIODIC_MIRROR_INTERVAL_IN_SECONDS } from './constants.js';
+import { HEARTBEAT_MESSAGE_TYPE, KEY_EXCHANGE_MESSAGE_TYPE } from './constants.js';
 
 const { debounce } = lodash;
 
@@ -213,8 +213,8 @@ async function main() {
     detectOutgoingStaleness(peer, {
       mirrorOutgoing,
       onStaleDriveDetected: () => {
-        logError(`[${peer.alias}] Stale outgoing drive detected. Initiating periodic mirror`);
-        setInterval(debouncedMirrorOutgoing, PERIODIC_MIRROR_INTERVAL_IN_SECONDS * 1000);
+        logError(`[${peer.alias}] Stale outgoing drive detected`);
+        // We mirror in order to check outgoing staleness, so no need to call mirror here again
       },
     });
 
@@ -265,12 +265,12 @@ async function main() {
 
     detectIncomingStaleness(peer, {
       onStaleHeartbeatDetected: () => {
-        logError(`[${peer.alias}] Stale incoming heartbeat detected for ${peer.alias}. Initiating periodic mirror`);
-        setInterval(debouncedMirrorIncoming, PERIODIC_MIRROR_INTERVAL_IN_SECONDS * 1000);
+        logError(`[${peer.alias}] Stale incoming heartbeat detected for ${peer.alias}`);
+        debouncedMirrorIncoming(); // Mirroring will likely not help here, but we mirror just in case
       },
       onStaleDriveDetected: () => {
-        logError(`[${peer.alias}] Stale incoming drive detected for ${peer.alias}. Initiating periodic mirror`);
-        setInterval(debouncedMirrorIncoming, PERIODIC_MIRROR_INTERVAL_IN_SECONDS * 1000);
+        logError(`[${peer.alias}] Stale incoming drive detected for ${peer.alias}`);
+        debouncedMirrorIncoming(); // Mirroring will likely not help here, but we mirror just in case
       },
     });
   }
