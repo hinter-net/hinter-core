@@ -71,7 +71,7 @@ export async function detectIncomingStaleness(peer, { onStaleHeartbeatDetected, 
     // If the incoming heartbeat value (i.e. the peer in question's latest drive version) is still
     // greater than the version that was last mirrored by the change detection mechanism, then we
     // know the drive was stale when this periodic staleness check ran.
-    if (incomingHeartbeat.value > getLastRecordedIncomingMirror(peer).version) {
+    if (incomingHeartbeat.incomingHyperdriveVersion > getLastRecordedIncomingMirror(peer).version) {
       onStaleDriveDetected();
       break;
     }

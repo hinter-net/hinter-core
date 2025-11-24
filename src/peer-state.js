@@ -8,7 +8,7 @@ function getPeerState(peer) {
       incomingHyperdriveKeyHex: null,
       heartbeatIntervalId: null,
       incomingHeartbeat: {
-        value: null,
+        incomingHyperdriveVersion: null,
         unixTimestamp: null,
       },
       lastRecordedOutgoingMirror: {
@@ -41,10 +41,10 @@ export function setHeartbeatIntervalId(peer, heartbeatIntervalId) {
   setPeerState(peer, (state) => ({ ...state, heartbeatIntervalId }));
 }
 
-export function setIncomingHeartbeat(peer, value) {
+export function setIncomingHeartbeat(peer, incomingHyperdriveVersion) {
   setPeerState(peer, (state) => ({
     ...state,
-    incomingHeartbeat: { value, unixTimestamp: getUnixTimestamp() },
+    incomingHeartbeat: { incomingHyperdriveVersion, unixTimestamp: getUnixTimestamp() },
   }));
 }
 
