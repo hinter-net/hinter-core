@@ -7,10 +7,8 @@ This workflow builds and publishes the `@hinter-net/hinter-core` package to the 
 ### Features
 
 - **Manual Trigger**: Can be triggered manually from the GitHub Actions tab.
-- **NPM Provenance**: Generates provenance attestations, cryptographically proving the package was built from this
-  repository.
-- **Git Tagging**: Automatically creates and pushes a git tag with the version from `package.json` (e.g., `v0.2.0`) upon
-  successful publication.
+- **NPM Provenance**: Generates provenance attestations, cryptographically proving the package was built from this repository.
+- **Git Tagging**: Automatically creates and pushes a git tag with the version from `package.json` (e.g., `v0.2.0`) upon successful publication.
 
 ### Required Secrets
 
@@ -21,8 +19,7 @@ Before running the workflow, you need to configure the following secret in your 
    - Go to your profile picture → Access Tokens
    - Click "Generate New Token" -> "Granular Access Token"
    - Give it a descriptive name (e.g., "GitHub Actions - hinter-core").
-   - Under "Packages and Scopes", select the `@hinter-net/hinter-core` package (or the `@hinter-net` organization) and
-     grant it "Read and Write" permissions.
+   - Under "Packages and Scopes", select the `@hinter-net/hinter-core` package (or the `@hinter-net` organization) and grant it "Read and Write" permissions.
    - Copy the generated token.
 
 2. **Configure GitHub Repository Secrets**:
@@ -53,8 +50,7 @@ Before running the workflow, you need to configure the following secret in your 
 
 ## End-to-End Test Workflow
 
-This workflow runs an end-to-end test to verify that two `hinter-core` instances can communicate and synchronize data
-correctly.
+This workflow runs an end-to-end test to verify that two `hinter-core` instances can communicate and synchronize data correctly.
 
 ### Features
 
