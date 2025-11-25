@@ -71,7 +71,9 @@ export async function checkPeerSizeLimit(peer, incomingHyperdrive) {
   const incomingDriveSize = await calculateDriveSize(incomingHyperdrive);
   if (incomingDriveSize > peer.peerSizeLimitMB * 1024 * 1024) {
     fs.writeFileSync(path.join(getPeersDir(), peer.alias, '.blacklisted'), 'Exceeded the size limit');
-    logInfo(`${peer.alias} blacklisted for exceeding the size limit (${incomingDriveSize}). Exiting for restart.`);
+    logInfo(
+      `${peer.alias} blacklisted for exceeding the size limit (${incomingDriveSize} bytes). Exiting for restart.`
+    );
     process.exit(0);
   }
   return incomingDriveSize;

@@ -101,6 +101,14 @@ export function logInfo(message) {
   console.log('\x1b[2m', new Date().toISOString(), '\x1b[0m', message);
 }
 
-export function logError(message, error) {
-  console.error('\x1b[2m', new Date().toISOString(), '\x1b[0m', message, error);
+export function logError(message, ...optionalParams) {
+  console.error('\x1b[2m', new Date().toISOString(), '\x1b[0m', message, ...optionalParams);
+}
+
+export function getUnixTimestamp() {
+  return Math.floor(Date.now() / 1000);
+}
+
+export async function sleep(millis) {
+  return new Promise((res) => setTimeout(res, millis));
 }
