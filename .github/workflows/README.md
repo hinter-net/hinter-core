@@ -26,8 +26,8 @@ Before running the workflow, you need to configure the following secret in your 
    - Go to your repository → Settings → Secrets and variables → Actions
    - Add the following repository secret:
 
-| Secret Name | Description |
-|-------------|-------------|
+| Secret Name | Description                                        |
+| ----------- | -------------------------------------------------- |
 | `NPM_TOKEN` | Your NPM Granular Access Token (created in step 1) |
 
 ### How to Run
@@ -64,19 +64,19 @@ This workflow runs an end-to-end test to verify that two `hinter-core` instances
 The workflow consists of two parallel jobs, `hinter1` and `hinter2`.
 
 1.  **Setup**:
-    *   Each job checks out the repository and installs dependencies.
-    *   It builds the npm package using `npm run build:package`.
-    *   It installs the built package globally (`npm install -g ...`) along with `pm2`.
+    - Each job checks out the repository and installs dependencies.
+    - It builds the npm package using `npm run build:package`.
+    - It installs the built package globally (`npm install -g ...`) along with `pm2`.
 
 2.  **Execution**:
-    *   Each job runs `hinter-core-initialize` to set up a local data directory.
-    *   It then starts the `hinter-core` application as a background service using `pm2`.
-    *   `hinter1` creates a report file (`report-from-1.txt`) in its outgoing directory for `hinter2`.
-    *   `hinter2` creates a report file (`report-from-2.txt`) in its outgoing directory for `hinter1`.
+    - Each job runs `hinter-core-initialize` to set up a local data directory.
+    - It then starts the `hinter-core` application as a background service using `pm2`.
+    - `hinter1` creates a report file (`report-from-1.txt`) in its outgoing directory for `hinter2`.
+    - `hinter2` creates a report file (`report-from-2.txt`) in its outgoing directory for `hinter1`.
 
 3.  **Verification**:
-    *   Each node waits for the other's report file to appear in its incoming directory and verifies the content.
-    *   If a report is not received within the timeout period (180 seconds), the workflow fails.
+    - Each node waits for the other's report file to appear in its incoming directory and verifies the content.
+    - If a report is not received within the timeout period (180 seconds), the workflow fails.
 
 ### How to Run
 

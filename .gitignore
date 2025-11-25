@@ -1,5 +1,6 @@
 node_modules
 .DS_Store
+.eslintcache
 
 .storage
 hinter-core-data*
@@ -7,4 +8,5 @@ fuzz
 .env
 
 .idea
+.vscode
 tmp
