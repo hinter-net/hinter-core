@@ -21,10 +21,18 @@ import {
 } from './utils.js';
 import { checkPeerSizeLimit, parsePeersAndMonitorForChanges } from './peer.js';
 import { parseGlobalConfig } from './config.js';
+import { pauseHeartbeatForPeer, runHeartbeatForPeerOverConnection } from './heartbeats.js';
+import {
+  getIncomingHyperdriveKeyHex,
+  recordIncomingMirrorSuccess,
+  recordOutgoingMirrorSuccess,
+  setIncomingHeartbeat,
+  setIncomingHyperdriveKeyHex,
+} from './peer-state.js';
+import { detectIncomingStaleness, detectOutgoingStaleness } from './stale-detection.js';
+import { HEARTBEAT_MESSAGE_TYPE, KEY_EXCHANGE_MESSAGE_TYPE } from './constants.js';
 
 const { debounce } = lodash;
-
-const KEY_EXCHANGE_MESSAGE_TYPE = 'hinter-core/share-drive-key';
 
 printAsciiArt();
 
@@ -67,16 +75,13 @@ async function main() {
       const outgoingHyperdrive = new Hyperdrive(outgoingNamespace);
       await outgoingHyperdrive.ready();
 
-      return {
-        ...peerConfig,
-        outgoingHyperdrive,
-        incomingHyperdriveKeyHex: null,
-      };
+      return { ...peerConfig, outgoingHyperdrive };
     })
   );
 
   /*
-   * Establish peer connections, and complete Hyperdrives setup for each peer (upon receiving their drive key)
+   * Establish peer connections, initiate heartbeats, and complete Hyperdrives setup for each peer (upon
+   * receiving their drive key)
    */
   swarm.on('connection', (conn, peerInfo) => {
     const peerPublicKey = Buffer.from(peerInfo.publicKey).toString('hex');
@@ -88,20 +93,23 @@ async function main() {
     }
 
     const stream = store.replicate(conn);
-    stream.on('error', (err) => handleReplicationError(peer, err));
     logInfo(`Connected to ${peer.alias}!`);
+    stream.on('error', (err) => handleReplicationError(peer, err));
+    conn.on('data', (buffer) => handleMessagesFromPeer(peer, buffer));
+
+    runHeartbeatForPeerOverConnection(conn, peer, peer.outgoingHyperdrive);
 
     // Exchange drive keys
-    conn.on('data', (buffer) => handleReceiveDriveKeyFromPeer(peer, buffer));
     const message = {
       type: KEY_EXCHANGE_MESSAGE_TYPE,
       outgoingHyperdriveKeyHex: peer.outgoingHyperdrive.key.toString('hex'),
     };
     conn.write(JSON.stringify(message), 'utf8');
-    logInfo(`Sent drive key to ${peer.alias}`);
+    logInfo(`[${peer.alias}] Sent drive key to ${peer.alias}`);
   });
 
   function handleReplicationError(peer, err) {
+    pauseHeartbeatForPeer(peer);
     if (err.message.includes('connection reset by peer') || err.message.includes('connection timed out')) {
       logInfo(`[${peer.alias}] Disconnected`);
       return;
@@ -118,30 +126,41 @@ async function main() {
     process.exit(0);
   }
 
-  function handleReceiveDriveKeyFromPeer(peer, buffer) {
+  function handleMessagesFromPeer(peer, buffer) {
     const result = goSync(() => JSON.parse(buffer.toString('utf8')));
     if (!result.success) {
       // We don't log anything because we expect the parsing to fail for all buffers except the key exchange message
       return;
     }
-    if (result.data?.type !== KEY_EXCHANGE_MESSAGE_TYPE) {
-      return;
-    }
 
-    logInfo(`Received drive key from ${peer.alias}`);
-    if (peer.incomingHyperdriveKeyHex) {
-      // If a peer deletes their .storage directory they will create a new outgoing Hyperdrive the next time their
-      // hinter-core starts up. When that happens it's easier to just restart in order to mirror their new drive.
-      if (peer.incomingHyperdriveKeyHex !== result.data.outgoingHyperdriveKeyHex) {
-        logInfo(`${peer.alias} has a new outgoing Hyperdrive. Exiting for restart.`);
-        process.exit(0);
+    const { data: message } = result;
+    switch (message?.type) {
+      case KEY_EXCHANGE_MESSAGE_TYPE: {
+        logInfo(`[${peer.alias}] Received drive key from ${peer.alias}`);
+        const { outgoingHyperdriveKeyHex: driveKeyHex } = message;
+        const existingIncomingHyperdriveKeyHex = getIncomingHyperdriveKeyHex(peer);
+        if (existingIncomingHyperdriveKeyHex) {
+          // If a peer deletes their .storage directory they will create a new outgoing Hyperdrive the next time their
+          // hinter-core starts up. When that happens it's easier to just restart in order to mirror their new drive.
+          if (existingIncomingHyperdriveKeyHex !== driveKeyHex) {
+            logInfo(`${peer.alias} has a new outgoing Hyperdrive. Exiting for restart.`);
+            process.exit(0);
+          }
+          logInfo(`[${peer.alias}] Already setup`);
+          return;
+        }
+
+        setIncomingHyperdriveKeyHex(peer, driveKeyHex);
+        completeHyperdriveSetup(peer, driveKeyHex);
+        return;
       }
-      logInfo(`[${peer.alias}] Already setup`);
-      return;
-    }
 
-    peer.incomingHyperdriveKeyHex = result.data.outgoingHyperdriveKeyHex;
-    completeHyperdriveSetup(peer, result.data.outgoingHyperdriveKeyHex);
+      case HEARTBEAT_MESSAGE_TYPE: {
+        logInfo(`[${peer.alias}] Received heartbeat (${message.outgoingHyperdriveVersion}) from ${peer.alias}`);
+        setIncomingHeartbeat(peer, message.outgoingHyperdriveVersion);
+        return;
+      }
+    }
   }
 
   /*
@@ -157,15 +176,21 @@ async function main() {
   );
 
   async function completeHyperdriveSetup(peer, incomingDriveKeyHex) {
-    const outgoingDiscovery = swarm.join(peer.outgoingHyperdrive.discoveryKey, { client: false, server: true });
+    const { outgoingHyperdrive } = peer;
+    const outgoingDiscovery = swarm.join(outgoingHyperdrive.discoveryKey, { client: false, server: true });
     await outgoingDiscovery.flushed();
 
     const outgoingLocaldrive = new Localdrive(path.join(peersDirectoryPath, peer.alias, 'outgoing'));
-    async function mirrorOutgoing() {
+    async function mirrorOutgoing(opts = { recordAction: true }) {
       logInfo(`[${peer.alias}] Mirroring outgoing drive...`);
-      const outgoingMirror = outgoingLocaldrive.mirror(peer.outgoingHyperdrive);
+      const outgoingMirror = outgoingLocaldrive.mirror(outgoingHyperdrive);
       await outgoingMirror.done();
-      logInfo(`[${peer.alias}] Successfully mirrored outgoing drive`);
+      const mirroredVersion = outgoingHyperdrive.db.version;
+      logInfo(`[${peer.alias}] Successfully mirrored outgoing drive (version: ${mirroredVersion})`);
+      if (opts.recordAction) {
+        recordOutgoingMirrorSuccess(peer, mirroredVersion);
+      }
+      return mirroredVersion;
     }
 
     const debouncedMirrorOutgoing = debounce(mirrorOutgoing, 1000);
@@ -185,6 +210,14 @@ async function main() {
       });
     debouncedMirrorOutgoing();
 
+    detectOutgoingStaleness(peer, {
+      mirrorOutgoing,
+      onStaleDriveDetected: () => {
+        logError(`[${peer.alias}] Stale outgoing drive detected`);
+        // We mirror in order to check outgoing staleness, so no need to call mirror here again
+      },
+    });
+
     if (peer.disableIncomingReports) {
       logInfo(`[${peer.alias}] Incoming reports are disabled`);
       return;
@@ -201,7 +234,9 @@ async function main() {
       logInfo(`[${peer.alias}] Mirroring incoming drive...`);
       const incomingMirror = incomingHyperdrive.mirror(incomingLocaldrive);
       await incomingMirror.done();
-      logInfo(`[${peer.alias}] Successfully mirrored incoming drive`);
+      const mirroredVersion = incomingHyperdrive.db.version;
+      logInfo(`[${peer.alias}] Successfully mirrored incoming drive (version: ${mirroredVersion})`);
+      recordIncomingMirrorSuccess(peer, mirroredVersion);
 
       const size = await checkPeerSizeLimit(peer, incomingHyperdrive);
       logInfo(`[${peer.alias}] Incoming drive size: ${(size / 1024 / 1024).toFixed(3)} MB (${size} bytes)`);
@@ -227,6 +262,17 @@ async function main() {
         debouncedMirrorIncoming();
       });
     debouncedMirrorIncoming();
+
+    detectIncomingStaleness(peer, {
+      onStaleHeartbeatDetected: () => {
+        logError(`[${peer.alias}] Stale incoming heartbeat detected for ${peer.alias}`);
+        debouncedMirrorIncoming(); // Mirroring will likely not help here, but we mirror just in case
+      },
+      onStaleDriveDetected: () => {
+        logError(`[${peer.alias}] Stale incoming drive detected for ${peer.alias}`);
+        debouncedMirrorIncoming(); // Mirroring will likely not help here, but we mirror just in case
+      },
+    });
   }
 
   logInfo('Ready to connect all peers!');
