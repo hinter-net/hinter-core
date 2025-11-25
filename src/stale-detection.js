@@ -10,7 +10,6 @@ import {
 } from './constants.js';
 
 export async function detectOutgoingStaleness(peer, { mirrorOutgoing, onStaleDriveDetected }) {
-  // We break out of the loop if staleness is detected
   while (true) {
     await sleep(STALENESS_CHECK_INTERVAL_IN_SECONDS * 1000);
     if (!isRunningHeartbeatForPeer(peer)) {
@@ -44,7 +43,6 @@ export async function detectOutgoingStaleness(peer, { mirrorOutgoing, onStaleDri
 }
 
 export async function detectIncomingStaleness(peer, { onStaleHeartbeatDetected, onStaleDriveDetected }) {
-  // We break out of the loop if staleness is detected
   while (true) {
     await sleep(STALENESS_CHECK_INTERVAL_IN_SECONDS * 1000);
     if (!isRunningHeartbeatForPeer(peer)) {
